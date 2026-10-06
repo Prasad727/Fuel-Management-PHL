@@ -89,7 +89,15 @@ http.createServer(async (req, res) => {
       if (m === 'DELETE') { records.splice(i, 1); persist(); return send(res, 200, { deleted: id }); }
     }
     send(res, 404, { error: 'Not found' });
-  } catch (e) { send(res, 400, { error: e.message }); }
+  } catch (e) {
+  console.error("Server error:", e);
+
+  if (res.headersSent) {
+    return;
+  }
+
+  send(res, 400, { error: e.message });
+}
 }).listen(PORT, '0.0.0.0', () => {
   console.log('\nFleet Fuel Manager is running.\n  On this computer:  http://localhost:' + PORT);
   for (const l of Object.values(os.networkInterfaces()))
