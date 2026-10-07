@@ -1,175 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fleet Fuel Manager</title>
-<style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6f8;--card:#fff;--text:#1b2430;--muted:#6b7785;--line:#dde3ea;--accent:#d9480f;--head:#1b2430;--headtext:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171d;--card:#1b232c;--text:#e8edf2;--muted:#93a0ad;--line:#2d3844;--accent:#ff8a4c;--head:#0d1217;--headtext:#e8edf2}}
-:root[data-theme="dark"]{--bg:#12171d;--card:#1b232c;--text:#e8edf2;--muted:#93a0ad;--line:#2d3844;--accent:#ff8a4c;--head:#0d1217;--headtext:#e8edf2}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
-h1{font-size:1.4rem;margin:0 0 4px}
-.sub{color:var(--muted);margin:0 0 18px;font-size:.9rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
-label{display:flex;flex-direction:column;font-size:.78rem;color:var(--muted);gap:4px}
-input{padding:9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-size:.95rem;width:100%}
-button{padding:9px 14px;border:0;border-radius:6px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:.9rem}
-button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-button.del{background:transparent;color:var(--muted);padding:4px 8px;border:0;font-size:1rem}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
-.bar .grow{flex:1;min-width:140px}
-.stats{display:flex;gap:20px;color:var(--muted);font-size:.85rem;margin-left:auto}
-.stats b{color:var(--text)}
-.scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:640px}
-thead th{background:var(--head);color:var(--headtext);text-align:left;padding:10px;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0}
-td{padding:10px;border-bottom:1px solid var(--line);font-size:.92rem}
-td.id{font-family:ui-monospace,Menlo,monospace;color:var(--accent);font-weight:600}
-td.num{text-align:right}th.num{text-align:right}
-.bar input[type=date]{width:auto}
-.empty{padding:28px;text-align:center;color:var(--muted)}
-.msg{font-size:.82rem;color:var(--muted);margin-top:8px}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Fleet Fuel Manager</title>
+    <style>
+        :root {
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top,0px);
+            padding-bottom: env(safe-area-inset-bottom,0px);
+            --bg: #f4f6f8;
+            --card: #fff;
+            --text: #1b2430;
+            --muted: #6b7785;
+            --line: #dde3ea;
+            --accent: #d9480f;
+            --head: #1b2430;
+            --headtext: #fff
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #12171d;
+                --card: #1b232c;
+                --text: #e8edf2;
+                --muted: #93a0ad;
+                --line: #2d3844;
+                --accent: #ff8a4c;
+                --head: #0d1217;
+                --headtext: #e8edf2
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #12171d;
+            --card: #1b232c;
+            --text: #e8edf2;
+            --muted: #93a0ad;
+            --line: #2d3844;
+            --accent: #ff8a4c;
+            --head: #0d1217;
+            --headtext: #e8edf2
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top,0px)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif
+        }
+
+        .wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 16px 40px
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin: 0 0 4px
+        }
+
+        .sub {
+            color: var(--muted);
+            margin: 0 0 18px;
+            font-size: .9rem
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+            gap: 12px;
+            align-items: end
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: .78rem;
+            color: var(--muted);
+            gap: 4px
+        }
+
+        input {
+            padding: 9px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: .95rem;
+            width: 100%
+        }
+
+        button {
+            padding: 9px 14px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: .9rem
+        }
+
+            button.ghost {
+                background: transparent;
+                color: var(--text);
+                border: 1px solid var(--line)
+            }
+
+            button.del {
+                background: transparent;
+                color: var(--muted);
+                padding: 4px 8px;
+                border: 0;
+                font-size: 1rem
+            }
+
+        .bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+            .bar .grow {
+                flex: 1;
+                min-width: 140px
+            }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            color: var(--muted);
+            font-size: .85rem;
+            margin-left: auto
+        }
+
+            .stats b {
+                color: var(--text)
+            }
+
+        .scroll {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px
+        }
+
+        thead th {
+            background: var(--head);
+            color: var(--headtext);
+            text-align: left;
+            padding: 10px;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            position: sticky;
+            top: 0
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--line);
+            font-size: .92rem
+        }
+
+            td.id {
+                font-family: ui-monospace,Menlo,monospace;
+                color: var(--accent);
+                font-weight: 600
+            }
+
+            td.num {
+                text-align: right
+            }
+
+        th.num {
+            text-align: right
+        }
+
+        .bar input[type=date] {
+            width: auto
+        }
+
+        .bar select {
+            padding: 9px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: .9rem
+        }
+
+        .empty {
+            padding: 28px;
+            text-align: center;
+            color: var(--muted)
+        }
+
+        .msg {
+            font-size: .82rem;
+            color: var(--muted);
+            margin-top: 8px
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>⛽ Fleet Fuel Manager</h1>
-  <p class="sub">Enter a date and trip number, and a unique ID is generated automatically. <span id="st"></span></p>
+    <div class="wrap">
+        <h1>⛽ Fleet Fuel Manager</h1>
+        <p class="sub">Enter a date and trip number, and a unique ID is generated automatically. <span id="st"></span></p>
 
-  <div class="card">
-    <form id="f">
-      <label>Date<input type="date" id="date" required></label>
-      <label>Trip Number<input id="trip" required placeholder="e.g. T-1024"></label>
-      <label>Odometer (km) – optional<input id="odo" type="number" min="0" step="1" placeholder="optional"></label>
-      <label>Truck No<input id="truck" required placeholder="e.g. ABC 1234"></label>
-      <label>Given Fuel (L)<input id="fuel" type="number" min="0" step="0.01" required></label>
-      <label>Location<input id="loc" required placeholder="e.g. Lusaka"></label>
-      <button type="submit" id="sub">Add record</button><button type="button" class="ghost" id="cancel" hidden>Cancel</button>
-    </form>
-    <div class="msg">Or upload a CSV with columns: Date, Trip Number, Odometer (optional), Truck No, Given Fuel, Location.</div>
-  </div>
+        <div class="card">
+            <form id="f">
+                <label>Date<input type="date" id="date" required></label>
+                <label>Trip Number<input id="trip" required placeholder="e.g. T-1024"></label>
+                <label>Odometer (km) – optional<input id="odo" type="number" min="0" step="1" placeholder="optional"></label>
+                <label>Truck No<input id="truck" required placeholder="e.g. ABC 1234"></label>
+                <label>Given Fuel (L)<input id="fuel" type="number" min="0" step="0.01" required></label>
+                <label>Location<input id="loc" required placeholder="e.g. Lusaka"></label>
+                <button type="submit" id="sub">Add record</button><button type="button" class="ghost" id="cancel" hidden>Cancel</button>
+            </form>
+            <div class="msg">Or upload a CSV with columns: Date, Trip Number, Odometer (optional), Truck No, Given Fuel, Location.</div>
+        </div>
 
-  <div class="card">
-    <div class="bar">
-      <input class="grow" id="q" placeholder="Search trip, truck, location or ID…">
-      <input type="date" id="from" title="From date"><input type="date" id="to" title="To date">
-      <button class="ghost" id="up">Upload CSV</button>
-      <button class="ghost" id="ex">Export CSV</button>
-      <button class="ghost" id="bk" title="Download a full backup of all records">Backup</button>
-      <button class="ghost" id="rs" title="Restore from a backup file">Restore</button>
-      <button class="ghost" id="clr">Clear all</button>
-      <input type="file" id="bfile" accept=".json,application/json" hidden>
-      <input type="file" id="file" accept=".csv,text/csv" hidden>
-      <div class="stats"><span>Records: <b id="n">0</b></span><span>Total fuel: <b id="tot">0</b> L</span></div>
+        <div class="card">
+            <div class="bar">
+                <input class="grow" id="q" placeholder="Search trip, truck, location or ID…">
+                <input type="date" id="from" title="From date"><input type="date" id="to" title="To date">
+                <select id="win" title="How much history to load"><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option><option value="all">All records</option></select>
+                <button class="ghost" id="up">Upload CSV</button>
+                <button class="ghost" id="ex">Export CSV</button>
+                <button class="ghost" id="bk" title="Download a full backup of all records">Backup</button>
+                <button class="ghost" id="rs" title="Restore from a backup file">Restore</button>
+                <button class="ghost" id="clr">Clear all</button>
+                <input type="file" id="bfile" accept=".json,application/json" hidden>
+                <input type="file" id="file" accept=".csv,text/csv" hidden>
+                <div class="stats"><span>Records: <b id="n">0</b></span><span>Total fuel: <b id="tot">0</b> L</span></div>
+            </div>
+            <div class="scroll">
+                <table>
+                    <thead><tr><th>Unique ID</th><th>Date</th><th>Trip Number</th><th class="num">Odometer (km)</th><th>Truck No</th><th class="num">Given Fuel (L)</th><th>Location</th><th></th></tr></thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+            <div class="empty" id="empty">No records yet. Add one above or upload a CSV.</div>
+        </div>
     </div>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Unique ID</th><th>Date</th><th>Trip Number</th><th class="num">Odometer (km)</th><th>Truck No</th><th class="num">Given Fuel (L)</th><th>Location</th><th></th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
-    <div class="empty" id="empty">No records yet. Add one above or upload a CSV.</div>
-  </div>
-</div>
 
-<script>
-const $=id=>document.getElementById(id);
-let data=[],editing=null;
-async function api(m,u,b){
-  const r=await fetch(u,{method:m,headers:{'Content-Type':'application/json'},body:b===undefined?undefined:JSON.stringify(b)});
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error(j.error||('Server error '+r.status));
-  return j;
-}
-function status(ok,t){$('st').textContent=(ok?'🟢 ':'🔴 ')+t}
-async function load(){
-  try{data=await api('GET','/api/records');status(true,'Connected to server · '+data.length+' records · '+new Date().toLocaleTimeString())}
-  catch(e){status(false,'Cannot reach server: '+e.message)}
-  render();
-}
-async function run(fn){try{await fn();await load()}catch(e){alert(e.message)}}
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-function render(){
-  const q=$('q').value.trim().toLowerCase(),from=$('from').value,to=$('to').value;
-  const list=data.filter(r=>(!q||[r.id,r.trip,r.truck,r.loc,r.date].join(' ').toLowerCase().includes(q))&&(!from||r.date>=from)&&(!to||r.date<=to));
-  $('rows').innerHTML=list.slice().reverse().map(r=>`<tr><td class="id">${esc(r.id)}</td><td>${esc(r.date)}</td><td>${esc(r.trip)}</td><td class="num">${r.odo===''||r.odo==null?'—':Number(r.odo).toLocaleString()}</td><td>${esc(r.truck)}</td><td class="num">${Number(r.fuel).toLocaleString(undefined,{maximumFractionDigits:2})}</td><td>${esc(r.loc)}</td><td style="white-space:nowrap"><button class="del" title="Edit" onclick="edit('${r.id}')">✎</button><button class="del" title="Delete" onclick="del('${r.id}')">✕</button></td></tr>`).join('');
-  $('empty').style.display=list.length?'none':'block';
-  $('n').textContent=list.length;
-  $('tot').textContent=list.reduce((s,r)=>s+Number(r.fuel||0),0).toLocaleString(undefined,{maximumFractionDigits:2});
-}
-function del(id){if(!confirm('Delete record '+id+'?'))return;if(editing===id)resetForm();run(()=>api('DELETE','/api/records/'+encodeURIComponent(id)))}
-$('date').value=new Date().toISOString().slice(0,10);
-function resetForm(){editing=null;$('sub').textContent='Add record';$('cancel').hidden=true;['trip','fuel','odo'].forEach(i=>$(i).value='')}
-$('f').addEventListener('submit',e=>{
-  e.preventDefault();
-  const rec={date:$('date').value,trip:$('trip').value.trim(),truck:$('truck').value.trim(),fuel:parseFloat($('fuel').value),loc:$('loc').value.trim(),odo:$('odo').value===''?'':parseFloat($('odo').value)};
-  if(!editing&&data.some(r=>r.date===rec.date&&r.trip.toLowerCase()===rec.trip.toLowerCase()&&r.truck.toLowerCase()===rec.truck.toLowerCase())&&!confirm('A record with the same date, trip and truck already exists. Add anyway?'))return;
-  run(async()=>{
-    if(editing)await api('PUT','/api/records/'+encodeURIComponent(editing),rec);else await api('POST','/api/records',rec);
-    resetForm();$('trip').focus();
-  });
-});
-function edit(id){const r=data.find(x=>x.id===id);if(!r)return;editing=id;$('date').value=r.date;$('trip').value=r.trip;$('odo').value=r.odo??'';$('truck').value=r.truck;$('fuel').value=r.fuel;$('loc').value=r.loc;$('sub').textContent='Save changes ('+id+')';$('cancel').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}
-$('cancel').onclick=resetForm;
-['q','from','to'].forEach(i=>$(i).addEventListener('input',render));
-$('up').onclick=()=>$('file').click();
-function parseCSV(t){
-  const rows=[];let row=[],cur='',inq=false;
-  for(let i=0;i<t.length;i++){const c=t[i];
-    if(inq){if(c=='"'&&t[i+1]=='"'){cur+='"';i++}else if(c=='"')inq=false;else cur+=c}
-    else if(c=='"')inq=true;
-    else if(c==','){row.push(cur);cur=''}
-    else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;row.push(cur);cur='';if(row.some(x=>x.trim()))rows.push(row);row=[]}
-    else cur+=c}
-  row.push(cur);if(row.some(x=>x.trim()))rows.push(row);return rows;
-}
-$('file').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=()=>{
-    const rows=parseCSV(String(rd.result).replace(/^\uFEFF/,''));
-    if(rows.length<2){alert('No data rows found.');return}
-    const h=rows[0].map(x=>x.trim().toLowerCase());
-    const find=(...k)=>h.findIndex(x=>k.some(y=>x.includes(y)));
-    const ix={date:find('date'),trip:find('trip'),truck:find('truck'),fuel:find('fuel'),loc:find('location','loc'),odo:find('odo')};
-    if(Object.entries(ix).some(([k,v])=>k!=='odo'&&v<0)){alert('CSV needs columns: Date, Trip Number, Truck No, Given Fuel, Location (Odometer optional)');return}
-    const recs=rows.slice(1).map(r=>{
-      let d=(r[ix.date]||'').trim();const t=new Date(d);
-      if(d&&!/^\d{4}-\d{2}-\d{2}$/.test(d)&&!isNaN(t))d=t.toISOString().slice(0,10);
-      return{date:d||new Date().toISOString().slice(0,10),trip:(r[ix.trip]||'').trim(),truck:(r[ix.truck]||'').trim(),fuel:parseFloat(r[ix.fuel])||0,loc:(r[ix.loc]||'').trim(),odo:ix.odo>=0&&(r[ix.odo]||'').trim()!==''?parseFloat(r[ix.odo]):''};
-    });
-    run(async()=>{const j=await api('POST','/api/import',recs);alert(j.added+' records imported with new unique IDs.')});
-  };
-  rd.readAsText(f);e.target.value='';
-});
-$('ex').onclick=()=>{
-  const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
-  const csv=['Unique ID,Date,Trip Number,Odometer,Truck No,Given Fuel,Location',...data.map(r=>[r.id,r.date,r.trip,r.odo??'',r.truck,r.fuel,r.loc].map(q).join(','))].join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='fuel-records.csv';a.click();
-};
-$('bk').onclick=()=>{
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify({app:'fleet-fuel-manager',version:1,exported:new Date().toISOString(),records:data},null,1)],{type:'application/json'}));
-  a.download='fleet-fuel-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();
-};
-$('rs').onclick=()=>$('bfile').click();
-$('bfile').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=()=>{
-    let recs;try{const j=JSON.parse(rd.result);recs=Array.isArray(j)?j:j.records;if(!Array.isArray(recs))throw 0}catch(err){alert('That is not a valid backup file.');return}
-    if(!confirm('Replace all current records on the server with '+recs.length+' records from this backup?'))return;
-    run(()=>api('POST','/api/restore',recs));
-  };
-  rd.readAsText(f);e.target.value='';
-});
-$('clr').onclick=()=>{if(data.length&&confirm('Delete ALL records on the server? Download a Backup first if unsure.'))run(()=>api('POST','/api/restore',[]))};
-load();setInterval(load,15000);
-</script>
+    <script>
+        const $ = id => document.getElementById(id);
+        let data = [], editing = null;
+        async function api(m, u, b) {
+            const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json' }, body: b === undefined ? undefined : JSON.stringify(b) });
+            const j = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error(j.error || ('Server error ' + r.status));
+            return j;
+        }
+        function status(ok, t) { $('st').textContent = (ok ? '🟢 ' : '🔴 ') + t }
+        function sinceDate() { const w = $('win').value; let s = null; if (w !== 'all') { const d = new Date(); d.setDate(d.getDate() - parseInt(w)); s = d.toISOString().slice(0, 10) } const f = $('from').value; if (f && s && f < s) s = f; return s }
+        async function load() {
+            try { const s = sinceDate(); data = await api('GET', '/api/records' + (s ? '?since=' + s : '')); status(true, 'Connected · ' + data.length + ' records loaded (' + $('win').selectedOptions[0].text.toLowerCase() + ') · ' + new Date().toLocaleTimeString()) }
+            catch (e) { status(false, 'Cannot reach server: ' + e.message) }
+            render();
+        }
+        async function run(fn) { try { await fn(); await load() } catch (e) { alert(e.message) } }
+        function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }
+        function render() {
+            const q = $('q').value.trim().toLowerCase(), from = $('from').value, to = $('to').value;
+            const list = data.filter(r => (!q || [r.id, r.trip, r.truck, r.loc, r.date].join(' ').toLowerCase().includes(q)) && (!from || r.date >= from) && (!to || r.date <= to));
+            $('rows').innerHTML = list.slice().reverse().map(r => `<tr><td class="id">${esc(r.id)}</td><td>${esc(r.date)}</td><td>${esc(r.trip)}</td><td class="num">${r.odo === '' || r.odo == null ? '—' : Number(r.odo).toLocaleString()}</td><td>${esc(r.truck)}</td><td class="num">${Number(r.fuel).toLocaleString(undefined, { maximumFractionDigits: 2 })}</td><td>${esc(r.loc)}</td><td style="white-space:nowrap"><button class="del" title="Edit" onclick="edit('${r.id}')">✎</button><button class="del" title="Delete" onclick="del('${r.id}')">✕</button></td></tr>`).join('');
+            $('empty').style.display = list.length ? 'none' : 'block';
+            $('n').textContent = list.length;
+            $('tot').textContent = list.reduce((s, r) => s + Number(r.fuel || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        }
+        function del(id) { if (!confirm('Delete record ' + id + '?')) return; if (editing === id) resetForm(); run(() => api('DELETE', '/api/records/' + encodeURIComponent(id))) }
+        $('date').value = new Date().toISOString().slice(0, 10);
+        function resetForm() { editing = null; $('sub').textContent = 'Add record'; $('cancel').hidden = true;['trip', 'fuel', 'odo'].forEach(i => $(i).value = '') }
+        $('f').addEventListener('submit', e => {
+            e.preventDefault();
+            const rec = { date: $('date').value, trip: $('trip').value.trim(), truck: $('truck').value.trim(), fuel: parseFloat($('fuel').value), loc: $('loc').value.trim(), odo: $('odo').value === '' ? '' : parseFloat($('odo').value) };
+            if (!editing && data.some(r => r.date === rec.date && r.trip.toLowerCase() === rec.trip.toLowerCase() && r.truck.toLowerCase() === rec.truck.toLowerCase()) && !confirm('A record with the same date, trip and truck already exists. Add anyway?')) return;
+            run(async () => {
+                if (editing) await api('PUT', '/api/records/' + encodeURIComponent(editing), rec); else await api('POST', '/api/records', rec);
+                resetForm(); $('trip').focus();
+            });
+        });
+        function edit(id) { const r = data.find(x => x.id === id); if (!r) return; editing = id; $('date').value = r.date; $('trip').value = r.trip; $('odo').value = r.odo ?? ''; $('truck').value = r.truck; $('fuel').value = r.fuel; $('loc').value = r.loc; $('sub').textContent = 'Save changes (' + id + ')'; $('cancel').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
+        $('cancel').onclick = resetForm;
+        ['q', 'from', 'to'].forEach(i => $(i).addEventListener('input', render));
+        $('win').addEventListener('change', load); $('from').addEventListener('change', load);
+        $('up').onclick = () => $('file').click();
+        function parseCSV(t) {
+            const rows = []; let row = [], cur = '', inq = false;
+            for (let i = 0; i < t.length; i++) {
+                const c = t[i];
+                if (inq) { if (c == '"' && t[i + 1] == '"') { cur += '"'; i++ } else if (c == '"') inq = false; else cur += c }
+                else if (c == '"') inq = true;
+                else if (c == ',') { row.push(cur); cur = '' }
+                else if (c == '\n' || c == '\r') { if (c == '\r' && t[i + 1] == '\n') i++; row.push(cur); cur = ''; if (row.some(x => x.trim())) rows.push(row); row = [] }
+                else cur += c
+            }
+            row.push(cur); if (row.some(x => x.trim())) rows.push(row); return rows;
+        }
+        $('file').addEventListener('change', e => {
+            const f = e.target.files[0]; if (!f) return;
+            const rd = new FileReader();
+            rd.onload = () => {
+                const rows = parseCSV(String(rd.result).replace(/^\uFEFF/, ''));
+                if (rows.length < 2) { alert('No data rows found.'); return }
+                const h = rows[0].map(x => x.trim().toLowerCase());
+                const find = (...k) => h.findIndex(x => k.some(y => x.includes(y)));
+                const ix = { date: find('date'), trip: find('trip'), truck: find('truck'), fuel: find('fuel'), loc: find('location', 'loc'), odo: find('odo') };
+                if (Object.entries(ix).some(([k, v]) => k !== 'odo' && v < 0)) { alert('CSV needs columns: Date, Trip Number, Truck No, Given Fuel, Location (Odometer optional)'); return }
+                const recs = rows.slice(1).map(r => {
+                    let d = (r[ix.date] || '').trim(); const t = new Date(d);
+                    if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d) && !isNaN(t)) d = t.toISOString().slice(0, 10);
+                    return { date: d || new Date().toISOString().slice(0, 10), trip: (r[ix.trip] || '').trim(), truck: (r[ix.truck] || '').trim(), fuel: parseFloat(r[ix.fuel]) || 0, loc: (r[ix.loc] || '').trim(), odo: ix.odo >= 0 && (r[ix.odo] || '').trim() !== '' ? parseFloat(r[ix.odo]) : '' };
+                });
+                run(async () => { const j = await api('POST', '/api/import', recs); alert(j.added + ' records imported with new unique IDs.') });
+            };
+            rd.readAsText(f); e.target.value = '';
+        });
+        $('ex').onclick = async () => {
+            let data; try { data = await api('GET', '/api/records') } catch (e) { return alert(e.message) }
+            const q = s => '"' + String(s).replace(/"/g, '""') + '"';
+            const csv = ['Unique ID,Date,Trip Number,Odometer,Truck No,Given Fuel,Location', ...data.map(r => [r.id, r.date, r.trip, r.odo ?? '', r.truck, r.fuel, r.loc].map(q).join(','))].join('\n');
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'fuel-records.csv'; a.click();
+        };
+        $('bk').onclick = async () => {
+            let data; try { data = await api('GET', '/api/records') } catch (e) { return alert(e.message) }
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify({ app: 'fleet-fuel-manager', version: 1, exported: new Date().toISOString(), records: data }, null, 1)], { type: 'application/json' }));
+            a.download = 'fleet-fuel-backup-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+        };
+        $('rs').onclick = () => $('bfile').click();
+        $('bfile').addEventListener('change', e => {
+            const f = e.target.files[0]; if (!f) return;
+            const rd = new FileReader();
+            rd.onload = () => {
+                let recs; try { const j = JSON.parse(rd.result); recs = Array.isArray(j) ? j : j.records; if (!Array.isArray(recs)) throw 0 } catch (err) { alert('That is not a valid backup file.'); return }
+                if (!confirm('Replace all current records on the server with ' + recs.length + ' records from this backup?')) return;
+                run(() => api('POST', '/api/restore', recs));
+            };
+            rd.readAsText(f); e.target.value = '';
+        });
+        $('clr').onclick = () => { if (data.length && confirm('Delete ALL records on the server? Download a Backup first if unsure.')) run(() => api('POST', '/api/restore', [])) };
+        load(); setInterval(load, 60000);
+    </script>
 </body>
 </html>
