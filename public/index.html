@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -318,6 +318,7 @@
                                 <th>Truck No</th>
                                 <th class="num">Fuel entries</th>
                                 <th class="num">Total fuel (L)</th>
+                                <th class="num">Latest Odometer (km)</th>
                                 <th>Date(s)</th>
                             </tr>
                         </thead>
@@ -490,38 +491,38 @@
                 .slice()
                 .reverse()
                 .map(r => `
-                        <tr>
-                            <td class="id">${esc(r.id)}</td>
-                            <td>${esc(r.date)}</td>
-                            <td>${esc(r.trip)}</td>
-                            <td class="num">
-                                ${r.odo === '' || r.odo == null
+                            <tr>
+                                <td class="id">${esc(r.id)}</td>
+                                <td>${esc(r.date)}</td>
+                                <td>${esc(r.trip)}</td>
+                                <td class="num">
+                                    ${r.odo === '' || r.odo == null
                         ? '—'
                         : Number(r.odo).toLocaleString()
                     }
-                            </td>
-                            <td>${esc(r.truck)}</td>
-                            <td class="num">
-                                ${Number(r.fuel).toLocaleString(undefined, {
+                                </td>
+                                <td>${esc(r.truck)}</td>
+                                <td class="num">
+                                    ${Number(r.fuel).toLocaleString(undefined, {
                         maximumFractionDigits: 2
                     })}
-                            </td>
-                            <td>${esc(r.loc)}</td>
-                            <td style="white-space:nowrap">
-                                <button
-                                    class="del"
-                                    title="Edit"
-                                    onclick="edit('${r.id}')"
-                                >✎</button>
+                                </td>
+                                <td>${esc(r.loc)}</td>
+                                <td style="white-space:nowrap">
+                                    <button
+                                        class="del"
+                                        title="Edit"
+                                        onclick="edit('${r.id}')"
+                                    >✎</button>
 
-                                <button
-                                    class="del"
-                                    title="Delete"
-                                    onclick="del('${r.id}')"
-                                >✕</button>
-                            </td>
-                        </tr>
-                    `)
+                                    <button
+                                        class="del"
+                                        title="Delete"
+                                        onclick="del('${r.id}')"
+                                    >✕</button>
+                                </td>
+                            </tr>
+                        `)
                 .join('');
 
             /*
@@ -553,12 +554,28 @@
                         truck: r.truck,
                         n: 0,
                         fuel: 0,
+                        odo: '',
+                        odoDate: '',
+                        odoId: '',
                         d1: r.date,
                         d2: r.date
                     };
 
                 x.n++;
                 x.fuel += Number(r.fuel || 0);
+
+                // Keep the odometer from the latest dated record.
+                if (r.odo !== '' && r.odo != null && isFinite(Number(r.odo))) {
+                    if (
+                        x.odo === '' ||
+                        r.date > x.odoDate ||
+                        (r.date === x.odoDate && String(r.id) > String(x.odoId))
+                    ) {
+                        x.odo = Number(r.odo);
+                        x.odoDate = r.date;
+                        x.odoId = r.id;
+                    }
+                }
 
                 if (r.date < x.d1) x.d1 = r.date;
                 if (r.date > x.d2) x.d2 = r.date;
@@ -571,34 +588,40 @@
             $('sumrows').innerHTML = gs.length
                 ? gs
                     .map(x => `
-                            <tr>
-                                <td>${esc(x.trip)}</td>
-                                <td>${esc(x.truck)}</td>
-                                <td class="num">${x.n}</td>
-                                <td class="num">
-                                    ${x.fuel.toLocaleString(undefined, {
+                                <tr>
+                                    <td>${esc(x.trip)}</td>
+                                    <td>${esc(x.truck)}</td>
+                                    <td class="num">${x.n}</td>
+                                    <td class="num">
+                                        ${x.fuel.toLocaleString(undefined, {
                         maximumFractionDigits: 2
                     })}
-                                </td>
-                                <td>
-                                    ${x.d1 === x.d2
+                                    </td>
+                                    <td class="num">
+                                        ${x.odo === ''
+                            ? '—'
+                            : x.odo.toLocaleString()
+                        }
+                                    </td>
+                                    <td>
+                                        ${x.d1 === x.d2
                             ? x.d1
                             : x.d1 + ' → ' + x.d2
                         }
-                                </td>
-                            </tr>
-                        `)
+                                    </td>
+                                </tr>
+                            `)
                     .join('')
                 : `
-                        <tr>
-                            <td
-                                colspan="5"
-                                style="color:var(--muted);text-align:center"
-                            >
-                                No data
-                            </td>
-                        </tr>
-                    `;
+                            <tr>
+                                <td
+                                    colspan="6"
+                                    style="color:var(--muted);text-align:center"
+                                >
+                                    No data
+                                </td>
+                            </tr>
+                        `;
 
             /*
              * Entries = EVERY individual record.
@@ -1012,8 +1035,11 @@
             a.click();
         };
 
-        $('rs').onclick = () =>
-            $('bfile').click();
+        // Restore/Clear buttons are currently hidden in the HTML.
+        // Only attach their handlers if the elements exist.
+        if ($('rs')) {
+            $('rs').onclick = () => $('bfile').click();
+        }
 
         $('bfile').addEventListener(
             'change',
@@ -1073,22 +1099,24 @@
             }
         );
 
-        $('clr').onclick = () => {
-            if (
-                data.length &&
-                confirm(
-                    'Delete ALL records on the server? Download a Backup first if unsure.'
-                )
-            ) {
-                run(() =>
-                    api(
-                        'POST',
-                        '/api/restore',
-                        []
+        if ($('clr')) {
+            $('clr').onclick = () => {
+                if (
+                    data.length &&
+                    confirm(
+                        'Delete ALL records on the server? Download a Backup first if unsure.'
                     )
-                );
-            }
-        };
+                ) {
+                    run(() =>
+                        api(
+                            'POST',
+                            '/api/restore',
+                            []
+                        )
+                    );
+                }
+            };
+        }
 
         /*
          * Start by loading ALL records.
@@ -1109,4 +1137,3 @@
     </script>
 </body>
 </html>
-```
