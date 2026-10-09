@@ -249,6 +249,7 @@
 </head>
 <body>
     <div class="wrap">
+        <a href="/fleet">Fleet Management</a>
         <h1>⛽ Fleet Fuel Manager</h1>
         <p class="sub">Enter a date and trip number, and a unique ID is generated automatically. <span id="st"></span></p>
 
@@ -281,7 +282,6 @@
                 <input type="date" id="from" title="From date">
                 <input type="date" id="to" title="To date">
 
-                <!-- CHANGED: All records is now the default -->
                 <select id="win" title="How much history to load">
                     <option value="all" selected>All records</option>
                     <option value="30">Last 30 days</option>
@@ -292,8 +292,9 @@
                 <button class="ghost" id="up">Upload CSV</button>
                 <button class="ghost" id="ex">Export CSV</button>
                 <button class="ghost" id="bk" title="Download a full backup of all records">Backup</button>
+
                 <!--<button class="ghost" id="rs" title="Restore from a backup file">Restore</button>
-                <button class="ghost" id="clr">Clear all</button> -->
+            <button class="ghost" id="clr">Clear all</button> -->
 
                 <input type="file" id="bfile" accept=".json,application/json" hidden>
                 <input type="file" id="file" accept=".csv,text/csv" hidden>
@@ -378,10 +379,6 @@
         function sinceDate() {
             const w = $('win').value;
 
-            /*
-             * CHANGED:
-             * "All records" now loads everything from the server.
-             */
             let s = null;
 
             if (w !== 'all') {
@@ -432,7 +429,9 @@
         async function run(fn) {
             try {
                 await fn();
+
                 allData = null;
+
                 await load();
 
                 if ($('q').value.trim()) {
@@ -491,54 +490,41 @@
                 .slice()
                 .reverse()
                 .map(r => `
-                            <tr>
-                                <td class="id">${esc(r.id)}</td>
-                                <td>${esc(r.date)}</td>
-                                <td>${esc(r.trip)}</td>
-                                <td class="num">
-                                    ${r.odo === '' || r.odo == null
+                        <tr>
+                            <td class="id">${esc(r.id)}</td>
+                            <td>${esc(r.date)}</td>
+                            <td>${esc(r.trip)}</td>
+                            <td class="num">
+                                ${r.odo === '' || r.odo == null
                         ? '—'
                         : Number(r.odo).toLocaleString()
                     }
-                                </td>
-                                <td>${esc(r.truck)}</td>
-                                <td class="num">
-                                    ${Number(r.fuel).toLocaleString(undefined, {
+                            </td>
+                            <td>${esc(r.truck)}</td>
+                            <td class="num">
+                                ${Number(r.fuel).toLocaleString(undefined, {
                         maximumFractionDigits: 2
-                    })}
-                                </td>
-                                <td>${esc(r.loc)}</td>
-                                <td style="white-space:nowrap">
-                                    <button
-                                        class="del"
-                                        title="Edit"
-                                        onclick="edit('${r.id}')"
-                                    >✎</button>
+                    })
+                    }
+                            </td>
+                            <td>${esc(r.loc)}</td>
+                            <td style="white-space:nowrap">
+                                <button
+                                    class="del"
+                                    title="Edit"
+                                    onclick="edit('${r.id}')"
+                                >✎</button>
 
-                                    <button
-                                        class="del"
-                                        title="Delete"
-                                        onclick="del('${r.id}')"
-                                    >✕</button>
-                                </td>
-                            </tr>
-                        `)
+                                <button
+                                    class="del"
+                                    title="Delete"
+                                    onclick="del('${r.id}')"
+                                >✕</button>
+                            </td>
+                        </tr>
+                    `)
                 .join('');
 
-            /*
-             * IMPORTANT:
-             * The grouping is only for the SUMMARY.
-             *
-             * It does NOT delete or combine individual entries.
-             *
-             * Example:
-             *
-             * Trip 1 / Truck 1 / 600 / Sakanya
-             * Trip 1 / Truck 1 / 50  / Kasumbalesa
-             *
-             * = 2 entries
-             * = 650 L total
-             */
             const g = {};
 
             list.forEach(r => {
@@ -564,7 +550,6 @@
                 x.n++;
                 x.fuel += Number(r.fuel || 0);
 
-                // Keep the odometer from the latest dated record.
                 if (r.odo !== '' && r.odo != null && isFinite(Number(r.odo))) {
                     if (
                         x.odo === '' ||
@@ -588,46 +573,42 @@
             $('sumrows').innerHTML = gs.length
                 ? gs
                     .map(x => `
-                                <tr>
-                                    <td>${esc(x.trip)}</td>
-                                    <td>${esc(x.truck)}</td>
-                                    <td class="num">${x.n}</td>
-                                    <td class="num">
-                                        ${x.fuel.toLocaleString(undefined, {
+                            <tr>
+                                <td>${esc(x.trip)}</td>
+                                <td>${esc(x.truck)}</td>
+                                <td class="num">${x.n}</td>
+                                <td class="num">
+                                    ${x.fuel.toLocaleString(undefined, {
                         maximumFractionDigits: 2
-                    })}
-                                    </td>
-                                    <td class="num">
-                                        ${x.odo === ''
+                    })
+                        }
+                                </td>
+                                <td class="num">
+                                    ${x.odo === ''
                             ? '—'
                             : x.odo.toLocaleString()
                         }
-                                    </td>
-                                    <td>
-                                        ${x.d1 === x.d2
+                                </td>
+                                <td>
+                                    ${x.d1 === x.d2
                             ? x.d1
                             : x.d1 + ' → ' + x.d2
                         }
-                                    </td>
-                                </tr>
-                            `)
-                    .join('')
-                : `
-                            <tr>
-                                <td
-                                    colspan="6"
-                                    style="color:var(--muted);text-align:center"
-                                >
-                                    No data
                                 </td>
                             </tr>
-                        `;
+                        `)
+                    .join('')
+                : `
+                        <tr>
+                            <td
+                                colspan="6"
+                                style="color:var(--muted);text-align:center"
+                            >
+                                No data
+                            </td>
+                        </tr>
+                    `;
 
-            /*
-             * Entries = EVERY individual record.
-             *
-             * Trips = unique Trip Number + Truck combination.
-             */
             $('trips').textContent = gs.length;
 
             $('empty').style.display =
@@ -667,6 +648,7 @@
 
         function resetForm() {
             editing = null;
+
             $('sub').textContent = 'Add record';
             $('cancel').hidden = true;
 
@@ -691,17 +673,6 @@
             };
 
             run(async () => {
-                /*
-                 * IMPORTANT:
-                 * There is NO duplicate-trip check here.
-                 *
-                 * Therefore:
-                 * Trip 1 + Truck 1 + 600 + Sakanya
-                 * Trip 1 + Truck 1 + 50 + Kasumbalesa
-                 *
-                 * are both allowed.
-                 */
-
                 if (editing) {
                     await api(
                         'PUT',
@@ -879,11 +850,13 @@
                     alert(
                         'CSV needs columns: Date, Trip Number, Truck No, Given Fuel, Location (Odometer optional)'
                     );
+
                     return;
                 }
 
                 const recs = rows.slice(1).map(r => {
                     let d = (r[ix.date] || '').trim();
+
                     const t = new Date(d);
 
                     if (
@@ -1037,6 +1010,7 @@
 
         // Restore/Clear buttons are currently hidden in the HTML.
         // Only attach their handlers if the elements exist.
+
         if ($('rs')) {
             $('rs').onclick = () => $('bfile').click();
         }
@@ -1072,6 +1046,7 @@
                         alert(
                             'That is not a valid backup file.'
                         );
+
                         return;
                     }
 
@@ -1119,9 +1094,38 @@
         }
 
         /*
-         * Start by loading ALL records.
+         * Load ALL existing records from Firestore
+         * when the website is opened/refreshed.
+         *
+         * This does NOT create, delete, or modify
+         * any records. It only reads /api/records.
          */
-        load();
+        (async () => {
+            try {
+                data = await api('GET', '/api/records');
+
+                allData = data.slice();
+                allAt = Date.now();
+
+                status(
+                    true,
+                    'Connected · ' +
+                    data.length +
+                    ' records loaded · ' +
+                    new Date().toLocaleTimeString()
+                );
+
+                render();
+
+            } catch (e) {
+                status(
+                    false,
+                    'Cannot reach server: ' + e.message
+                );
+
+                render();
+            }
+        })();
 
         /*
          * Refresh every 60 seconds.
@@ -1137,3 +1141,4 @@
     </script>
 </body>
 </html>
+```

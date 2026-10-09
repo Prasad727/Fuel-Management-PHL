@@ -131,16 +131,20 @@ function body(req) {
 }
 const send = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
 
-let store;
+// Pages: address -> file inside the public folder
+const PAGES = { '/': 'fleet.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html', '/index.html': 'fuel.html' };
+
+let store, trips;
 const server = http.createServer(async (req, res) => {
     try {
         if (!authed(req)) { res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Fleet Fuel Manager"' }); return res.end('Login required'); }
         const p = new URL(req.url, 'http://x').pathname, m = req.method;
         if (!p.startsWith('/api/')) {
-            if (p !== '/' && p !== '/index.html') { res.writeHead(404); return res.end('Not found'); }
+            if (!PAGES[p]) { res.writeHead(404); return res.end('Not found'); }
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            return res.end(fs.readFileSync(path.join(__dirname, 'public', 'index.html')));
+            return res.end(fs.readFileSync(path.join(__dirname, 'public', PAGES[p])));
         }
+        if (p === '/api/fleet' || p.startsWith('/api/fleet/') || p.startsWith('/api/trips')) return await trips.handle(req, res, p, m);
         if (p === '/api/records' && m === 'GET') {
             const since = new URL(req.url, 'http://x').searchParams.get('since');
             const list = await store.list(/^\d{4}-\d{2}-\d{2}$/.test(since || '') ? since : null);
@@ -168,6 +172,7 @@ const server = http.createServer(async (req, res) => {
 (async () => {
     try { store = process.env.FIREBASE_SERVICE_ACCOUNT ? await firestoreStore() : fileStore(); }
     catch (e) { console.error('Could not start storage: ' + e.message); process.exit(1); }
+    trips = require('./trips')({ body, send }); // fleet trips + fleet list (uses the same storage choice)
     server.listen(PORT, '0.0.0.0', () => {
         console.log('\nFleet Fuel Manager is running.\n  On this computer:  http://localhost:' + PORT);
         for (const l of Object.values(os.networkInterfaces()))

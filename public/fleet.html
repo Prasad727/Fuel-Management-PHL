@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Fleet Management</title>
+    <style>
+        :root {
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top,0px);
+            padding-bottom: env(safe-area-inset-bottom,0px);
+            --bg: #eef1f4;
+            --panel: #fff;
+            --ink: #17212b;
+            --mute: #5d6b79;
+            --line: #d5dce3;
+            --head: #17212b;
+            --headink: #fff;
+            --accent: #f2a900;
+            --accentink: #17212b;
+            --g: #d9f2df;
+            --o: #ffe2bd;
+            --r: #ffd0cd;
+            --w: #fff;
+            --gb: #1f8a3b;
+            --ob: #d9730d;
+            --rb: #c62d26
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0f151b;
+                --panel: #18212a;
+                --ink: #e8edf2;
+                --mute: #93a1af;
+                --line: #2b3742;
+                --head: #0a0f14;
+                --g: #18382a;
+                --o: #44300f;
+                --r: #4a1d1b;
+                --w: #18212a;
+                --gb: #4fcf72;
+                --ob: #f5a04a;
+                --rb: #ff7a72
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #0f151b;
+            --panel: #18212a;
+            --ink: #e8edf2;
+            --mute: #93a1af;
+            --line: #2b3742;
+            --head: #0a0f14;
+            --g: #18382a;
+            --o: #44300f;
+            --r: #4a1d1b;
+            --w: #18212a;
+            --gb: #4fcf72;
+            --ob: #f5a04a;
+            --rb: #ff7a72
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top,0px)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.45 "Barlow","Segoe UI",system-ui,sans-serif
+        }
+
+        header {
+            background: var(--head);
+            color: var(--headink);
+            padding: 18px 20px;
+            border-bottom: 4px solid var(--accent)
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        .top {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        h1 {
+            font: 700 26px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;
+            letter-spacing: .02em;
+            margin: 0
+        }
+
+        .sub {
+            color: #9fb0c0;
+            font-size: 13px;
+            margin-top: 2px
+        }
+
+        .quick {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+            .quick a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 600;
+                border: 2px solid var(--accent);
+                color: #fff
+            }
+
+                .quick a.primary {
+                    background: var(--accent);
+                    color: var(--accentink)
+                }
+
+                .quick a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+                    outline: 3px solid var(--accent);
+                    outline-offset: 2px
+                }
+
+        main {
+            padding: 20px
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+            gap: 12px;
+            margin-bottom: 22px
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-left: 6px solid var(--c,var(--mute));
+            border-radius: 4px;
+            padding: 12px 14px
+        }
+
+            .card b {
+                display: block;
+                font: 700 34px/1 "Barlow Condensed","Arial Narrow",sans-serif
+            }
+
+            .card span {
+                color: var(--mute);
+                font-size: 13px
+            }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--line)
+        }
+
+            .tabs button {
+                border: 0;
+                background: none;
+                color: var(--mute);
+                font: 600 15px inherit;
+                font-family: inherit;
+                padding: 10px 16px;
+                cursor: pointer;
+                border-bottom: 4px solid transparent;
+                margin-bottom: -2px
+            }
+
+                .tabs button[aria-selected="true"] {
+                    color: var(--ink);
+                    border-color: var(--accent)
+                }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 14px 0
+        }
+
+            .tools label {
+                display: flex;
+                flex-direction: column;
+                font-size: 12px;
+                color: var(--mute);
+                gap: 3px;
+                flex: 1 1 150px
+            }
+
+            .tools input, .tools select {
+                font: inherit;
+                padding: 8px 10px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: var(--panel);
+                color: var(--ink);
+                width: 100%
+            }
+
+        .scroll {
+            overflow-x: auto;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 4px
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 880px
+        }
+
+        th, td {
+            padding: 9px 11px;
+            text-align: left;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap
+        }
+
+        th {
+            background: var(--head);
+            color: var(--headink);
+            font-weight: 600;
+            font-size: 13px
+        }
+
+        td.rem {
+            white-space: normal;
+            min-width: 150px
+        }
+
+        tr.g td {
+            background: var(--g)
+        }
+
+        tr.o td {
+            background: var(--o)
+        }
+
+        tr.r td {
+            background: var(--r)
+        }
+
+        td.days {
+            font-weight: 700;
+            border-left: 5px solid transparent
+        }
+
+        tr.g td.days {
+            border-color: var(--gb)
+        }
+
+        tr.o td.days {
+            border-color: var(--ob)
+        }
+
+        tr.r td.days {
+            border-color: var(--rb)
+        }
+
+        tr.w td.days {
+            border-color: var(--line)
+        }
+
+        .legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--mute);
+            margin: 10px 0
+        }
+
+            .legend i {
+                display: inline-block;
+                width: 14px;
+                height: 14px;
+                border: 1px solid var(--line);
+                vertical-align: -2px;
+                margin-right: 5px
+            }
+
+        .empty {
+            padding: 26px;
+            text-align: center;
+            color: var(--mute)
+        }
+
+        .count {
+            font-size: 13px;
+            color: var(--mute);
+            margin-bottom: 6px
+        }
+
+        .bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0 8px;
+            align-items: center
+        }
+
+        .btn {
+            font: 600 14px inherit;
+            font-family: inherit;
+            padding: 9px 14px;
+            border-radius: 5px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--ink);
+            cursor: pointer
+        }
+
+            .btn.pri {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: var(--accentink)
+            }
+
+        .bar select {
+            font: inherit;
+            padding: 9px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            background: var(--panel);
+            color: var(--ink)
+        }
+
+        .msg {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-left: 6px solid var(--gb);
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 14px
+        }
+
+            .msg.err {
+                border-left-color: var(--rb)
+            }
+
+        dialog {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+            color: var(--ink);
+            width: min(640px,94vw);
+            padding: 18px
+        }
+
+            dialog::backdrop {
+                background: #0008
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px
+        }
+
+        .wide {
+            grid-column: 1/-1
+        }
+
+        dialog label {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: var(--mute);
+            gap: 3px
+        }
+
+        dialog input, dialog select {
+            font: inherit;
+            padding: 8px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: var(--bg);
+            color: var(--ink)
+        }
+
+        .acts {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 14px
+        }
+
+        td.act {
+            white-space: nowrap
+        }
+
+            td.act button {
+                font: inherit;
+                font-size: 13px;
+                margin-right: 4px;
+                padding: 3px 8px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: var(--panel);
+                color: var(--ink);
+                cursor: pointer
+            }
+
+        @media(max-width:520px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="wrap top">
+            <div><h1>Fleet Management</h1><div class="sub" id="today"></div></div>
+            <nav class="quick" aria-label="Quick links">
+                <a class="primary" href="/fuel">Fuel Management</a>
+                <a href="/procurement.html">Procurement</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="cards" aria-label="Fleet summary">
+            <div class="card" style="--c:#2f6fed"><b id="cTotal">0</b><span>Total trucks</span></div>
+            <div class="card" style="--c:#1f8a3b"><b id="cLoaded">0</b><span>Loaded trucks</span></div>
+            <div class="card" style="--c:#8a96a3"><b id="cEmpty">0</b><span>Empty trucks</span></div>
+            <div class="card" style="--c:#f2a900"><b id="cZam">0</b><span>Trucks in Zambia</span></div>
+            <div class="card" style="--c:#c62d26"><b id="cDrc">0</b><span>Trucks in DRC</span></div>
+        </section>
+
+        <div class="tabs" role="tablist">
+            <button role="tab" id="tabZam" aria-selected="true">Towards Zambia</button>
+            <button role="tab" id="tabDrc" aria-selected="false">Towards DRC</button>
+        </div>
+
+        <div class="tools">
+            <label>Truck (horse)<input id="qTruck" type="search" placeholder="e.g. BCB 4521"></label>
+            <label>Location<input id="qLoc" type="search" placeholder="Loading, offloading or current"></label>
+            <label>Loading date<input id="qDate" type="date"></label>
+            <label>Sort by days<select id="sort"><option value="">Default</option><option value="desc">Most days first</option><option value="asc">Fewest days first</option></select></label>
+            <label>Show<select id="stat"><option value="">All trips</option><option value="open">Not yet offloaded</option><option value="done">Offloaded</option></select></label>
+        </div>
+
+        <div class="bar">
+            <button class="btn pri" id="bAdd">Add trip</button>
+            <button class="btn" id="bUp">Upload Excel</button>
+            <button class="btn" id="bFl">Fleet list</button>
+            <button class="btn" id="bTpl">Download template</button>
+            <button class="btn" id="bExp">Export data</button>
+            <button class="btn" id="bClr">Clear all</button>
+            <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+            <select id="mode" aria-label="Upload mode"><option value="merge">Upload: add new and update existing</option><option value="replace">Upload: replace all data</option></select>
+        </div>
+        <div id="msg" class="msg" role="status" hidden></div>
+        <dialog id="fdlg"><h2>Fleet list</h2><p class="count" id="fN"></p><div id="fL" style="max-height:50vh;overflow:auto"></div><div class="acts"><button class="btn" id="fX">Close</button></div></dialog>
+        <dialog id="dlg">
+            <form method="dialog" id="frm">
+                <h2 id="dT">Add trip</h2>
+                <div class="grid">
+                    <label>Horse<input name="h" required></label>
+                    <label>Direction<select name="dir"><option value="ZAM">Towards Zambia</option><option value="DRC">Towards DRC</option></select></label>
+                    <label>Loading date<input name="ld" type="date" required></label>
+                    <label>Loading location<input name="ll"></label>
+                    <label>Date offloaded<input name="od" type="date"></label>
+                    <label>Offloading location<input name="ol"></label>
+                    <label>Current location<input name="cl"></label>
+                    <label>Current country<select name="cc"><option value="ZAM">Zambia</option><option value="DRC">DRC</option></select></label>
+                    <label class="wide">Remarks<input name="r"></label>
+                </div>
+                <div class="acts"><button type="button" class="btn" id="dX">Cancel</button><button class="btn pri" value="save">Save trip</button></div>
+            </form>
+        </dialog>
+        <div class="legend" aria-label="Days colour key">
+            <span><i style="background:var(--w)"></i>Under 7 days</span>
+            <span><i style="background:var(--g)"></i>7 to 8 days</span>
+            <span><i style="background:var(--o)"></i>9 to 11 days</span>
+            <span><i style="background:var(--r)"></i>12 days or more</span>
+        </div>
+        <div class="count" id="count"></div>
+        <div class="scroll">
+            <table>
+                <thead><tr><th>Horse</th><th>Loading date</th><th>Loading location</th><th>Date offloaded</th><th>Offloading location</th><th>Current location</th><th>Remarks</th><th>Days</th><th>Actions</th></tr></thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>var S="fleet_trips_v1",DAY=864e5,$=function(i){return document.getElementById(i)};
+var now=new Date();now.setHours(0,0,0,0);
+function iso(x){return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+function ago(n){return iso(new Date(now.getTime()-n*DAY))}
+function pd(s){return s?new Date(s+"T00:00:00"):null}
+function fmt(x){return x?x.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}):""}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function uid(){return"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+var trips=[];
+async function api(url,method,data){var r=await fetch(url,{method:method||"GET",headers:{"Content-Type":"application/json"},body:data?JSON.stringify(data):undefined});
+ var j=await r.json().catch(function(){return{}});if(!r.ok)throw new Error(j.error||("Server error "+r.status));return j}
+async function reload(){var r=await Promise.all([api("/api/trips"),api("/api/fleet")]);trips=r[0];fleet=r[1];draw()}
+function days(t){var a=pd(t.ld),b=t.od?pd(t.od):now;return Math.round((b-a)/DAY)}
+/* Colour rule: only trips with no offloading date. 7 green, 9 orange, 12+ red */
+function cls(t){if(t.od)return"w";var n=days(t);return n>=12?"r":n>=9?"o":n>=7?"g":"w"}
+var fleet=[];
+var tab="ZAM";
+function cards(){
+ var hs={},ld={};trips.forEach(function(t){hs[t.h]=1;if(!t.od)ld[t.h]=t});
+ var tot=fleet.length,l=Object.keys(ld),z=0;
+ l.forEach(function(h){if(ld[h].cc=="ZAM")z++});
+ $("cTotal").textContent=tot;$("cLoaded").textContent=l.length;$("cEmpty").textContent=tot-l.length;$("cZam").textContent=z;$("cDrc").textContent=l.length-z;
+}
+function draw(){
+ cards();
+ var q=$("qTruck").value.trim().toLowerCase(),lo=$("qLoc").value.trim().toLowerCase(),dd=$("qDate").value,s=$("sort").value,st=$("stat").value;
+ var r=trips.filter(function(t){
+  if(t.dir!=tab)return false;
+  if(q&&t.h.toLowerCase().indexOf(q)<0)return false;
+  if(lo&&[t.ll,t.ol,t.cl].join(" ").toLowerCase().indexOf(lo)<0)return false;
+  if(dd&&t.ld!=dd&&t.od!=dd)return false;
+  if(st=="open"&&t.od)return false;if(st=="done"&&!t.od)return false;return true});
+ if(s)r.sort(function(a,b){return s=="asc"?days(a)-days(b):days(b)-days(a)});
+ $("count").textContent=r.length+(r.length==1?" truck":" trucks")+" shown";
+ $("rows").innerHTML=r.length?r.map(function(t){
+  return'<tr class="'+cls(t)+'"><td><b>'+esc(t.h)+'</b></td><td>'+fmt(pd(t.ld))+'</td><td>'+esc(t.ll)+'</td><td>'+fmt(pd(t.od))+'</td><td>'+esc(t.ol)+'</td><td>'+esc(t.cl)+'</td><td class="rem">'+esc(t.r)+'</td><td class="days">'+days(t)+'</td><td class="act"><button data-e="'+t.id+'">Edit</button><button data-d="'+t.id+'">Delete</button></td></tr>'}).join(""):
+  '<tr><td colspan="9" class="empty">No trucks here yet. Add a trip or upload an Excel file.</td></tr>';
+}
+function say(t,err){var m=$("msg");m.hidden=false;m.className="msg"+(err?" err":"");m.innerHTML=t}
+function setTab(t){tab=t;$("tabZam").setAttribute("aria-selected",t=="ZAM");$("tabDrc").setAttribute("aria-selected",t=="DRC");draw()}
+$("tabZam").onclick=function(){setTab("ZAM")};$("tabDrc").onclick=function(){setTab("DRC")};
+["qTruck","qLoc","qDate","sort","stat"].forEach(function(i){$(i).addEventListener("input",draw)});
+
+/* Add / edit / delete */
+function fleetUI(){$("fN").textContent=fleet.length+" trucks. A truck is added automatically the first time it appears in a trip.";
+ $("fL").innerHTML=fleet.map(function(h){return'<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span>'+esc(h)+'</span><button class="btn" data-f="'+esc(h)+'">Remove</button></div>'}).join("")}
+$("bFl").onclick=function(){fleetUI();$("fdlg").showModal()};$("fX").onclick=function(){$("fdlg").close()};
+$("fL").onclick=async function(e){var h=e.target.dataset.f;if(h&&confirm("Remove "+h+" from the fleet? Its past trips stay.")){try{await api("/api/fleet/"+encodeURIComponent(h),"DELETE");await reload();fleetUI()}catch(x){say(esc(x.message),true)}}};
+var dlg=$("dlg"),frm=$("frm"),editId=null;
+function openForm(t){editId=t?t.id:null;$("dT").textContent=t?"Edit trip":"Add trip";
+ var v=t||{h:"",dir:tab,ld:iso(now),ll:"",od:"",ol:"",cl:"",cc:"ZAM",r:""};
+ Object.keys(v).forEach(function(k){if(frm.elements[k])frm.elements[k].value=v[k]});dlg.showModal()}
+$("bAdd").onclick=function(){openForm(null)};$("dX").onclick=function(){dlg.close()};
+frm.onsubmit=async function(){
+ var o={};["h","dir","ld","ll","od","ol","cl","cc","r"].forEach(function(k){o[k]=frm.elements[k].value.trim()});
+ try{await api(editId?"/api/trips/"+editId:"/api/trips",editId?"PUT":"POST",o);await reload();say(editId?"Trip updated.":"Trip added.")}catch(x){say(esc(x.message),true)}};
+$("rows").onclick=async function(e){var b=e.target;
+ if(b.dataset.e)openForm(trips.filter(function(t){return t.id==b.dataset.e})[0]);
+ if(b.dataset.d&&confirm("Delete this trip?")){try{await api("/api/trips/"+b.dataset.d,"DELETE");await reload();say("Trip deleted.")}catch(x){say(esc(x.message),true)}}};
+$("bClr").onclick=async function(){if(confirm("Delete ALL trips for everyone? Download an export first if unsure.")){try{await api("/api/trips/bulk","POST",{mode:"replace",trips:[]});await reload();say("All trips cleared.")}catch(x){say(esc(x.message),true)}}};
+
+/* Excel: template, export, upload */
+var HEAD=["Horse","Direction","Loading Date","Loading Location","Date Offloaded","Offloading Location","Current Location","Current Country","Remarks"];
+$("bTpl").onclick=function(){
+ var wb=XLSX.utils.book_new();
+ var a=[HEAD,["BCB 4521","Towards DRC","2026-10-05","Lusaka","","Lubumbashi","Kapiri Mposhi","Zambia","On schedule"],["BCA 5547","Towards Zambia","2026-09-20","Kolwezi","2026-10-02","Lusaka","Lusaka","Zambia","Offloaded"]];
+ var ws=XLSX.utils.aoa_to_sheet(a);ws["!cols"]=HEAD.map(function(){return{wch:22}});XLSX.utils.book_append_sheet(wb,ws,"Trips");
+ var n=[["How to fill this template"],["Horse and Loading Date are required. Direction must be Towards Zambia or Towards DRC."],["Dates: use yyyy-mm-dd (for example 2026-10-05) or normal Excel dates."],["Leave Date Offloaded empty while the truck is still on the road. The truck then counts as loaded."],["Current Country: Zambia or DRC."],["A row with the same Horse and Loading Date as an existing trip updates that trip. Other rows are added."],["Delete the two example rows before you upload."]];
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(n),"Instructions");XLSX.writeFile(wb,"fleet_template.xlsx")};
+$("bExp").onclick=function(){
+ var a=[HEAD].concat(trips.map(function(t){return[t.h,t.dir=="ZAM"?"Towards Zambia":"Towards DRC",t.ld,t.ll,t.od,t.ol,t.cl,t.cc=="ZAM"?"Zambia":"DRC",t.r]}));
+ var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a),"Trips");XLSX.writeFile(wb,"fleet_export_"+iso(now)+".xlsx")};
+$("bUp").onclick=function(){$("file").click()};
+function toIso(v){
+ if(v===""||v==null)return"";
+ if(v instanceof Date){var d=new Date(v.getTime()+432e5);return iso(d)}
+ if(typeof v=="number"){var u=new Date(Math.round((v-25569)*864e5));return u.getUTCFullYear()+"-"+String(u.getUTCMonth()+1).padStart(2,"0")+"-"+String(u.getUTCDate()).padStart(2,"0")}
+ var s=String(v).trim(),m;
+ if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))return m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0");
+ if(m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/))return m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0");
+ return null}
+function key(o,names){var ks=Object.keys(o);for(var i=0;i<ks.length;i++){var k=ks[i].toLowerCase().replace(/[^a-z]/g,"");if(names.indexOf(k)>-1)return o[ks[i]]}return""}
+$("file").onchange=function(e){
+ var f=e.target.files[0];if(!f)return;var rd=new FileReader();
+ rd.onload=async function(){try{
+  var wb=XLSX.read(rd.result,{type:"array",cellDates:true});
+  var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:true});
+  var inc=[],bad=[];
+  rows.forEach(function(r,i){
+   var line=i+2,h=String(key(r,["horse","truck","horseno"])).trim(),ld=toIso(key(r,["loadingdate","dateloaded"])),od=toIso(key(r,["dateoffloaded","offloadeddate","offloadingdate"]));
+   var dr=String(key(r,["direction","route","towards"])),dir=/drc|congo/i.test(dr)?"DRC":/zam/i.test(dr)?"ZAM":"";
+   var cc=/drc|congo/i.test(String(key(r,["currentcountry","country"])))?"DRC":"ZAM";
+   if(!h&&!ld&&!dr)return;
+   if(!h)return bad.push("row "+line+": Horse is missing");
+   if(!ld)return bad.push("row "+line+": Loading Date is missing or not a valid date");
+   if(od===null)return bad.push("row "+line+": Date Offloaded is not a valid date");
+   if(!dir)return bad.push("row "+line+": Direction must be Towards Zambia or Towards DRC");
+   inc.push({h:h,dir:dir,ld:ld,od:od,cc:cc,ll:String(key(r,["loadinglocation"])).trim(),ol:String(key(r,["offloadinglocation"])).trim(),cl:String(key(r,["currentlocation"])).trim(),r:String(key(r,["remarks","remark"])).trim()})});
+  var why=bad.length?esc(bad.slice(0,5).join("; "))+(bad.length>5?"; ...":""):"";
+  if(!inc.length){say("Nothing was uploaded. "+(why||"The file has no rows. Download the template and fill it in."),true)}
+  else{var res=await api("/api/trips/bulk","POST",{mode:$("mode").value,trips:inc});await reload();
+   say("Upload done: "+res.added+" trips added, "+res.updated+" updated. New trucks added to fleet: "+res.newTrucks+" (fleet now "+fleet.length+")"+(bad.length?", "+bad.length+" skipped ("+why+")":"")+".",bad.length>0)}
+ }catch(x){say("Upload failed: "+esc(x.message),true)}e.target.value=""};
+ rd.readAsArrayBuffer(f)};
+$("today").textContent="Today, "+fmt(now);
+draw();reload().catch(function(x){say("Could not load trips: "+esc(x.message),true)});</script>
+
+</body>
+</html>
