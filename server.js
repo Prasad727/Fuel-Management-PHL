@@ -172,7 +172,10 @@ const server = http.createServer(async (req, res) => {
 (async () => {
     try { store = process.env.FIREBASE_SERVICE_ACCOUNT ? await firestoreStore() : fileStore(); }
     catch (e) { console.error('Could not start storage: ' + e.message); process.exit(1); }
-    trips = require('./trips')({ body, send }); // fleet trips + fleet list (uses the same storage choice)
+    // Fleet trips + fleet list (same storage choice). The explicit ".js" stops Node picking a different file or folder named "trips".
+    const makeTrips = require('./trips.js');
+    if (typeof makeTrips !== 'function') { console.error('trips.js did not load correctly. Make sure it is the file from the chat and sits next to server.js.'); process.exit(1); }
+    trips = makeTrips({ body, send });
     server.listen(PORT, '0.0.0.0', () => {
         console.log('\nFleet Fuel Manager is running.\n  On this computer:  http://localhost:' + PORT);
         for (const l of Object.values(os.networkInterfaces()))
