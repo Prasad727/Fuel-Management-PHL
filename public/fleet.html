@@ -1080,8 +1080,32 @@
             var r = await fetch(url, { method: method || "GET", headers: { "Content-Type": "application/json" }, body: d ? JSON.stringify(d) : undefined });
             var j = await r.json().catch(function () { return {} }); if (!r.ok) throw new Error(j.error || ("Server error " + r.status)); return j
         }
-        async function reload() { data = await api("/api/trips"); draw() }
-        async function saveTable(name, arr) { var res = await api("/api/trips/" + name, "PUT", { rows: arr }); data[name] = { rows: res.rows, updated: res.updated }; draw(); return res }
+        /* CHANGED: Normalize the API response so missing table keys never cause "reading rows" errors. */
+        function normalizeTrips(payload) {
+            var source = payload && payload.data && typeof payload.data === "object" ? payload.data : payload;
+            if (!source || typeof source !== "object") throw new Error("The trips API returned an unexpected response.");
+            function table(value, label) {
+                if (Array.isArray(value)) return { rows: value, updated: "" };
+                if (value && Array.isArray(value.rows)) return { rows: value.rows, updated: value.updated || "" };
+                throw new Error("The trips API response is missing the " + label + " rows. Check the backend /api/trips response format before uploading.");
+            }
+            var zam = source.zam || source.towardsZambia || source.towards_zambia;
+            var drc = source.drc || source.towardsDRC || source.towardsDrc || source.towards_drc;
+            return { zam: table(zam, "Towards Zambia"), drc: table(drc, "Towards DRC") };
+        }
+        async function reload() {
+            var payload = await api("/api/trips");
+            data = normalizeTrips(payload);
+            draw();
+        }
+        /* CHANGED: Accept a missing rows array in the save response without crashing the UI. */
+        async function saveTable(name, arr) {
+            var res = await api("/api/trips/" + name, "PUT", { rows: arr });
+            var savedRows = res && Array.isArray(res.rows) ? res.rows : arr;
+            data[name] = { rows: savedRows, updated: (res && res.updated) || new Date().toISOString() };
+            draw();
+            return Object.assign({}, res || {}, { rows: savedRows, created: res && res.created != null ? res.created : 0 });
+        }
         /* A truck is LOADED when it has a loading date and no offloading date. Otherwise it is EMPTY. */
         function loaded(t) { return !!t.ld && !t.od }
         function days(t) { return t.ld ? Math.round(((t.od ? pd(t.od) : now) - pd(t.ld)) / DAY) : null }
@@ -1197,7 +1221,8 @@
                     });
                     var why = bad.length ? esc(bad.slice(0, 5).join("; ")) + (bad.length > 5 ? "; ..." : "") : "";
                     if (!inc.length) { say("Nothing was uploaded. " + (why || "The file has no rows. Download the template and fill it in."), true) }
-                    else if (confirm("Replace the " + NAMES[name] + " table (" + data[name].rows.length + " rows now) with " + inc.length + " rows from this file? Rows that are not in the file will be removed.")) {
+                    /* CHANGED: Guard the current table count in case an API response omitted that table. */
+                    else if (confirm("Replace the " + NAMES[name] + " table (" + ((data[name] && Array.isArray(data[name].rows)) ? data[name].rows.length : 0) + " rows now) with " + inc.length + " rows from this file? Rows that are not in the file will be removed.")) {
                         var L = inc.filter(loaded).length, res = await saveTable(name, inc);
                         say(NAMES[name] + " updated: " + res.rows.length + " rows (" + L + " loaded, " + (res.rows.length - L) + " empty). " + res.created + " new IDs created." + (bad.length ? " " + bad.length + " rows skipped (" + why + ")." : "") + " Use Export data to download the rows with their IDs.", bad.length > 0)
                     }
