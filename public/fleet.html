@@ -1,246 +1,1230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fleet Management</title>
-<style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#eef1f4;--panel:#fff;--ink:#17212b;--mute:#5d6b79;--line:#d5dce3;--head:#17212b;--headink:#fff;--accent:#f2a900;--accentink:#17212b;
---g:#d9f2df;--o:#ffe2bd;--r:#ffd0cd;--w:#fff;--gb:#1f8a3b;--ob:#d9730d;--rb:#c62d26}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f151b;--panel:#18212a;--ink:#e8edf2;--mute:#93a1af;--line:#2b3742;--head:#0a0f14;--g:#18382a;--o:#44300f;--r:#4a1d1b;--w:#18212a;--gb:#4fcf72;--ob:#f5a04a;--rb:#ff7a72}}
-:root[data-theme="dark"]{--bg:#0f151b;--panel:#18212a;--ink:#e8edf2;--mute:#93a1af;--line:#2b3742;--head:#0a0f14;--g:#18382a;--o:#44300f;--r:#4a1d1b;--w:#18212a;--gb:#4fcf72;--ob:#f5a04a;--rb:#ff7a72}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Barlow","Segoe UI",system-ui,sans-serif}
-header{background:var(--head);color:var(--headink);padding:18px 20px;border-bottom:4px solid var(--accent)}
-.wrap{max-width:1200px;margin:0 auto}
-.top{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
-h1{font:700 26px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em;margin:0}
-.sub{color:#9fb0c0;font-size:13px;margin-top:2px}
-.quick{display:flex;gap:8px;flex-wrap:wrap}
-.quick a{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:600;border:2px solid var(--accent);color:#fff}
-.quick a.primary{background:var(--accent);color:var(--accentink)}
-.quick a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-main{padding:20px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
-.card{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--c,var(--mute));border-radius:4px;padding:12px 14px}
-.card b{display:block;font:700 34px/1 "Barlow Condensed","Arial Narrow",sans-serif}
-.card span{color:var(--mute);font-size:13px}
-.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line)}
-.tabs button{border:0;background:none;color:var(--mute);font:600 15px inherit;font-family:inherit;padding:10px 16px;cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px}
-.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
-.tools{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
-.tools label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);gap:3px;flex:1 1 150px}
-.tools input,.tools select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);width:100%}
-.scroll{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:4px}
-table{border-collapse:collapse;width:100%;min-width:880px}
-th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{background:var(--head);color:var(--headink);font-weight:600;font-size:13px}
-td.rem{white-space:normal;min-width:150px}
-tr.g td{background:var(--g)}tr.o td{background:var(--o)}tr.r td{background:var(--r)}
-td.days{font-weight:700;border-left:5px solid transparent}
-tr.g td.days{border-color:var(--gb)}tr.o td.days{border-color:var(--ob)}tr.r td.days{border-color:var(--rb)}
-tr.w td.days{border-color:var(--line)}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin:10px 0}
-.legend i{display:inline-block;width:14px;height:14px;border:1px solid var(--line);vertical-align:-2px;margin-right:5px}
-.empty{padding:26px;text-align:center;color:var(--mute)}
-.count{font-size:13px;color:var(--mute);margin-bottom:6px}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px;align-items:center}
-.btn{font:600 14px inherit;font-family:inherit;padding:9px 14px;border-radius:5px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
-.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accentink)}
-.bar select{font:inherit;padding:9px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink)}
-.msg{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--gb);padding:10px 14px;margin-bottom:10px;border-radius:4px;font-size:14px}
-.msg.err{border-left-color:var(--rb)}
-dialog{border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:min(640px,94vw);padding:18px}
-dialog::backdrop{background:#0008}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.wide{grid-column:1/-1}
-dialog label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);gap:3px}
-dialog input,dialog select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
-.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-td.act{white-space:nowrap}td.act button{font:inherit;font-size:13px;margin-right:4px;padding:3px 8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
-@media(max-width:520px){.grid{grid-template-columns:1fr}}
-.tid{font:12px ui-monospace,Consolas,monospace;color:var(--mute)}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professional Hauliers - Fleet Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8f7f3;
+            --card: #fff;
+            --ink: #14130f;
+            --mute: #6b6a63;
+            --mute2: #a3a29a;
+            --line: #e8e6df;
+            --soft: #f3f2ed;
+            --yel: #fbbf24;
+            --yink: #1c1400;
+            --ybg: #fef3c7;
+            --yfg: #92400e;
+            --ydot: #f59e0b;
+            --gbg: #dcfce7;
+            --gfg: #15803d;
+            --obg: #ffedd5;
+            --ofg: #c2410c;
+            --rbg: #fee2e2;
+            --rfg: #b91c1c;
+            --red: #e5483d;
+            --org: #f97316;
+            --grn: #22a55b;
+            --side: #111110;
+            --sideline: #262623;
+            --sideink: #a8a79f;
+            --card2: #1c1c1a
+        }
+
+            :root[data-theme="dark"] {
+                --bg: #0c0c0b;
+                --card: #171715;
+                --ink: #f4f3ee;
+                --mute: #9a998f;
+                --mute2: #6d6c64;
+                --line: #2a2a27;
+                --soft: #1f1f1c;
+                --side: #070706;
+                --sideline: #22221f;
+                --ybg: #3a2d08;
+                --yfg: #fcd34d;
+                --gbg: #123524;
+                --gfg: #86efac;
+                --obg: #47290c;
+                --ofg: #fdba74;
+                --rbg: #4a1a1a;
+                --rfg: #fca5a5
+            }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.45 "Inter","Segoe UI",system-ui,sans-serif
+        }
+
+        .ic {
+            width: 18px;
+            height: 18px;
+            flex: none
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh
+        }
+
+        .side {
+            background: var(--side);
+            color: var(--sideink);
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            background: none;
+            border: 0;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 12px;
+            font-family: inherit
+        }
+
+            .brand:hover {
+                background: #1a1a18
+            }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--yel);
+            color: var(--yink);
+            display: grid;
+            place-items: center;
+            flex: none
+        }
+
+            .logo .ic {
+                width: 22px;
+                height: 22px
+            }
+
+        .bt {
+            flex: 1;
+            min-width: 0
+        }
+
+            .bt b {
+                display: block;
+                color: #fff;
+                font-size: 13.5px;
+                line-height: 1.15;
+                letter-spacing: .04em;
+                font-weight: 800
+            }
+
+            .bt small {
+                font-size: 12px;
+                color: #8d8c84
+            }
+
+        .brand > .ic {
+            color: #8d8c84;
+            transition: transform .2s
+        }
+
+        .brand[aria-expanded="true"] > .ic {
+            transform: rotate(180deg)
+        }
+
+        .menu {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            top: 84px;
+            background: var(--card2);
+            border: 1px solid #2e2e2a;
+            border-radius: 14px;
+            padding: 8px;
+            z-index: 40;
+            box-shadow: 0 18px 40px rgba(0,0,0,.45)
+        }
+
+            .menu[hidden] {
+                display: none
+            }
+
+        .mh, .sec {
+            font-size: 11.5px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #77766e;
+            padding: 8px 10px 6px;
+            font-weight: 600
+        }
+
+        .mi, .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--sideink);
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 11px;
+            font-weight: 500
+        }
+
+            .mi:hover, .nav a:hover {
+                background: #1c1c1a;
+                color: #fff
+            }
+
+            .mi small {
+                display: block;
+                font-size: 12px;
+                color: #77766e;
+                font-weight: 400
+            }
+
+            .mi.on, .nav a.on {
+                background: var(--yel);
+                color: var(--yink)
+            }
+
+                .mi.on small {
+                    color: #5c4400
+                }
+
+            .mi.soon, .nav a.soon {
+                opacity: .6;
+                pointer-events: none
+            }
+
+        .tag {
+            margin-left: auto;
+            font-size: 11px;
+            letter-spacing: .08em;
+            border: 1px solid #33332f;
+            border-radius: 99px;
+            padding: 3px 10px;
+            color: #8d8c84
+        }
+
+        .nav {
+            margin-top: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .sf {
+            margin-top: auto;
+            border-top: 1px solid var(--sideline);
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .dark {
+            background: none;
+            border: 0;
+            color: var(--sideink);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 11px;
+            cursor: pointer;
+            font: 500 15px inherit;
+            font-family: inherit;
+            text-align: left
+        }
+
+            .dark:hover {
+                background: #1c1c1a;
+                color: #fff
+            }
+
+        .user {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 12px
+        }
+
+            .user i {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #262623;
+                color: #fff;
+                display: grid;
+                place-items: center;
+                font: 600 13px inherit;
+                font-style: normal
+            }
+
+            .user b {
+                display: block;
+                color: #fff;
+                font-size: 14.5px;
+                line-height: 1.2
+            }
+
+            .user small {
+                font-size: 12.5px;
+                color: #77766e
+            }
+
+        .main {
+            min-width: 0
+        }
+
+        .head {
+            padding: 30px 40px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap
+        }
+
+        .eye {
+            font-size: 13px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--mute);
+            font-weight: 500
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 38px;
+            line-height: 1.1;
+            letter-spacing: -.025em;
+            font-weight: 800
+        }
+
+        .today {
+            font-size: 15px;
+            color: var(--mute);
+            font-weight: 500;
+            margin: 0 0 10px
+        }
+
+        .head p {
+            margin: 0;
+            color: var(--mute);
+            max-width: 640px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font: 600 14px inherit;
+            font-family: inherit;
+            padding: 10px 15px;
+            border-radius: 11px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            color: var(--ink);
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+            .btn:hover {
+                background: var(--soft)
+            }
+
+            .btn.pri {
+                background: var(--yel);
+                border-color: var(--yel);
+                color: var(--yink);
+                padding: 12px 20px;
+                font-weight: 700
+            }
+
+                .btn.pri:hover {
+                    filter: brightness(.96)
+                }
+
+        button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+            outline: 3px solid var(--yel);
+            outline-offset: 2px
+        }
+
+        .body {
+            padding: 28px 40px 44px;
+            max-width: 1500px
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(5,1fr);
+            gap: 16px;
+            margin-bottom: 18px
+        }
+
+        .k {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px 22px
+        }
+
+        .kh {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--mute)
+        }
+
+        .chip {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--soft);
+            color: var(--mute)
+        }
+
+            .chip.y {
+                background: var(--ybg);
+                color: var(--yfg)
+            }
+
+            .chip.g {
+                background: var(--gbg);
+                color: var(--gfg)
+            }
+
+        .k b {
+            display: block;
+            font-size: 40px;
+            line-height: 1;
+            margin: 18px 0 12px;
+            letter-spacing: -.03em;
+            font-weight: 800
+        }
+
+        .k span {
+            color: var(--mute);
+            font-size: 14px
+        }
+
+        .util {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 22px
+        }
+
+            .util b {
+                display: block;
+                line-height: 1.2
+            }
+
+            .util small {
+                color: var(--mute);
+                font-size: 14px
+            }
+
+        .track {
+            flex: 1;
+            height: 10px;
+            background: var(--soft);
+            border-radius: 99px;
+            overflow: hidden
+        }
+
+            .track div {
+                height: 100%;
+                width: 0;
+                background: var(--yel);
+                border-radius: 99px;
+                transition: width .5s
+            }
+
+        .util strong {
+            font-size: 17px;
+            min-width: 48px;
+            text-align: right
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            overflow: hidden
+        }
+
+        .ph {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 10px;
+            padding: 0 24px 0 24px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .tabs {
+            display: flex
+        }
+
+            .tabs button {
+                border: 0;
+                background: none;
+                color: var(--mute);
+                font: 600 15px inherit;
+                font-family: inherit;
+                padding: 20px 22px;
+                border-bottom: 3px solid transparent;
+                cursor: pointer;
+                margin-bottom: -1px
+            }
+
+                .tabs button span {
+                    margin-left: 8px;
+                    font-size: 13px;
+                    background: var(--soft);
+                    padding: 2px 9px;
+                    border-radius: 99px;
+                    color: var(--mute)
+                }
+
+                .tabs button[aria-selected="true"] {
+                    color: var(--ink);
+                    border-color: var(--yel)
+                }
+
+        .bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px 0
+        }
+
+        .msg {
+            margin: 14px 24px 0;
+            background: var(--gbg);
+            color: var(--gfg);
+            border-radius: 12px;
+            padding: 11px 15px;
+            font-size: 14px
+        }
+
+            .msg.err {
+                background: var(--rbg);
+                color: var(--rfg)
+            }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: flex-end;
+            padding: 20px 24px
+        }
+
+            .tools > label {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                font-size: 13.5px;
+                font-weight: 500;
+                flex: 1 1 170px
+            }
+
+            .tools .seg, .tools .rst {
+                flex: none
+            }
+
+        .inp {
+            position: relative
+        }
+
+            .inp .ic {
+                position: absolute;
+                left: 13px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--mute);
+                width: 17px;
+                height: 17px
+            }
+
+            .inp input {
+                padding-left: 40px !important
+            }
+
+        .tools input, .tools select, dialog input, dialog select {
+            font: inherit;
+            font-size: 14.5px;
+            padding: 11px 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--ink);
+            width: 100%
+        }
+
+        .seg {
+            display: inline-flex;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 3px
+        }
+
+            .seg button {
+                border: 0;
+                background: none;
+                font: 600 14.5px inherit;
+                font-family: inherit;
+                color: var(--mute);
+                padding: 8px 16px;
+                border-radius: 9px;
+                cursor: pointer
+            }
+
+                .seg button.on {
+                    background: var(--card);
+                    color: var(--ink);
+                    box-shadow: 0 1px 3px rgba(0,0,0,.12)
+                }
+
+        .rst {
+            background: none;
+            border: 0;
+            color: var(--mute);
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            font: 500 14.5px inherit;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 11px 12px
+        }
+
+        .scroll {
+            overflow: auto;
+            max-height: 66vh;
+            border-top: 1px solid var(--line)
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            min-width: 1180px
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: var(--soft);
+            text-align: left;
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--mute);
+            font-weight: 600;
+            padding: 16px 14px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        td {
+            padding: 16px 14px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle
+        }
+
+            td:first-child, th:first-child {
+                padding-left: 20px
+            }
+
+        tr:hover td {
+            background: var(--soft)
+        }
+
+        tr.r td:first-child {
+            box-shadow: inset 4px 0 0 var(--red)
+        }
+
+        tr.o td:first-child {
+            box-shadow: inset 4px 0 0 var(--org)
+        }
+
+        tr.g td:first-child {
+            box-shadow: inset 4px 0 0 var(--grn)
+        }
+
+        .horse {
+            font: 700 15px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            letter-spacing: .02em
+        }
+
+        .sub {
+            font-size: 12px;
+            color: var(--mute)
+        }
+
+        .mono {
+            font-family: ui-monospace,Menlo,Consolas,monospace
+        }
+
+        .dash {
+            color: var(--mute2)
+        }
+
+        td.rem {
+            color: var(--mute);
+            min-width: 150px;
+            max-width: 200px
+        }
+
+        .st {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 13.5px
+        }
+
+            .st i {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: currentColor
+            }
+
+            .st.ld {
+                background: var(--ybg);
+                color: var(--yfg)
+            }
+
+                .st.ld i {
+                    background: var(--ydot)
+                }
+
+            .st.em {
+                background: var(--soft);
+                color: var(--mute)
+            }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 11px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 13.5px;
+            background: var(--soft);
+            color: var(--mute);
+            border: 1px solid transparent;
+            white-space: nowrap
+        }
+
+        tr.L.w .pill {
+            background: var(--card);
+            border-color: var(--line);
+            color: var(--ink)
+        }
+
+        tr.g .pill {
+            background: var(--gbg);
+            color: var(--gfg);
+            border-color: var(--grn)
+        }
+
+        tr.o .pill {
+            background: var(--obg);
+            color: var(--ofg);
+            border-color: var(--org)
+        }
+
+        tr.r .pill {
+            background: var(--rbg);
+            color: var(--rfg);
+            border-color: var(--red)
+        }
+
+        td.act {
+            white-space: nowrap
+        }
+
+            td.act button {
+                font: 600 13px inherit;
+                font-family: inherit;
+                margin-right: 6px;
+                padding: 6px 12px;
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                background: var(--card);
+                color: var(--ink);
+                cursor: pointer
+            }
+
+                td.act button[data-d] {
+                    color: var(--rfg)
+                }
+
+        .empty {
+            padding: 48px;
+            text-align: center;
+            color: var(--mute)
+        }
+
+        .foot {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--line);
+            font-size: 14px;
+            color: var(--mute)
+        }
+
+        .lg {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+            .lg span {
+                padding: 3px 12px;
+                border-radius: 99px;
+                font-weight: 600;
+                font-size: 13px;
+                border: 1px solid var(--line);
+                color: var(--ink)
+            }
+
+            .lg .g {
+                background: var(--gbg);
+                color: var(--gfg);
+                border-color: var(--grn)
+            }
+
+            .lg .o {
+                background: var(--obg);
+                color: var(--ofg);
+                border-color: var(--org)
+            }
+
+            .lg .r {
+                background: var(--rbg);
+                color: var(--rfg);
+                border-color: var(--red)
+            }
+
+        dialog {
+            border: 0;
+            border-radius: 20px;
+            background: var(--card);
+            color: var(--ink);
+            width: min(660px,94vw);
+            padding: 26px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.35)
+        }
+
+            dialog::backdrop {
+                background: #0009
+            }
+
+            dialog h2 {
+                margin: 0 0 16px;
+                font-size: 20px
+            }
+
+            dialog label {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--mute)
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+
+        .wide {
+            grid-column: 1/-1
+        }
+
+        .acts {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px
+        }
+
+        @media(max-width:1200px) {
+            .kpis {
+                grid-template-columns: repeat(3,1fr)
+            }
+        }
+
+        @media(max-width:860px) {
+            .app {
+                grid-template-columns: 1fr
+            }
+
+            .side {
+                position: relative;
+                height: auto;
+                flex-direction: row;
+                align-items: center;
+                padding: 10px 14px;
+                gap: 8px
+            }
+
+            .brand {
+                width: auto;
+                flex: 1
+            }
+
+            .nav, .user, .sf {
+                display: none
+            }
+
+            .menu {
+                top: 72px
+            }
+
+            .head, .body {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            h1 {
+                font-size: 28px
+            }
+
+            .kpis {
+                grid-template-columns: repeat(2,1fr)
+            }
+
+            .ph {
+                padding: 0 12px
+            }
+
+            .tabs button {
+                padding: 16px 12px
+            }
+
+            .tools {
+                padding: 16px 14px
+            }
+        }
+
+        @media(max-width:520px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
 </head>
 <body>
-<header><div class="wrap top">
-  <div><h1>Fleet Management</h1><div class="sub" id="today"></div></div>
-  <nav class="quick" aria-label="Quick links">
-    <a class="primary" href="/fuel">Fuel Management</a>
-    <a href="/procurement.html">Procurement</a>
-  </nav>
-</div></header>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></symbol>
+            <symbol id="i-fuel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17" /><path d="M3 22h12" /><path d="M15 9h2a2 2 0 0 1 2 2v5a2 2 0 0 0 4 0V8l-3-3" /><rect x="6" y="7" width="6" height="4" /></symbol>
+            <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></symbol>
+            <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></symbol>
+            <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4" /><path d="M3.34 19a10 10 0 1 1 17.32 0" /></symbol>
+            <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></symbol>
+            <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></symbol>
+            <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></symbol>
+            <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></symbol>
+            <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
+            <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></symbol>
+            <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></symbol>
+        </defs>
+    </svg>
+    <div class="app">
+        <aside class="side">
+            <button class="brand" id="brand" aria-haspopup="menu" aria-expanded="false" aria-controls="menu">
+                <span class="logo"><svg class="ic"><use href="#i-truck" /></svg></span>
+                <span class="bt"><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span>
+                <svg class="ic"><use href="#i-chev" /></svg>
+            </button>
+            <div class="menu" id="menu" role="menu" hidden></div>
+            <nav class="nav" id="nav" aria-label="Modules"></nav>
+            <div class="sf">
+                <button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button>
+                <div class="user"><i>OP</i><div><b>Operations desk</b><small>Password protected</small></div></div>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="head">
+                <div>
+                    <h1>Fleet Management</h1>
+                    <div class="today" id="today"></div>
+                    <p>A truck is loaded when it has a loading date and no offloading date. Days are counted from loading to offloading, or to today.</p>
+                </div>
+                <button class="btn pri" id="bAdd"><svg class="ic"><use href="#i-plus" /></svg>Add truck</button>
+            </header>
+            <div class="body">
+                <section class="kpis" aria-label="Fleet summary">
+                    <div class="k"><div class="kh">Total trucks<span class="chip y"><svg class="ic"><use href="#i-truck" /></svg></span></div><b id="cTotal">0</b><span>Unique horses in both tables</span></div>
+                    <div class="k"><div class="kh">Loaded<span class="chip g"><svg class="ic"><use href="#i-box" /></svg></span></div><b id="cLoaded">0</b><span>Loading date, not offloaded</span></div>
+                    <div class="k"><div class="kh">Empty<span class="chip"><svg class="ic"><use href="#i-box" /></svg></span></div><b id="cEmpty">0</b><span>Offloaded or not yet loaded</span></div>
+                    <div class="k"><div class="kh">In Zambia<span class="chip"><svg class="ic"><use href="#i-pin" /></svg></span></div><b id="cZam">0</b><span>From Current Country</span></div>
+                    <div class="k"><div class="kh">In DRC<span class="chip"><svg class="ic"><use href="#i-pin" /></svg></span></div><b id="cDrc">0</b><span>From Current Country</span></div>
+                </section>
+                <section class="util">
+                    <span class="chip y"><svg class="ic"><use href="#i-gauge" /></svg></span>
+                    <div><b>Fleet utilisation</b><small id="util">0 of 0 trucks carrying cargo</small></div>
+                    <div class="track"><div id="fill"></div></div><strong id="pct">0%</strong>
+                </section>
+                <section class="panel">
+                    <div class="ph">
+                        <div class="tabs" role="tablist">
+                            <button role="tab" id="tabZam" aria-selected="true">Towards Zambia<span id="nZam">0</span></button>
+                            <button role="tab" id="tabDrc" aria-selected="false">Towards DRC<span id="nDrc">0</span></button>
+                        </div>
+                        <div class="bar">
+                            <button class="btn" id="bUp"><svg class="ic"><use href="#i-up" /></svg>Upload Excel</button>
+                            <button class="btn" id="bTpl"><svg class="ic"><use href="#i-file" /></svg>Download template</button>
+                            <button class="btn" id="bExp"><svg class="ic"><use href="#i-down" /></svg>Export data</button>
+                            <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+                        </div>
+                    </div>
+                    <div id="msg" class="msg" role="status" hidden></div>
+                    <div class="tools">
+                        <label>Truck<span class="inp"><svg class="ic"><use href="#i-search" /></svg><input id="qTruck" type="search" placeholder="Search horse, e.g. BCB 4521"></span></label>
+                        <label>Location<input id="qLoc" type="search" placeholder="Loading, offloading or current"></label>
+                        <label>Loading date<input id="qDate" type="date"></label>
+                        <label>Sort by days<select id="sort"><option value="">Default order</option><option value="desc">Most days first</option><option value="asc">Fewest days first</option></select></label>
+                        <label class="seg-l">Status<span class="seg" id="seg"><button data-v="" class="on">All</button><button data-v="open">Loaded</button><button data-v="done">Empty</button></span></label>
+                        <button class="rst" id="reset"><svg class="ic"><use href="#i-reset" /></svg>Reset</button>
+                    </div>
+                    <div class="scroll">
+                        <table>
+                            <thead><tr><th>Horse</th><th>Status</th><th>Loading date</th><th>Loading location</th><th>Date offloaded</th><th>Offloading location</th><th>Current location</th><th>Remarks</th><th>Days</th><th>Actions</th></tr></thead>
+                            <tbody id="rows"></tbody>
+                        </table>
+                    </div>
+                    <div class="foot">
+                        <div class="lg">Days (loaded trucks): <span>Under 7</span><span class="g">7+ days</span><span class="o">9+ days</span><span class="r">12+ days</span></div>
+                        <div><span id="count"></span> &middot; <span id="upd"></span></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <dialog id="dlg">
+        <form method="dialog" id="frm">
+            <h2 id="dT">Add truck</h2>
+            <div class="grid">
+                <label>Horse<input name="h" required></label>
+                <label>Loading date<input name="ld" type="date"></label>
+                <label>Loading location<input name="ll"></label>
+                <label>Date offloaded<input name="od" type="date"></label>
+                <label>Offloading location<input name="ol"></label>
+                <label>Current location<input name="cl"></label>
+                <label>Current country<select name="cc"><option value="">Not set</option><option value="ZAM">Zambia</option><option value="DRC">DRC</option></select></label>
+                <label class="wide">Remarks<input name="r"></label>
+            </div>
+            <div class="acts"><button type="button" class="btn" id="dX">Cancel</button><button class="btn pri" value="save">Save</button></div>
+        </form>
+    </dialog>
 
-<main class="wrap">
-  <section class="cards" aria-label="Fleet summary">
-    <div class="card" style="--c:#2f6fed"><b id="cTotal">0</b><span>Total trucks</span></div>
-    <div class="card" style="--c:#1f8a3b"><b id="cLoaded">0</b><span>Loaded trucks</span></div>
-    <div class="card" style="--c:#8a96a3"><b id="cEmpty">0</b><span>Empty trucks</span></div>
-    <div class="card" style="--c:#f2a900"><b id="cZam">0</b><span>Trucks in Zambia</span></div>
-    <div class="card" style="--c:#c62d26"><b id="cDrc">0</b><span>Trucks in DRC</span></div>
-  </section>
+    <script>
+        var DAY = 864e5, $ = function (i) { return document.getElementById(i) };
+        var now = new Date(); now.setHours(0, 0, 0, 0);
+        function iso(x) { return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0") }
+        function pd(s) { return s ? new Date(s + "T00:00:00") : null }
+        function fmt(x) { return x ? x.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "" }
+        function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] }) }
+        var data = { zam: { rows: [], updated: "" }, drc: { rows: [], updated: "" } }, tab = "zam", NAMES = { zam: "Towards Zambia", drc: "Towards DRC" };
+        function R() { return data[tab].rows }
+        async function api(url, method, d) {
+            var r = await fetch(url, { method: method || "GET", headers: { "Content-Type": "application/json" }, body: d ? JSON.stringify(d) : undefined });
+            var j = await r.json().catch(function () { return {} }); if (!r.ok) throw new Error(j.error || ("Server error " + r.status)); return j
+        }
+        async function reload() { data = await api("/api/trips"); draw() }
+        async function saveTable(name, arr) { var res = await api("/api/trips/" + name, "PUT", { rows: arr }); data[name] = { rows: res.rows, updated: res.updated }; draw(); return res }
+        /* A truck is LOADED when it has a loading date and no offloading date. Otherwise it is EMPTY. */
+        function loaded(t) { return !!t.ld && !t.od }
+        function days(t) { return t.ld ? Math.round(((t.od ? pd(t.od) : now) - pd(t.ld)) / DAY) : null }
+        /* Colour only for loaded trucks: 7 green, 9 orange, 12+ red */
+        function cls(t) { if (!loaded(t)) return "w"; var n = days(t); return n >= 12 ? "r" : n >= 9 ? "o" : n >= 7 ? "g" : "w" }
+        function ccName2(t) { return t.cc == "ZAM" ? "Zambia" : t.cc == "DRC" ? "DRC" : "" }
+        function dash(v) { return v ? esc(v) : '<span class="dash">&mdash;</span>' }
+        var statV = "";
+        function cards() {
+            var best = {};
+            data.zam.rows.concat(data.drc.rows).forEach(function (t) { var b = best[t.h]; if (!b || (loaded(t) && !loaded(b))) best[t.h] = t });
+            var hs = Object.keys(best), l = 0, z = 0, d = 0;
+            hs.forEach(function (h) { var t = best[h]; if (loaded(t)) l++; if (t.cc == "ZAM") z++; if (t.cc == "DRC") d++ });
+            $("cTotal").textContent = hs.length; $("cLoaded").textContent = l; $("cEmpty").textContent = hs.length - l; $("cZam").textContent = z; $("cDrc").textContent = d;
+            var pc = hs.length ? Math.round(l * 100 / hs.length) : 0;
+            $("fill").style.width = pc + "%"; $("pct").textContent = pc + "%"; $("util").textContent = l + " of " + hs.length + " trucks carrying cargo";
+            $("nZam").textContent = data.zam.rows.length; $("nDrc").textContent = data.drc.rows.length;
+        }
+        function draw() {
+            cards();
+            var q = $("qTruck").value.trim().toLowerCase(), lo = $("qLoc").value.trim().toLowerCase(), dd = $("qDate").value, s = $("sort").value, st = statV;
+            var r = R().filter(function (t) {
+                if (q && t.h.toLowerCase().indexOf(q) < 0) return false;
+                if (lo && [t.ll, t.ol, t.cl].join(" ").toLowerCase().indexOf(lo) < 0) return false;
+                if (dd && t.ld != dd && t.od != dd) return false;
+                if (st == "open" && !loaded(t)) return false; if (st == "done" && loaded(t)) return false; return true
+            });
+            var dv = function (t) { var n = days(t); return n == null ? -1 : n };
+            if (s) r.sort(function (a, b) { return s == "asc" ? dv(a) - dv(b) : dv(b) - dv(a) });
+            $("count").textContent = "Showing " + r.length + " of " + R().length + " rows";
+            $("upd").textContent = data[tab].updated ? "Updated " + new Date(data[tab].updated).toLocaleString("en-GB") : "No data uploaded yet";
+            ["bUp", "bTpl", "bExp"].forEach(function (i) { $(i).title = NAMES[tab] });
+            $("rows").innerHTML = r.length ? r.map(function (t) {
+                var n = days(t), L = loaded(t), c = ccName2(t);
+                return '<tr class="' + cls(t) + (L ? " L" : "") + '"><td><b class="horse">' + esc(t.h) + '</b><div class="sub mono">' + esc(t.id) + '</div></td>'
+                    + '<td><span class="st ' + (L ? "ld" : "em") + '"><i></i>' + (L ? "Loaded" : "Empty") + '</span></td>'
+                    + '<td>' + (t.ld ? fmt(pd(t.ld)) : dash()) + '</td><td>' + dash(t.ll) + '</td><td>' + (t.od ? fmt(pd(t.od)) : dash()) + '</td><td>' + dash(t.ol) + '</td>'
+                    + '<td>' + dash(t.cl) + (c ? '<div class="sub">' + c + '</div>' : '') + '</td><td class="rem">' + dash(t.r) + '</td>'
+                    + '<td class="days">' + (n == null ? dash() : '<span class="pill">' + n + (n == 1 ? " day" : " days") + '</span>') + '</td>'
+                    + '<td class="act"><button data-e="' + esc(t.id) + '">Edit</button><button data-d="' + esc(t.id) + '">Delete</button></td></tr>'
+            }).join("") :
+                '<tr><td colspan="10" class="empty">No trucks in this table yet. Upload an Excel file or add a truck.</td></tr>';
+        }
+        function say(t, err) { var m = $("msg"); m.hidden = false; m.className = "msg" + (err ? " err" : ""); m.innerHTML = t }
+        function setTab(t) { tab = t; $("tabZam").setAttribute("aria-selected", t == "zam"); $("tabDrc").setAttribute("aria-selected", t == "drc"); $("msg").hidden = true; draw() }
+        $("tabZam").onclick = function () { setTab("zam") }; $("tabDrc").onclick = function () { setTab("drc") };
+        ["qTruck", "qLoc", "qDate", "sort"].forEach(function (i) { $(i).addEventListener("input", draw) });
 
-  <div class="tabs" role="tablist">
-    <button role="tab" id="tabZam" aria-selected="true">Towards Zambia</button>
-    <button role="tab" id="tabDrc" aria-selected="false">Towards DRC</button>
-  </div>
+        /* Add / edit / delete a truck in the open table */
+        var dlg = $("dlg"), frm = $("frm"), editId = null;
+        function openForm(t) {
+            editId = t ? t.id : null; $("dT").textContent = (t ? "Edit truck" : "Add truck") + " - " + NAMES[tab];
+            var v = t || { h: "", ld: "", ll: "", od: "", ol: "", cl: "", cc: "", r: "" };
+            ["h", "ld", "ll", "od", "ol", "cl", "cc", "r"].forEach(function (k) { frm.elements[k].value = v[k] || "" }); dlg.showModal()
+        }
+        $("bAdd").onclick = function () { openForm(null) }; $("dX").onclick = function () { dlg.close() };
+        frm.onsubmit = async function () {
+            var o = { id: editId || "" };["h", "ld", "ll", "od", "ol", "cl", "cc", "r"].forEach(function (k) { o[k] = frm.elements[k].value.trim() });
+            var arr = editId ? R().map(function (t) { return t.id == editId ? o : t }) : R().concat([o]);
+            try { await saveTable(tab, arr); say(editId ? "Truck updated." : "Truck added.") } catch (x) { say(esc(x.message), true) }
+        };
+        $("rows").onclick = async function (e) {
+            var b = e.target;
+            if (b.dataset.e) openForm(R().filter(function (t) { return t.id == b.dataset.e })[0]);
+            if (b.dataset.d && confirm("Remove this row from " + NAMES[tab] + "?")) { try { await saveTable(tab, R().filter(function (t) { return t.id != b.dataset.d })); say("Row removed.") } catch (x) { say(esc(x.message), true) } }
+        };
 
-  <div class="tools">
-    <label>Truck (horse)<input id="qTruck" type="search" placeholder="e.g. BCB 4521"></label>
-    <label>Location<input id="qLoc" type="search" placeholder="Loading, offloading or current"></label>
-    <label>Loading date<input id="qDate" type="date"></label>
-    <label>Sort by days<select id="sort"><option value="">Default</option><option value="desc">Most days first</option><option value="asc">Fewest days first</option></select></label>
-    <label>Show<select id="stat"><option value="">All trucks</option><option value="open">Loaded trucks</option><option value="done">Empty trucks</option></select></label>
-  </div>
-
-  <div class="bar">
-  <button class="btn pri" id="bAdd">Add truck</button>
-  <button class="btn" id="bUp">Upload Excel</button>
-  <button class="btn" id="bTpl">Download template</button>
-  <button class="btn" id="bExp">Export data</button>
-  <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
-  <span class="count" id="upd"></span>
-</div>
-<div id="msg" class="msg" role="status" hidden></div>
-<dialog id="dlg"><form method="dialog" id="frm">
-  <h2 id="dT">Add truck</h2>
-  <div class="grid">
-   <label>Horse<input name="h" required></label>
-   <label>Loading date<input name="ld" type="date"></label>
-   <label>Loading location<input name="ll"></label>
-   <label>Date offloaded<input name="od" type="date"></label>
-   <label>Offloading location<input name="ol"></label>
-   <label>Current location<input name="cl"></label>
-   <label>Current country<select name="cc"><option value="">Not set</option><option value="ZAM">Zambia</option><option value="DRC">DRC</option></select></label>
-   <label class="wide">Remarks<input name="r"></label>
-  </div>
-  <div class="acts"><button type="button" class="btn" id="dX">Cancel</button><button class="btn pri" value="save">Save</button></div>
-</form></dialog>
-<div class="legend" aria-label="Days colour key">
-    <span><i style="background:var(--w)"></i>Under 7 days</span>
-    <span><i style="background:var(--g)"></i>7 to 8 days</span>
-    <span><i style="background:var(--o)"></i>9 to 11 days</span>
-    <span><i style="background:var(--r)"></i>12 days or more</span>
-  </div>
-  <div class="count" id="count"></div>
-  <div class="scroll"><table>
-    <thead><tr><th>Trip ID</th><th>Horse</th><th>Loading date</th><th>Loading location</th><th>Date offloaded</th><th>Offloading location</th><th>Current location</th><th>Remarks</th><th>Days</th><th>Actions</th></tr></thead>
-    <tbody id="rows"></tbody>
-  </table></div>
-</main>
-
-<script>
-var DAY=864e5,$=function(i){return document.getElementById(i)};
-var now=new Date();now.setHours(0,0,0,0);
-function iso(x){return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
-function pd(s){return s?new Date(s+"T00:00:00"):null}
-function fmt(x){return x?x.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}):""}
-function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-var data={zam:{rows:[],updated:""},drc:{rows:[],updated:""}},tab="zam",NAMES={zam:"Towards Zambia",drc:"Towards DRC"};
-function R(){return data[tab].rows}
-async function api(url,method,d){var r=await fetch(url,{method:method||"GET",headers:{"Content-Type":"application/json"},body:d?JSON.stringify(d):undefined});
- var j=await r.json().catch(function(){return{}});if(!r.ok)throw new Error(j.error||("Server error "+r.status));return j}
-async function reload(){data=await api("/api/trips");draw()}
-async function saveTable(name,arr){var res=await api("/api/trips/"+name,"PUT",{rows:arr});data[name]={rows:res.rows,updated:res.updated};draw();return res}
-/* A truck is LOADED when it has a loading date and no offloading date. Otherwise it is EMPTY. */
-function loaded(t){return !!t.ld&&!t.od}
-function days(t){return t.ld?Math.round(((t.od?pd(t.od):now)-pd(t.ld))/DAY):null}
-/* Colour only for loaded trucks: 7 green, 9 orange, 12+ red */
-function cls(t){if(!loaded(t))return"w";var n=days(t);return n>=12?"r":n>=9?"o":n>=7?"g":"w"}
-function cards(){
- var best={};
- data.zam.rows.concat(data.drc.rows).forEach(function(t){var b=best[t.h];if(!b||(loaded(t)&&!loaded(b)))best[t.h]=t});
- var hs=Object.keys(best),l=0,z=0,d=0;
- hs.forEach(function(h){var t=best[h];if(loaded(t))l++;if(t.cc=="ZAM")z++;if(t.cc=="DRC")d++});
- $("cTotal").textContent=hs.length;$("cLoaded").textContent=l;$("cEmpty").textContent=hs.length-l;$("cZam").textContent=z;$("cDrc").textContent=d;
-}
-function draw(){
- cards();
- var q=$("qTruck").value.trim().toLowerCase(),lo=$("qLoc").value.trim().toLowerCase(),dd=$("qDate").value,s=$("sort").value,st=$("stat").value;
- var r=R().filter(function(t){
-  if(q&&t.h.toLowerCase().indexOf(q)<0)return false;
-  if(lo&&[t.ll,t.ol,t.cl].join(" ").toLowerCase().indexOf(lo)<0)return false;
-  if(dd&&t.ld!=dd&&t.od!=dd)return false;
-  if(st=="open"&&!loaded(t))return false;if(st=="done"&&loaded(t))return false;return true});
- var dv=function(t){var n=days(t);return n==null?-1:n};
- if(s)r.sort(function(a,b){return s=="asc"?dv(a)-dv(b):dv(b)-dv(a)});
- $("count").textContent=r.length+(r.length==1?" truck":" trucks")+" shown in "+NAMES[tab];
- $("upd").textContent=data[tab].updated?"Last updated: "+new Date(data[tab].updated).toLocaleString("en-GB"):"No data uploaded yet";
- $("bUp").textContent="Upload Excel ("+NAMES[tab]+")";$("bTpl").textContent="Download template";$("bExp").textContent="Export data";
- $("rows").innerHTML=r.length?r.map(function(t){var n=days(t);
-  return'<tr class="'+cls(t)+'"><td><b>'+esc(t.h)+'</b><div class="count">'+esc(t.id)+'</div></td><td>'+fmt(pd(t.ld))+'</td><td>'+esc(t.ll)+'</td><td>'+fmt(pd(t.od))+'</td><td>'+esc(t.ol)+'</td><td>'+esc(t.cl)+'</td><td class="rem">'+esc(t.r)+'</td><td class="days">'+(n==null?"":n)+'</td><td class="act"><button data-e="'+esc(t.id)+'">Edit</button><button data-d="'+esc(t.id)+'">Delete</button></td></tr>'}).join(""):
-  '<tr><td colspan="9" class="empty">No trucks in this table yet. Upload an Excel file or add a truck.</td></tr>';
-}
-function say(t,err){var m=$("msg");m.hidden=false;m.className="msg"+(err?" err":"");m.innerHTML=t}
-function setTab(t){tab=t;$("tabZam").setAttribute("aria-selected",t=="zam");$("tabDrc").setAttribute("aria-selected",t=="drc");$("msg").hidden=true;draw()}
-$("tabZam").onclick=function(){setTab("zam")};$("tabDrc").onclick=function(){setTab("drc")};
-["qTruck","qLoc","qDate","sort","stat"].forEach(function(i){$(i).addEventListener("input",draw)});
-
-/* Add / edit / delete a truck in the open table */
-var dlg=$("dlg"),frm=$("frm"),editId=null;
-function openForm(t){editId=t?t.id:null;$("dT").textContent=(t?"Edit truck":"Add truck")+" - "+NAMES[tab];
- var v=t||{h:"",ld:"",ll:"",od:"",ol:"",cl:"",cc:"",r:""};
- ["h","ld","ll","od","ol","cl","cc","r"].forEach(function(k){frm.elements[k].value=v[k]||""});dlg.showModal()}
-$("bAdd").onclick=function(){openForm(null)};$("dX").onclick=function(){dlg.close()};
-frm.onsubmit=async function(){
- var o={id:editId||""};["h","ld","ll","od","ol","cl","cc","r"].forEach(function(k){o[k]=frm.elements[k].value.trim()});
- var arr=editId?R().map(function(t){return t.id==editId?o:t}):R().concat([o]);
- try{await saveTable(tab,arr);say(editId?"Truck updated.":"Truck added.")}catch(x){say(esc(x.message),true)}};
-$("rows").onclick=async function(e){var b=e.target;
- if(b.dataset.e)openForm(R().filter(function(t){return t.id==b.dataset.e})[0]);
- if(b.dataset.d&&confirm("Remove this row from "+NAMES[tab]+"?")){try{await saveTable(tab,R().filter(function(t){return t.id!=b.dataset.d}));say("Row removed.")}catch(x){say(esc(x.message),true)}}};
-
-/* Excel: template, export, upload. Each button works on the table that is open. */
-var HEAD=["ID","Horse","Loading Date","Loading Location","Date Offloaded","Offloading Location","Current Location","Current Country","Remarks"];
-function ccName(c){return c=="ZAM"?"Zambia":c=="DRC"?"DRC":""}
-function book(a,name,extra){var wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(a);ws["!cols"]=HEAD.map(function(){return{wch:22}});
- XLSX.utils.book_append_sheet(wb,ws,"Trucks");if(extra)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(extra),"Instructions");XLSX.writeFile(wb,name)}
-$("bTpl").onclick=function(){
- var n=NAMES[tab];
- book([HEAD,["","BCB 4521","2026-10-05","Lusaka","","Lubumbashi","Kapiri Mposhi","Zambia","On the road (loaded: has a loading date, no offloaded date)"],["","BCA 5547","2026-09-20","Kolwezi","2026-10-02","Lusaka","Lusaka","Zambia","Offloaded (empty: has an offloaded date)"]],
- "template_"+n.toLowerCase().replace(/ /g,"_")+".xlsx",
- [["How this template works ("+n+")"],["Every upload REPLACES the whole "+n+" table. The file is the full list of trucks for this table."],["To add a truck, add a row. To remove a truck, delete its row. To change a truck, edit its row."],["ID: leave empty for new rows. A unique ID is created for you. Use Export data to download your rows with their IDs."],["Horse is required. Dates: yyyy-mm-dd or normal Excel dates."],["Loaded truck = Loading Date filled and Date Offloaded empty. Empty truck = Date Offloaded filled, or no Loading Date."],["Current Country: Zambia or DRC. It feeds the Trucks in Zambia and Trucks in DRC cards."],["Days turn green at 7, orange at 9 and red at 12 days for loaded trucks."],["Delete the two example rows before you upload."]])};
-$("bExp").onclick=function(){
- var a=[HEAD].concat(R().map(function(t){return[t.id,t.h,t.ld,t.ll,t.od,t.ol,t.cl,ccName(t.cc),t.r]}));
- book(a,"fleet_"+NAMES[tab].toLowerCase().replace(/ /g,"_")+"_"+iso(now)+".xlsx")};
-$("bUp").onclick=function(){$("file").click()};
-function toIso(v){
- if(v===""||v==null)return"";
- if(v instanceof Date){return iso(new Date(v.getTime()+432e5))}
- if(typeof v=="number"){var u=new Date(Math.round((v-25569)*864e5));return u.getUTCFullYear()+"-"+String(u.getUTCMonth()+1).padStart(2,"0")+"-"+String(u.getUTCDate()).padStart(2,"0")}
- var s=String(v).trim(),m;
- if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))return m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0");
- if(m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/))return m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0");
- return null}
-function key(o,names){var ks=Object.keys(o);for(var i=0;i<ks.length;i++){var k=ks[i].toLowerCase().replace(/[^a-z]/g,"");if(names.indexOf(k)>-1)return o[ks[i]]}return""}
-$("file").onchange=function(e){
- var f=e.target.files[0];if(!f)return;var rd=new FileReader(),name=tab;
- rd.onload=async function(){try{
-  var wb=XLSX.read(rd.result,{type:"array",cellDates:true});
-  var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:true});
-  var inc=[],bad=[];
-  rows.forEach(function(r,i){
-   var line=i+2,h=String(key(r,["horse","truck","horseno"])).trim(),ld=toIso(key(r,["loadingdate","dateloaded"])),od=toIso(key(r,["dateoffloaded","offloadeddate","offloadingdate"]));
-   var c=String(key(r,["currentcountry","country"])),cc=/drc|congo/i.test(c)?"DRC":/zam/i.test(c)?"ZAM":"";
-   if(!h&&!ld&&!od)return;
-   if(!h)return bad.push("row "+line+": Horse is missing");
-   if(ld===null)return bad.push("row "+line+": Loading Date is not a valid date");
-   if(od===null)return bad.push("row "+line+": Date Offloaded is not a valid date");
-   if(od&&!ld)return bad.push("row "+line+": Date Offloaded needs a Loading Date");
-   if(od&&od<ld)return bad.push("row "+line+": Date Offloaded is before Loading Date");
-   inc.push({id:String(key(r,["id","tripid","uniqueid"])).trim(),h:h,ld:ld,od:od,cc:cc,ll:String(key(r,["loadinglocation"])).trim(),ol:String(key(r,["offloadinglocation"])).trim(),cl:String(key(r,["currentlocation"])).trim(),r:String(key(r,["remarks","remark"])).trim()})});
-  var why=bad.length?esc(bad.slice(0,5).join("; "))+(bad.length>5?"; ...":""):"";
-  if(!inc.length){say("Nothing was uploaded. "+(why||"The file has no rows. Download the template and fill it in."),true)}
-  else if(confirm("Replace the "+NAMES[name]+" table ("+data[name].rows.length+" rows now) with "+inc.length+" rows from this file? Rows that are not in the file will be removed.")){
-   var L=inc.filter(loaded).length,res=await saveTable(name,inc);
-   say(NAMES[name]+" updated: "+res.rows.length+" rows ("+L+" loaded, "+(res.rows.length-L)+" empty). "+res.created+" new IDs created."+(bad.length?" "+bad.length+" rows skipped ("+why+").":"")+" Use Export data to download the rows with their IDs.",bad.length>0)}
- }catch(x){say("Upload failed: "+esc(x.message),true)}e.target.value=""};
- rd.readAsArrayBuffer(f)};
-$("today").textContent="Today, "+fmt(now);
-draw();reload().catch(function(x){say("Could not load trucks: "+esc(x.message),true)});
-</script>
-
+        /* Excel: template, export, upload. Each button works on the table that is open. */
+        var HEAD = ["ID", "Horse", "Loading Date", "Loading Location", "Date Offloaded", "Offloading Location", "Current Location", "Current Country", "Remarks"];
+        function ccName(c) { return c == "ZAM" ? "Zambia" : c == "DRC" ? "DRC" : "" }
+        function book(a, name, extra) {
+            var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(a); ws["!cols"] = HEAD.map(function () { return { wch: 22 } });
+            XLSX.utils.book_append_sheet(wb, ws, "Trucks"); if (extra) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(extra), "Instructions"); XLSX.writeFile(wb, name)
+        }
+        $("bTpl").onclick = function () {
+            var n = NAMES[tab];
+            book([HEAD, ["", "BCB 4521", "2026-10-05", "Lusaka", "", "Lubumbashi", "Kapiri Mposhi", "Zambia", "On the road (loaded: has a loading date, no offloaded date)"], ["", "BCA 5547", "2026-09-20", "Kolwezi", "2026-10-02", "Lusaka", "Lusaka", "Zambia", "Offloaded (empty: has an offloaded date)"]],
+                "template_" + n.toLowerCase().replace(/ /g, "_") + ".xlsx",
+                [["How this template works (" + n + ")"], ["Every upload REPLACES the whole " + n + " table. The file is the full list of trucks for this table."], ["To add a truck, add a row. To remove a truck, delete its row. To change a truck, edit its row."], ["ID: leave empty for new rows. A unique ID is created for you. Use Export data to download your rows with their IDs."], ["Horse is required. Dates: yyyy-mm-dd or normal Excel dates."], ["Loaded truck = Loading Date filled and Date Offloaded empty. Empty truck = Date Offloaded filled, or no Loading Date."], ["Current Country: Zambia or DRC. It feeds the Trucks in Zambia and Trucks in DRC cards."], ["Days turn green at 7, orange at 9 and red at 12 days for loaded trucks."], ["Delete the two example rows before you upload."]])
+        };
+        $("bExp").onclick = function () {
+            var a = [HEAD].concat(R().map(function (t) { return [t.id, t.h, t.ld, t.ll, t.od, t.ol, t.cl, ccName(t.cc), t.r] }));
+            book(a, "fleet_" + NAMES[tab].toLowerCase().replace(/ /g, "_") + "_" + iso(now) + ".xlsx")
+        };
+        $("bUp").onclick = function () { $("file").click() };
+        function toIso(v) {
+            if (v === "" || v == null) return "";
+            if (v instanceof Date) { return iso(new Date(v.getTime() + 432e5)) }
+            if (typeof v == "number") { var u = new Date(Math.round((v - 25569) * 864e5)); return u.getUTCFullYear() + "-" + String(u.getUTCMonth() + 1).padStart(2, "0") + "-" + String(u.getUTCDate()).padStart(2, "0") }
+            var s = String(v).trim(), m;
+            if (m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)) return m[1] + "-" + m[2].padStart(2, "0") + "-" + m[3].padStart(2, "0");
+            if (m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/)) return m[3] + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
+            return null
+        }
+        function key(o, names) { var ks = Object.keys(o); for (var i = 0; i < ks.length; i++) { var k = ks[i].toLowerCase().replace(/[^a-z]/g, ""); if (names.indexOf(k) > -1) return o[ks[i]] } return "" }
+        $("file").onchange = function (e) {
+            var f = e.target.files[0]; if (!f) return; var rd = new FileReader(), name = tab;
+            rd.onload = async function () {
+                try {
+                    var wb = XLSX.read(rd.result, { type: "array", cellDates: true });
+                    var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "", raw: true });
+                    var inc = [], bad = [];
+                    rows.forEach(function (r, i) {
+                        var line = i + 2, h = String(key(r, ["horse", "truck", "horseno"])).trim(), ld = toIso(key(r, ["loadingdate", "dateloaded"])), od = toIso(key(r, ["dateoffloaded", "offloadeddate", "offloadingdate"]));
+                        var c = String(key(r, ["currentcountry", "country"])), cc = /drc|congo/i.test(c) ? "DRC" : /zam/i.test(c) ? "ZAM" : "";
+                        if (!h && !ld && !od) return;
+                        if (!h) return bad.push("row " + line + ": Horse is missing");
+                        if (ld === null) return bad.push("row " + line + ": Loading Date is not a valid date");
+                        if (od === null) return bad.push("row " + line + ": Date Offloaded is not a valid date");
+                        if (od && !ld) return bad.push("row " + line + ": Date Offloaded needs a Loading Date");
+                        if (od && od < ld) return bad.push("row " + line + ": Date Offloaded is before Loading Date");
+                        inc.push({ id: String(key(r, ["id", "tripid", "uniqueid"])).trim(), h: h, ld: ld, od: od, cc: cc, ll: String(key(r, ["loadinglocation"])).trim(), ol: String(key(r, ["offloadinglocation"])).trim(), cl: String(key(r, ["currentlocation"])).trim(), r: String(key(r, ["remarks", "remark"])).trim() })
+                    });
+                    var why = bad.length ? esc(bad.slice(0, 5).join("; ")) + (bad.length > 5 ? "; ..." : "") : "";
+                    if (!inc.length) { say("Nothing was uploaded. " + (why || "The file has no rows. Download the template and fill it in."), true) }
+                    else if (confirm("Replace the " + NAMES[name] + " table (" + data[name].rows.length + " rows now) with " + inc.length + " rows from this file? Rows that are not in the file will be removed.")) {
+                        var L = inc.filter(loaded).length, res = await saveTable(name, inc);
+                        say(NAMES[name] + " updated: " + res.rows.length + " rows (" + L + " loaded, " + (res.rows.length - L) + " empty). " + res.created + " new IDs created." + (bad.length ? " " + bad.length + " rows skipped (" + why + ")." : "") + " Use Export data to download the rows with their IDs.", bad.length > 0)
+                    }
+                } catch (x) { say("Upload failed: " + esc(x.message), true) } e.target.value = ""
+            };
+            rd.readAsArrayBuffer(f)
+        };
+        /* Modules menu: add a module here and it appears in the sidebar and in the menu that opens from the company name */
+        var MODULES = [{ n: "Fleet Management", d: "Trucks, trips and Excel uploads", h: "/fleet", i: "truck" }, { n: "Fuel Management", d: "Fuel given per trip and truck", h: "/fuel", i: "fuel" }, { n: "Procurement", d: "Coming soon", h: "", i: "box", soon: 1 }], CUR = "/fleet";
+        function ico(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>' }
+        function item(m, cn) { return '<a ' + (cn == "mi" ? 'role="menuitem" ' : '') + 'class="' + (cn == "mi" ? "mi " : "") + (m.h == CUR ? "on " : "") + (m.soon ? "soon" : "") + '" href="' + (m.h || "#") + '">' + ico(m.i) + (cn == "mi" ? '<span>' + m.n + '<small>' + m.d + '</small></span>' : m.n) + (m.soon ? '<span class="tag">SOON</span>' : '') + '</a>' }
+        $("nav").innerHTML = '<div class="sec">Operations</div>' + MODULES.map(function (m) { return item(m, "nav") }).join("");
+        $("menu").innerHTML = '<div class="mh">Modules</div>' + MODULES.map(function (m) { return item(m, "mi") }).join("");
+        function menu(open) { $("menu").hidden = !open; $("brand").setAttribute("aria-expanded", open) }
+        $("brand").onclick = function (e) { e.stopPropagation(); menu($("menu").hidden) };
+        document.addEventListener("click", function (e) { if (!$("menu").contains(e.target)) menu(false) });
+        document.addEventListener("keydown", function (e) { if (e.key == "Escape") menu(false) });
+        /* Status filter, reset, theme */
+        function setSeg() { [].forEach.call($("seg").children, function (b) { b.className = b.dataset.v == statV ? "on" : "" }) }
+        $("seg").onclick = function (e) { if (e.target.dataset && e.target.dataset.v !== undefined) { statV = e.target.dataset.v; setSeg(); draw() } };
+        $("reset").onclick = function () { ["qTruck", "qLoc", "qDate"].forEach(function (i) { $(i).value = "" }); $("sort").value = ""; statV = ""; setSeg(); draw() };
+        function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); $("darkLbl").textContent = t == "dark" ? "Light mode" : "Dark mode" }
+        var th = ""; try { th = localStorage.getItem("ph_theme") || "" } catch (e) { }
+        applyTheme(th || "light");
+        $("dark").onclick = function () { var t = document.documentElement.getAttribute("data-theme") == "dark" ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("ph_theme", t) } catch (e) { } };
+        $("today").textContent = "Today, " + fmt(now);
+        draw(); reload().catch(function (x) { say("Could not load trucks: " + esc(x.message), true) });
+    </script>
 </body>
 </html>
