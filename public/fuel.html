@@ -1,52 +1,61 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Fleet Fuel Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professional Hauliers - Fuel Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            box-sizing: border-box;
-            padding-top: env(safe-area-inset-top,0px);
-            padding-bottom: env(safe-area-inset-bottom,0px);
-            --bg: #f4f6f8;
+            --bg: #f8f7f3;
             --card: #fff;
-            --text: #1b2430;
-            --muted: #6b7785;
-            --line: #dde3ea;
-            --accent: #d9480f;
-            --head: #1b2430;
-            --headtext: #fff
+            --ink: #14130f;
+            --mute: #6b6a63;
+            --mute2: #a3a29a;
+            --line: #e8e6df;
+            --soft: #f3f2ed;
+            --yel: #fbbf24;
+            --yink: #1c1400;
+            --ybg: #fef3c7;
+            --yfg: #92400e;
+            --ydot: #f59e0b;
+            --gbg: #dcfce7;
+            --gfg: #15803d;
+            --obg: #ffedd5;
+            --ofg: #c2410c;
+            --rbg: #fee2e2;
+            --rfg: #b91c1c;
+            --red: #e5483d;
+            --org: #f97316;
+            --grn: #22a55b;
+            --side: #111110;
+            --sideline: #262623;
+            --sideink: #a8a79f;
+            --card2: #1c1c1a
         }
 
-        @media (prefers-color-scheme:dark) {
-            :root:not([data-theme="light"]) {
-                --bg: #12171d;
-                --card: #1b232c;
-                --text: #e8edf2;
-                --muted: #93a0ad;
-                --line: #2d3844;
-                --accent: #ff8a4c;
-                --head: #0d1217;
-                --headtext: #e8edf2
+            :root[data-theme="dark"] {
+                --bg: #0c0c0b;
+                --card: #171715;
+                --ink: #f4f3ee;
+                --mute: #9a998f;
+                --mute2: #6d6c64;
+                --line: #2a2a27;
+                --soft: #1f1f1c;
+                --side: #070706;
+                --sideline: #22221f;
+                --ybg: #3a2d08;
+                --yfg: #fcd34d;
+                --gbg: #123524;
+                --gfg: #86efac;
+                --obg: #47290c;
+                --ofg: #fdba74;
+                --rbg: #4a1a1a;
+                --rfg: #fca5a5
             }
-        }
-
-        :root[data-theme="dark"] {
-            --bg: #12171d;
-            --card: #1b232c;
-            --text: #e8edf2;
-            --muted: #93a0ad;
-            --line: #2d3844;
-            --accent: #ff8a4c;
-            --head: #0d1217;
-            --headtext: #e8edf2
-        }
-
-        html {
-            scroll-padding-top: env(safe-area-inset-top,0px)
-        }
 
         * {
             box-sizing: border-box
@@ -55,301 +64,1148 @@
         body {
             margin: 0;
             background: var(--bg);
-            color: var(--text);
-            font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif
+            color: var(--ink);
+            font: 15px/1.45 "Inter","Segoe UI",system-ui,sans-serif
         }
 
-        .wrap {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px 16px 40px
+        .ic {
+            width: 18px;
+            height: 18px;
+            flex: none
         }
 
-        h1 {
-            font-size: 1.4rem;
-            margin: 0 0 4px
-        }
-
-        .sub {
-            color: var(--muted);
-            margin: 0 0 18px;
-            font-size: .9rem
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 16px
-        }
-
-        form {
+        .app {
             display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-            gap: 12px;
-            align-items: end
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh
         }
 
-        label {
+        .side {
+            background: var(--side);
+            color: var(--sideink);
+            padding: 22px 16px;
             display: flex;
             flex-direction: column;
-            font-size: .78rem;
-            color: var(--muted);
+            position: sticky;
+            top: 0;
+            height: 100vh
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            background: none;
+            border: 0;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 12px;
+            font-family: inherit
+        }
+
+            .brand:hover {
+                background: #1a1a18
+            }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--yel);
+            color: var(--yink);
+            display: grid;
+            place-items: center;
+            flex: none
+        }
+
+            .logo .ic {
+                width: 22px;
+                height: 22px
+            }
+
+        .bt {
+            flex: 1;
+            min-width: 0
+        }
+
+            .bt b {
+                display: block;
+                color: #fff;
+                font-size: 13.5px;
+                line-height: 1.15;
+                letter-spacing: .04em;
+                font-weight: 800
+            }
+
+            .bt small {
+                font-size: 12px;
+                color: #8d8c84
+            }
+
+        .brand > .ic {
+            color: #8d8c84;
+            transition: transform .2s
+        }
+
+        .brand[aria-expanded="true"] > .ic {
+            transform: rotate(180deg)
+        }
+
+        .menu {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            top: 84px;
+            background: var(--card2);
+            border: 1px solid #2e2e2a;
+            border-radius: 14px;
+            padding: 8px;
+            z-index: 40;
+            box-shadow: 0 18px 40px rgba(0,0,0,.45)
+        }
+
+            .menu[hidden] {
+                display: none
+            }
+
+        .mh, .sec {
+            font-size: 11.5px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #77766e;
+            padding: 8px 10px 6px;
+            font-weight: 600
+        }
+
+        .mi, .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--sideink);
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 11px;
+            font-weight: 500
+        }
+
+            .mi:hover, .nav a:hover {
+                background: #1c1c1a;
+                color: #fff
+            }
+
+            .mi small {
+                display: block;
+                font-size: 12px;
+                color: #77766e;
+                font-weight: 400
+            }
+
+            .mi.on, .nav a.on {
+                background: var(--yel);
+                color: var(--yink)
+            }
+
+                .mi.on small {
+                    color: #5c4400
+                }
+
+            .mi.soon, .nav a.soon {
+                opacity: .6;
+                pointer-events: none
+            }
+
+        .tag {
+            margin-left: auto;
+            font-size: 11px;
+            letter-spacing: .08em;
+            border: 1px solid #33332f;
+            border-radius: 99px;
+            padding: 3px 10px;
+            color: #8d8c84
+        }
+
+        .nav {
+            margin-top: 22px;
+            display: flex;
+            flex-direction: column;
             gap: 4px
         }
 
-        input {
-            padding: 9px;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            background: var(--bg);
-            color: var(--text);
-            font-size: .95rem;
-            width: 100%
+        .sf {
+            margin-top: auto;
+            border-top: 1px solid var(--sideline);
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px
         }
 
-        button {
-            padding: 9px 14px;
+        .dark {
+            background: none;
             border: 0;
-            border-radius: 6px;
-            background: var(--accent);
-            color: #fff;
-            font-weight: 600;
+            color: var(--sideink);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 11px;
             cursor: pointer;
-            font-size: .9rem
+            font: 500 15px inherit;
+            font-family: inherit;
+            text-align: left
         }
 
-            button.ghost {
-                background: transparent;
-                color: var(--text);
-                border: 1px solid var(--line)
+            .dark:hover {
+                background: #1c1c1a;
+                color: #fff
             }
 
-            button.del {
-                background: transparent;
-                color: var(--muted);
-                padding: 4px 8px;
-                border: 0;
-                font-size: 1rem
+        .user {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 12px
+        }
+
+            .user i {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #262623;
+                color: #fff;
+                display: grid;
+                place-items: center;
+                font: 600 13px inherit;
+                font-style: normal
             }
+
+            .user b {
+                display: block;
+                color: #fff;
+                font-size: 14.5px;
+                line-height: 1.2
+            }
+
+            .user small {
+                font-size: 12.5px;
+                color: #77766e
+            }
+
+        .main {
+            min-width: 0
+        }
+
+        .head {
+            padding: 30px 40px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap
+        }
+
+        .eye {
+            font-size: 13px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--mute);
+            font-weight: 500
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 38px;
+            line-height: 1.1;
+            letter-spacing: -.025em;
+            font-weight: 800
+        }
+
+        .today {
+            font-size: 15px;
+            color: var(--mute);
+            font-weight: 500;
+            margin: 0 0 10px
+        }
+
+        .head p {
+            margin: 0;
+            color: var(--mute);
+            max-width: 640px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font: 600 14px inherit;
+            font-family: inherit;
+            padding: 10px 15px;
+            border-radius: 11px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            color: var(--ink);
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+            .btn:hover {
+                background: var(--soft)
+            }
+
+            .btn.pri {
+                background: var(--yel);
+                border-color: var(--yel);
+                color: var(--yink);
+                padding: 12px 20px;
+                font-weight: 700
+            }
+
+                .btn.pri:hover {
+                    filter: brightness(.96)
+                }
+
+        button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+            outline: 3px solid var(--yel);
+            outline-offset: 2px
+        }
+
+        .body {
+            padding: 28px 40px 44px;
+            max-width: 1500px
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(5,1fr);
+            gap: 16px;
+            margin-bottom: 18px
+        }
+
+        .k {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px 22px
+        }
+
+        .kh {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--mute)
+        }
+
+        .chip {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--soft);
+            color: var(--mute)
+        }
+
+            .chip.y {
+                background: var(--ybg);
+                color: var(--yfg)
+            }
+
+            .chip.g {
+                background: var(--gbg);
+                color: var(--gfg)
+            }
+
+        .k b {
+            display: block;
+            font-size: 40px;
+            line-height: 1;
+            margin: 18px 0 12px;
+            letter-spacing: -.03em;
+            font-weight: 800
+        }
+
+        .k span {
+            color: var(--mute);
+            font-size: 14px
+        }
+
+        .util {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 22px
+        }
+
+            .util b {
+                display: block;
+                line-height: 1.2
+            }
+
+            .util small {
+                color: var(--mute);
+                font-size: 14px
+            }
+
+        .track {
+            flex: 1;
+            height: 10px;
+            background: var(--soft);
+            border-radius: 99px;
+            overflow: hidden
+        }
+
+            .track div {
+                height: 100%;
+                width: 0;
+                background: var(--yel);
+                border-radius: 99px;
+                transition: width .5s
+            }
+
+        .util strong {
+            font-size: 17px;
+            min-width: 48px;
+            text-align: right
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            overflow: hidden
+        }
+
+        .ph {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 10px;
+            padding: 0 24px 0 24px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .tabs {
+            display: flex
+        }
+
+            .tabs button {
+                border: 0;
+                background: none;
+                color: var(--mute);
+                font: 600 15px inherit;
+                font-family: inherit;
+                padding: 20px 22px;
+                border-bottom: 3px solid transparent;
+                cursor: pointer;
+                margin-bottom: -1px
+            }
+
+                .tabs button span {
+                    margin-left: 8px;
+                    font-size: 13px;
+                    background: var(--soft);
+                    padding: 2px 9px;
+                    border-radius: 99px;
+                    color: var(--mute)
+                }
+
+                .tabs button[aria-selected="true"] {
+                    color: var(--ink);
+                    border-color: var(--yel)
+                }
 
         .bar {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            align-items: center;
-            margin-bottom: 12px
-        }
-
-            .bar .grow {
-                flex: 1;
-                min-width: 140px
-            }
-
-        .stats {
-            display: flex;
-            gap: 20px;
-            color: var(--muted);
-            font-size: .85rem;
-            margin-left: auto
-        }
-
-            .stats b {
-                color: var(--text)
-            }
-
-        .scroll {
-            overflow-x: auto
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 640px
-        }
-
-        thead th {
-            background: var(--head);
-            color: var(--headtext);
-            text-align: left;
-            padding: 10px;
-            font-size: .8rem;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-            position: sticky;
-            top: 0
-        }
-
-        td {
-            padding: 10px;
-            border-bottom: 1px solid var(--line);
-            font-size: .92rem
-        }
-
-            td.id {
-                font-family: ui-monospace,Menlo,monospace;
-                color: var(--accent);
-                font-weight: 600
-            }
-
-            td.num {
-                text-align: right
-            }
-
-        th.num {
-            text-align: right
-        }
-
-        .bar input[type=date] {
-            width: auto
-        }
-
-        .bar select {
-            padding: 9px;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            background: var(--bg);
-            color: var(--text);
-            font-size: .9rem
-        }
-
-        .sumbox {
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            margin-bottom: 14px;
-            overflow: hidden
-        }
-
-        .sumtitle {
-            padding: 8px 10px;
-            font-size: .78rem;
-            font-weight: 600;
-            color: var(--muted)
-        }
-
-        .sumbox thead th {
-            position: static;
-            background: var(--bg);
-            color: var(--muted)
-        }
-
-        .empty {
-            padding: 28px;
-            text-align: center;
-            color: var(--muted)
+            padding: 14px 0
         }
 
         .msg {
-            font-size: .82rem;
-            color: var(--muted);
-            margin-top: 8px
+            margin: 14px 24px 0;
+            background: var(--gbg);
+            color: var(--gfg);
+            border-radius: 12px;
+            padding: 11px 15px;
+            font-size: 14px
+        }
+
+            .msg.err {
+                background: var(--rbg);
+                color: var(--rfg)
+            }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: flex-end;
+            padding: 20px 24px
+        }
+
+            .tools > label {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                font-size: 13.5px;
+                font-weight: 500;
+                flex: 1 1 170px
+            }
+
+            .tools .seg, .tools .rst {
+                flex: none
+            }
+
+        .inp {
+            position: relative
+        }
+
+            .inp .ic {
+                position: absolute;
+                left: 13px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--mute);
+                width: 17px;
+                height: 17px
+            }
+
+            .inp input {
+                padding-left: 40px !important
+            }
+
+        .tools input, .tools select, dialog input, dialog select {
+            font: inherit;
+            font-size: 14.5px;
+            padding: 11px 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--ink);
+            width: 100%
+        }
+
+        .seg {
+            display: inline-flex;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 3px
+        }
+
+            .seg button {
+                border: 0;
+                background: none;
+                font: 600 14.5px inherit;
+                font-family: inherit;
+                color: var(--mute);
+                padding: 8px 16px;
+                border-radius: 9px;
+                cursor: pointer
+            }
+
+                .seg button.on {
+                    background: var(--card);
+                    color: var(--ink);
+                    box-shadow: 0 1px 3px rgba(0,0,0,.12)
+                }
+
+        .rst {
+            background: none;
+            border: 0;
+            color: var(--mute);
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            font: 500 14.5px inherit;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 11px 12px
+        }
+
+        .scroll {
+            overflow: auto;
+            max-height: 66vh;
+            border-top: 1px solid var(--line)
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            min-width: 1180px
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: var(--soft);
+            text-align: left;
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--mute);
+            font-weight: 600;
+            padding: 16px 14px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        td {
+            padding: 16px 14px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle
+        }
+
+            td:first-child, th:first-child {
+                padding-left: 20px
+            }
+
+        tr:hover td {
+            background: var(--soft)
+        }
+
+        tr.r td:first-child {
+            box-shadow: inset 4px 0 0 var(--red)
+        }
+
+        tr.o td:first-child {
+            box-shadow: inset 4px 0 0 var(--org)
+        }
+
+        tr.g td:first-child {
+            box-shadow: inset 4px 0 0 var(--grn)
+        }
+
+        .horse {
+            font: 700 15px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            letter-spacing: .02em
+        }
+
+        .sub {
+            font-size: 12px;
+            color: var(--mute)
+        }
+
+        .mono {
+            font-family: ui-monospace,Menlo,Consolas,monospace
+        }
+
+        .dash {
+            color: var(--mute2)
+        }
+
+        td.rem {
+            color: var(--mute);
+            min-width: 150px;
+            max-width: 200px
+        }
+
+        .st {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 13.5px
+        }
+
+            .st i {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: currentColor
+            }
+
+            .st.ld {
+                background: var(--ybg);
+                color: var(--yfg)
+            }
+
+                .st.ld i {
+                    background: var(--ydot)
+                }
+
+            .st.em {
+                background: var(--soft);
+                color: var(--mute)
+            }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 11px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 13.5px;
+            background: var(--soft);
+            color: var(--mute);
+            border: 1px solid transparent;
+            white-space: nowrap
+        }
+
+        tr.L.w .pill {
+            background: var(--card);
+            border-color: var(--line);
+            color: var(--ink)
+        }
+
+        tr.g .pill {
+            background: var(--gbg);
+            color: var(--gfg);
+            border-color: var(--grn)
+        }
+
+        tr.o .pill {
+            background: var(--obg);
+            color: var(--ofg);
+            border-color: var(--org)
+        }
+
+        tr.r .pill {
+            background: var(--rbg);
+            color: var(--rfg);
+            border-color: var(--red)
+        }
+
+        td.act {
+            white-space: nowrap
+        }
+
+            td.act button {
+                font: 600 13px inherit;
+                font-family: inherit;
+                margin-right: 6px;
+                padding: 6px 12px;
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                background: var(--card);
+                color: var(--ink);
+                cursor: pointer
+            }
+
+                td.act button[data-d] {
+                    color: var(--rfg)
+                }
+
+        .empty {
+            padding: 48px;
+            text-align: center;
+            color: var(--mute)
+        }
+
+        .foot {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--line);
+            font-size: 14px;
+            color: var(--mute)
+        }
+
+        .lg {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+            .lg span {
+                padding: 3px 12px;
+                border-radius: 99px;
+                font-weight: 600;
+                font-size: 13px;
+                border: 1px solid var(--line);
+                color: var(--ink)
+            }
+
+            .lg .g {
+                background: var(--gbg);
+                color: var(--gfg);
+                border-color: var(--grn)
+            }
+
+            .lg .o {
+                background: var(--obg);
+                color: var(--ofg);
+                border-color: var(--org)
+            }
+
+            .lg .r {
+                background: var(--rbg);
+                color: var(--rfg);
+                border-color: var(--red)
+            }
+
+        dialog {
+            border: 0;
+            border-radius: 20px;
+            background: var(--card);
+            color: var(--ink);
+            width: min(660px,94vw);
+            padding: 26px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.35)
+        }
+
+            dialog::backdrop {
+                background: #0009
+            }
+
+            dialog h2 {
+                margin: 0 0 16px;
+                font-size: 20px
+            }
+
+            dialog label {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--mute)
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+
+        .wide {
+            grid-column: 1/-1
+        }
+
+        .acts {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px
+        }
+
+        @media(max-width:1200px) {
+            .kpis {
+                grid-template-columns: repeat(3,1fr)
+            }
+        }
+
+        @media(max-width:860px) {
+            .app {
+                grid-template-columns: 1fr
+            }
+
+            .side {
+                position: relative;
+                height: auto;
+                flex-direction: row;
+                align-items: center;
+                padding: 10px 14px;
+                gap: 8px
+            }
+
+            .brand {
+                width: auto;
+                flex: 1
+            }
+
+            .nav, .user, .sf {
+                display: none
+            }
+
+            .menu {
+                top: 72px
+            }
+
+            .head, .body {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            h1 {
+                font-size: 28px
+            }
+
+            .kpis {
+                grid-template-columns: repeat(2,1fr)
+            }
+
+            .ph {
+                padding: 0 12px
+            }
+
+            .tabs button {
+                padding: 16px 12px
+            }
+
+            .tools {
+                padding: 16px 14px
+            }
+        }
+
+        @media(max-width:520px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .kpis.k3 {
+            grid-template-columns: repeat(3,1fr)
+        }
+
+        .stp {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 13px;
+            padding: 2px 11px;
+            border-radius: 99px;
+            background: var(--soft);
+            color: var(--mute)
+        }
+
+            .stp:empty {
+                display: none
+            }
+
+        .sec2 {
+            padding: 20px 24px 0
+        }
+
+            .sec2 h2 {
+                margin: 0;
+                font-size: 17px
+            }
+
+        .fgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(170px,1fr));
+            gap: 14px;
+            align-items: end;
+            padding: 16px 24px 8px
+        }
+
+            .fgrid label {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                font-size: 13.5px;
+                font-weight: 500;
+                color: var(--mute)
+            }
+
+            .fgrid input:not([type=checkbox]), .tools2 input, .tools2 select {
+                font: inherit;
+                font-size: 14.5px;
+                padding: 11px 14px;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                background: var(--card);
+                color: var(--ink);
+                width: 100%
+            }
+
+            .fgrid label.chk {
+                flex-direction: row;
+                align-items: center;
+                gap: 9px;
+                color: var(--ink)
+            }
+
+                .fgrid label.chk input {
+                    width: 18px;
+                    height: 18px;
+                    accent-color: var(--yel)
+                }
+
+        .fbtns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .note {
+            padding: 6px 24px 20px;
+            font-size: 13px;
+            color: var(--mute)
+        }
+
+        .tools2 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding: 20px 24px 8px
+        }
+
+            .tools2 .grow {
+                flex: 1 1 280px;
+                width: auto
+            }
+
+            .tools2 input[type=date], .tools2 select {
+                width: auto
+            }
+
+        .sumtitle {
+            padding: 16px 24px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--mute);
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        td.id {
+            font: 600 12.5px ui-monospace,Menlo,Consolas,monospace;
+            color: var(--ink)
+        }
+
+        td.num, th.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums
+        }
+
+        .panel button.del {
+            padding: 5px 11px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--card);
+            color: var(--mute);
+            margin-right: 6px;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+            .panel button.del:hover {
+                color: var(--rfg);
+                border-color: var(--red)
+            }
+
+        @media(max-width:700px) {
+            .kpis.k3 {
+                grid-template-columns: 1fr
+            }
+
+            .fgrid, .tools2, .sec2, .sumtitle, .note {
+                padding-left: 14px;
+                padding-right: 14px
+            }
         }
     </style>
 </head>
 <body>
-    <div class="wrap">
-        <a href="/fleet">Fleet Management</a>
-        <h1>⛽ Fleet Fuel Manager</h1>
-        <p class="sub">Enter a date and trip number, and a unique ID is generated automatically. <span id="st"></span></p>
-
-        <div class="card">
-            <form id="f">
-                <label>Date<input type="date" id="date" required></label>
-                <label>Trip Number<input id="trip" required placeholder="e.g. T-1024"></label>
-                <label>Odometer (km) – optional<input id="odo" type="number" min="0" step="1" placeholder="optional"></label>
-                <label>Truck No<input id="truck" required placeholder="e.g. ABC 1234"></label>
-                <label>Given Fuel (L)<input id="fuel" type="number" min="0" step="0.01" required></label>
-                <label>Location<input id="loc" required placeholder="e.g. Lusaka"></label>
-
-                <label style="flex-direction:row;align-items:center;gap:6px;color:var(--text)">
-                    <input type="checkbox" id="keep" checked style="width:auto">
-                    Keep trip number after saving
-                </label>
-
-                <button type="submit" id="sub">Add record</button>
-                <button type="button" class="ghost" id="cancel" hidden>Cancel</button>
-            </form>
-
-            <div class="msg">
-                Or upload a CSV with columns: Date, Trip Number, Odometer (optional), Truck No, Given Fuel, Location.
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></symbol>
+            <symbol id="i-fuel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17" /><path d="M3 22h12" /><path d="M15 9h2a2 2 0 0 1 2 2v5a2 2 0 0 0 4 0V8l-3-3" /><rect x="6" y="7" width="6" height="4" /></symbol>
+            <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></symbol>
+            <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></symbol>
+            <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4" /><path d="M3.34 19a10 10 0 1 1 17.32 0" /></symbol>
+            <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></symbol>
+            <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></symbol>
+            <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></symbol>
+            <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></symbol>
+            <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
+            <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></symbol>
+            <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></symbol>
+        </defs>
+    </svg>
+    <div class="app">
+        <aside class="side">
+            <button class="brand" id="brand" aria-haspopup="menu" aria-expanded="false" aria-controls="menu">
+                <span class="logo"><svg class="ic"><use href="#i-truck" /></svg></span>
+                <span class="bt"><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span>
+                <svg class="ic"><use href="#i-chev" /></svg>
+            </button>
+            <div class="menu" id="menu" role="menu" hidden></div>
+            <nav class="nav" id="nav" aria-label="Modules"></nav>
+            <div class="sf">
+                <button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button>
+                <div class="user"><i>OP</i><div><b>Operations desk</b><small>Password protected</small></div></div>
             </div>
-        </div>
-
-        <div class="card">
-            <div class="bar">
-                <input class="grow" id="q" placeholder="Search trip no, truck no, location… (searches all records)">
-                <input type="date" id="from" title="From date">
-                <input type="date" id="to" title="To date">
-
-                <select id="win" title="How much history to load">
-                    <option value="all" selected>All records</option>
-                    <option value="30">Last 30 days</option>
-                    <option value="90">Last 90 days</option>
-                    <option value="365">Last year</option>
-                </select>
-
-                <button class="ghost" id="up">Upload CSV</button>
-                <button class="ghost" id="ex">Export CSV</button>
-                <button class="ghost" id="bk" title="Download a full backup of all records">Backup</button>
-
-                <!--<button class="ghost" id="rs" title="Restore from a backup file">Restore</button>
-            <button class="ghost" id="clr">Clear all</button> -->
-
-                <input type="file" id="bfile" accept=".json,application/json" hidden>
-                <input type="file" id="file" accept=".csv,text/csv" hidden>
-
-                <div class="stats">
-                    <span>Entries: <b id="n">0</b></span>
-                    <span>Trips: <b id="trips">0</b></span>
-                    <span>Total fuel: <b id="tot">0</b> L</span>
+        </aside>
+        <main class="main">
+            <header class="head">
+                <div>
+                    <h1>Fuel Management</h1>
+                    <div class="today" id="today"></div>
+                    <p>Enter a date and trip number, and a unique ID is generated automatically. <span id="st" class="stp"></span></p>
                 </div>
-            </div>
+            </header>
+            <div class="body">
+                <section class="kpis k3" aria-label="Fuel summary">
+                    <div class="k"><div class="kh">Entries<span class="chip y"><svg class="ic"><use href="#i-file" /></svg></span></div><b id="n">0</b><span>Fuel records listed</span></div>
+                    <div class="k"><div class="kh">Trips<span class="chip"><svg class="ic"><use href="#i-gauge" /></svg></span></div><b id="trips">0</b><span>Trip and truck groups</span></div>
+                    <div class="k"><div class="kh">Total fuel<span class="chip g"><svg class="ic"><use href="#i-fuel" /></svg></span></div><b id="tot">0</b><span>Litres</span></div>
+                </section>
 
-            <div class="sumbox">
-                <div class="sumtitle">
-                    Summary by trip &amp; truck (each fuel given is one entry)
-                </div>
+                <section class="panel" style="margin-bottom:22px">
+                    <div class="sec2"><h2>Add fuel record</h2></div>
+                    <form id="f" class="fgrid">
+                        <label>Date<input type="date" id="date" required></label>
+                        <label>Trip Number<input id="trip" required placeholder="e.g. T-1024"></label>
+                        <label>Odometer (km) – optional<input id="odo" type="number" min="0" step="1" placeholder="optional"></label>
+                        <label>Truck No<input id="truck" required placeholder="e.g. ABC 1234"></label>
+                        <label>Given Fuel (L)<input id="fuel" type="number" min="0" step="0.01" required></label>
+                        <label>Location<input id="loc" required placeholder="e.g. Lusaka"></label>
+                        <label class="chk"><input type="checkbox" id="keep" checked>Keep trip number after saving</label>
+                        <div class="fbtns"><button type="submit" id="sub" class="btn pri">Add record</button><button type="button" class="btn" id="cancel" hidden>Cancel</button></div>
+                    </form>
+                    <div class="note">Or upload a CSV with columns: Date, Trip Number, Odometer (optional), Truck No, Given Fuel, Location.</div>
+                </section>
 
-                <div class="scroll" style="max-height:220px">
-                    <table style="min-width:520px">
-                        <thead>
-                            <tr>
-                                <th>Trip Number</th>
-                                <th>Truck No</th>
-                                <th class="num">Fuel entries</th>
-                                <th class="num">Total fuel (L)</th>
-                                <th class="num">Latest Odometer (km)</th>
-                                <th>Date(s)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sumrows"></tbody>
-                    </table>
-                </div>
-            </div>
+                <section class="panel">
+                    <div class="tools2">
+                        <input class="grow" id="q" placeholder="Search trip no, truck no, location… (searches all records)">
+                        <input type="date" id="from" title="From date">
+                        <input type="date" id="to" title="To date">
+                        <select id="win" title="How much history to load">
+                            <option value="all" selected>All records</option>
+                            <option value="30">Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                        </select>
+                        <button class="btn" id="up"><svg class="ic"><use href="#i-up" /></svg>Upload CSV</button>
+                        <button class="btn" id="ex"><svg class="ic"><use href="#i-down" /></svg>Export CSV</button>
+                        <button class="btn" id="bk" title="Download a full backup of all records"><svg class="ic"><use href="#i-file" /></svg>Backup</button>
 
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Unique ID</th>
-                            <th>Date</th>
-                            <th>Trip Number</th>
-                            <th class="num">Odometer (km)</th>
-                            <th>Truck No</th>
-                            <th class="num">Given Fuel (L)</th>
-                            <th>Location</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="rows"></tbody>
-                </table>
-            </div>
+                        <!--<button class="btn" id="rs" title="Restore from a backup file">Restore</button>
+                        <button class="btn" id="clr">Clear all</button> -->
 
-            <div class="empty" id="empty">
-                No records yet. Add one above or upload a CSV.
+                        <input type="file" id="bfile" accept=".json,application/json" hidden>
+                        <input type="file" id="file" accept=".csv,text/csv" hidden>
+                    </div>
+
+                    <div class="sumtitle">Summary by trip &amp; truck (each fuel given is one entry)</div>
+                    <div class="scroll" style="max-height:220px">
+                        <table style="min-width:640px">
+                            <thead><tr><th>Trip Number</th><th>Truck No</th><th class="num">Fuel entries</th><th class="num">Total fuel (L)</th><th class="num">Latest Odometer (km)</th><th>Date(s)</th></tr></thead>
+                            <tbody id="sumrows"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="sumtitle" style="margin-top:6px">All fuel records</div>
+                    <div class="scroll">
+                        <table style="min-width:900px">
+                            <thead><tr><th>Unique ID</th><th>Date</th><th>Trip Number</th><th class="num">Odometer (km)</th><th>Truck No</th><th class="num">Given Fuel (L)</th><th>Location</th><th></th></tr></thead>
+                            <tbody id="rows"></tbody>
+                        </table>
+                    </div>
+                    <div class="empty" id="empty">No records yet. Add one above or upload a CSV.</div>
+                </section>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
@@ -362,13 +1218,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: b === undefined ? undefined : JSON.stringify(b)
             });
-
             const j = await r.json().catch(() => ({}));
-
             if (!r.ok) {
                 throw new Error(j.error || ('Server error ' + r.status));
             }
-
             return j;
         }
 
@@ -378,89 +1231,55 @@
 
         function sinceDate() {
             const w = $('win').value;
-
             let s = null;
-
             if (w !== 'all') {
                 const d = new Date();
                 d.setDate(d.getDate() - parseInt(w));
                 s = d.toISOString().slice(0, 10);
             }
-
             const f = $('from').value;
-
             if (f && s && f < s) {
                 s = f;
             }
-
             if (f && !s) {
                 s = f;
             }
-
             return s;
         }
 
         async function load() {
             try {
                 const s = sinceDate();
-
-                data = await api(
-                    'GET',
-                    '/api/records' + (s ? '?since=' + s : '')
-                );
-
-                status(
-                    true,
-                    'Connected · ' +
-                    data.length +
-                    ' records loaded (' +
-                    $('win').selectedOptions[0].text.toLowerCase() +
-                    ') · ' +
-                    new Date().toLocaleTimeString()
-                );
-
+                data = await api('GET', '/api/records' + (s ? '?since=' + s : ''));
+                status(true, 'Connected · ' + data.length + ' records loaded (' + $('win').selectedOptions[0].text.toLowerCase() + ') · ' + new Date().toLocaleTimeString());
             } catch (e) {
                 status(false, 'Cannot reach server: ' + e.message);
             }
-
             render();
         }
 
         async function run(fn) {
             try {
                 await fn();
-
                 allData = null;
-
                 await load();
-
                 if ($('q').value.trim()) {
                     await ensureAll();
                     render();
                 }
-
             } catch (e) {
                 alert(e.message);
             }
         }
 
         function esc(s) {
-            return String(s).replace(
-                /[&<>"]/g,
-                c => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;'
-                }[c])
-            );
+            return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
         }
 
         let allData = null, allAt = 0;
 
         async function ensureAll() {
             if (allData && Date.now() - allAt < 30000) return;
-
             allData = await api('GET', '/api/records');
             allAt = Date.now();
         }
@@ -469,17 +1288,13 @@
             const q = $('q').value.trim().toLowerCase();
             const from = $('from').value;
             const to = $('to').value;
-
             const toks = q.split(/\s+/).filter(Boolean);
 
             const list = (q && allData ? allData : data).filter(
                 r =>
                     (!toks.length ||
                         toks.every(t =>
-                            [r.id, r.trip, r.truck, r.loc, r.date]
-                                .join(' ')
-                                .toLowerCase()
-                                .includes(t)
+                            [r.id, r.trip, r.truck, r.loc, r.date].join(' ').toLowerCase().includes(t)
                         )
                     ) &&
                     (!from || r.date >= from) &&
@@ -490,72 +1305,33 @@
                 .slice()
                 .reverse()
                 .map(r => `
-                        <tr>
-                            <td class="id">${esc(r.id)}</td>
-                            <td>${esc(r.date)}</td>
-                            <td>${esc(r.trip)}</td>
-                            <td class="num">
-                                ${r.odo === '' || r.odo == null
-                        ? '—'
-                        : Number(r.odo).toLocaleString()
-                    }
-                            </td>
-                            <td>${esc(r.truck)}</td>
-                            <td class="num">
-                                ${Number(r.fuel).toLocaleString(undefined, {
-                        maximumFractionDigits: 2
-                    })
-                    }
-                            </td>
-                            <td>${esc(r.loc)}</td>
-                            <td style="white-space:nowrap">
-                                <button
-                                    class="del"
-                                    title="Edit"
-                                    onclick="edit('${r.id}')"
-                                >✎</button>
-
-                                <button
-                                    class="del"
-                                    title="Delete"
-                                    onclick="del('${r.id}')"
-                                >✕</button>
-                            </td>
-                        </tr>
-                    `)
+                            <tr>
+                                <td class="id">${esc(r.id)}</td>
+                                <td>${esc(r.date)}</td>
+                                <td>${esc(r.trip)}</td>
+                                <td class="num">${r.odo === '' || r.odo == null ? '—' : Number(r.odo).toLocaleString()}</td>
+                                <td>${esc(r.truck)}</td>
+                                <td class="num">${Number(r.fuel).toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                                <td>${esc(r.loc)}</td>
+                                <td style="white-space:nowrap">
+                                    <button class="del" title="Edit" onclick="edit('${r.id}')">✎</button>
+                                    <button class="del" title="Delete" onclick="del('${r.id}')">✕</button>
+                                </td>
+                            </tr>
+                        `)
                 .join('');
 
             const g = {};
 
             list.forEach(r => {
-                const k =
-                    r.trip.toLowerCase() +
-                    '|' +
-                    r.truck.toLowerCase();
-
-                const x =
-                    g[k] =
-                    g[k] || {
-                        trip: r.trip,
-                        truck: r.truck,
-                        n: 0,
-                        fuel: 0,
-                        odo: '',
-                        odoDate: '',
-                        odoId: '',
-                        d1: r.date,
-                        d2: r.date
-                    };
+                const k = r.trip.toLowerCase() + '|' + r.truck.toLowerCase();
+                const x = g[k] = g[k] || { trip: r.trip, truck: r.truck, n: 0, fuel: 0, odo: '', odoDate: '', odoId: '', d1: r.date, d2: r.date };
 
                 x.n++;
                 x.fuel += Number(r.fuel || 0);
 
                 if (r.odo !== '' && r.odo != null && isFinite(Number(r.odo))) {
-                    if (
-                        x.odo === '' ||
-                        r.date > x.odoDate ||
-                        (r.date === x.odoDate && String(r.id) > String(x.odoId))
-                    ) {
+                    if (x.odo === '' || r.date > x.odoDate || (r.date === x.odoDate && String(r.id) > String(x.odoId))) {
                         x.odo = Number(r.odo);
                         x.odoDate = r.date;
                         x.odoId = r.id;
@@ -566,95 +1342,42 @@
                 if (r.date > x.d2) x.d2 = r.date;
             });
 
-            const gs = Object.values(g).sort(
-                (a, b) => b.d2.localeCompare(a.d2)
-            );
+            const gs = Object.values(g).sort((a, b) => b.d2.localeCompare(a.d2));
 
             $('sumrows').innerHTML = gs.length
-                ? gs
-                    .map(x => `
-                            <tr>
-                                <td>${esc(x.trip)}</td>
-                                <td>${esc(x.truck)}</td>
-                                <td class="num">${x.n}</td>
-                                <td class="num">
-                                    ${x.fuel.toLocaleString(undefined, {
-                        maximumFractionDigits: 2
-                    })
-                        }
-                                </td>
-                                <td class="num">
-                                    ${x.odo === ''
-                            ? '—'
-                            : x.odo.toLocaleString()
-                        }
-                                </td>
-                                <td>
-                                    ${x.d1 === x.d2
-                            ? x.d1
-                            : x.d1 + ' → ' + x.d2
-                        }
-                                </td>
-                            </tr>
-                        `)
-                    .join('')
-                : `
-                        <tr>
-                            <td
-                                colspan="6"
-                                style="color:var(--muted);text-align:center"
-                            >
-                                No data
-                            </td>
-                        </tr>
-                    `;
+                ? gs.map(x => `
+                                <tr>
+                                    <td>${esc(x.trip)}</td>
+                                    <td>${esc(x.truck)}</td>
+                                    <td class="num">${x.n}</td>
+                                    <td class="num">${x.fuel.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                                    <td class="num">${x.odo === '' ? '—' : x.odo.toLocaleString()}</td>
+                                    <td>${x.d1 === x.d2 ? x.d1 : x.d1 + ' → ' + x.d2}</td>
+                                </tr>
+                            `).join('')
+                : `<tr><td colspan="6" style="color:var(--mute);text-align:center">No data</td></tr>`;
 
             $('trips').textContent = gs.length;
-
-            $('empty').style.display =
-                list.length ? 'none' : 'block';
-
+            $('empty').style.display = list.length ? 'none' : 'block';
             $('n').textContent = list.length;
-
-            $('tot').textContent =
-                list
-                    .reduce(
-                        (s, r) => s + Number(r.fuel || 0),
-                        0
-                    )
-                    .toLocaleString(undefined, {
-                        maximumFractionDigits: 2
-                    });
+            $('tot').textContent = list.reduce((s, r) => s + Number(r.fuel || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
         }
 
         function del(id) {
             if (!confirm('Delete record ' + id + '?')) return;
-
             if (editing === id) {
                 resetForm();
             }
-
-            run(() =>
-                api(
-                    'DELETE',
-                    '/api/records/' +
-                    encodeURIComponent(id)
-                )
-            );
+            run(() => api('DELETE', '/api/records/' + encodeURIComponent(id)));
         }
 
-        $('date').value =
-            new Date().toISOString().slice(0, 10);
+        $('date').value = new Date().toISOString().slice(0, 10);
 
         function resetForm() {
             editing = null;
-
             $('sub').textContent = 'Add record';
             $('cancel').hidden = true;
-
-            ['trip', 'fuel', 'odo'].forEach(
-                i => $(i).value = ''
-            );
+            ['trip', 'fuel', 'odo'].forEach(i => $(i).value = '');
         }
 
         $('f').addEventListener('submit', e => {
@@ -666,26 +1389,14 @@
                 truck: $('truck').value.trim(),
                 fuel: parseFloat($('fuel').value),
                 loc: $('loc').value.trim(),
-                odo:
-                    $('odo').value === ''
-                        ? ''
-                        : parseFloat($('odo').value)
+                odo: $('odo').value === '' ? '' : parseFloat($('odo').value)
             };
 
             run(async () => {
                 if (editing) {
-                    await api(
-                        'PUT',
-                        '/api/records/' +
-                        encodeURIComponent(editing),
-                        rec
-                    );
+                    await api('PUT', '/api/records/' + encodeURIComponent(editing), rec);
                 } else {
-                    await api(
-                        'POST',
-                        '/api/records',
-                        rec
-                    );
+                    await api('POST', '/api/records', rec);
                 }
 
                 const wasEdit = editing;
@@ -703,45 +1414,28 @@
 
         function edit(id) {
             const r = data.find(x => x.id === id);
-
             if (!r) return;
-
             editing = id;
-
             $('date').value = r.date;
             $('trip').value = r.trip;
             $('odo').value = r.odo ?? '';
             $('truck').value = r.truck;
             $('fuel').value = r.fuel;
             $('loc').value = r.loc;
-
-            $('sub').textContent =
-                'Save changes (' + id + ')';
-
+            $('sub').textContent = 'Save changes (' + id + ')';
             $('cancel').hidden = false;
-
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         $('cancel').onclick = resetForm;
 
-        ['from', 'to'].forEach(
-            i => $('' + i).addEventListener(
-                'input',
-                render
-            )
-        );
+        ['from', 'to'].forEach(i => $('' + i).addEventListener('input', render));
 
         let qt;
 
         $('q').addEventListener('input', () => {
             render();
-
             clearTimeout(qt);
-
             qt = setTimeout(async () => {
                 if ($('q').value.trim()) {
                     try {
@@ -750,7 +1444,6 @@
                         alert(e.message);
                     }
                 }
-
                 render();
             }, 400);
         });
@@ -783,14 +1476,11 @@
                     cur = '';
                 } else if (c == '\n' || c == '\r') {
                     if (c == '\r' && t[i + 1] == '\n') i++;
-
                     row.push(cur);
                     cur = '';
-
                     if (row.some(x => x.trim())) {
                         rows.push(row);
                     }
-
                     row = [];
                 } else {
                     cur += c;
@@ -808,29 +1498,19 @@
 
         $('file').addEventListener('change', e => {
             const f = e.target.files[0];
-
             if (!f) return;
-
             const rd = new FileReader();
 
             rd.onload = () => {
-                const rows = parseCSV(
-                    String(rd.result).replace(/^\uFEFF/, '')
-                );
+                const rows = parseCSV(String(rd.result).replace(/^\uFEFF/, ''));
 
                 if (rows.length < 2) {
                     alert('No data rows found.');
                     return;
                 }
 
-                const h = rows[0].map(
-                    x => x.trim().toLowerCase()
-                );
-
-                const find = (...k) =>
-                    h.findIndex(
-                        x => k.some(y => x.includes(y))
-                    );
+                const h = rows[0].map(x => x.trim().toLowerCase());
+                const find = (...k) => h.findIndex(x => k.some(y => x.includes(y)));
 
                 const ix = {
                     date: find('date'),
@@ -841,70 +1521,32 @@
                     odo: find('odo')
                 };
 
-                if (
-                    Object.entries(ix).some(
-                        ([k, v]) =>
-                            k !== 'odo' && v < 0
-                    )
-                ) {
-                    alert(
-                        'CSV needs columns: Date, Trip Number, Truck No, Given Fuel, Location (Odometer optional)'
-                    );
-
+                if (Object.entries(ix).some(([k, v]) => k !== 'odo' && v < 0)) {
+                    alert('CSV needs columns: Date, Trip Number, Truck No, Given Fuel, Location (Odometer optional)');
                     return;
                 }
 
                 const recs = rows.slice(1).map(r => {
                     let d = (r[ix.date] || '').trim();
-
                     const t = new Date(d);
 
-                    if (
-                        d &&
-                        !/^\d{4}-\d{2}-\d{2}$/.test(d) &&
-                        !isNaN(t)
-                    ) {
+                    if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d) && !isNaN(t)) {
                         d = t.toISOString().slice(0, 10);
                     }
 
                     return {
-                        date:
-                            d ||
-                            new Date()
-                                .toISOString()
-                                .slice(0, 10),
-
-                        trip:
-                            (r[ix.trip] || '').trim(),
-
-                        truck:
-                            (r[ix.truck] || '').trim(),
-
-                        fuel:
-                            parseFloat(r[ix.fuel]) || 0,
-
-                        loc:
-                            (r[ix.loc] || '').trim(),
-
-                        odo:
-                            ix.odo >= 0 &&
-                                (r[ix.odo] || '').trim() !== ''
-                                ? parseFloat(r[ix.odo])
-                                : ''
+                        date: d || new Date().toISOString().slice(0, 10),
+                        trip: (r[ix.trip] || '').trim(),
+                        truck: (r[ix.truck] || '').trim(),
+                        fuel: parseFloat(r[ix.fuel]) || 0,
+                        loc: (r[ix.loc] || '').trim(),
+                        odo: ix.odo >= 0 && (r[ix.odo] || '').trim() !== '' ? parseFloat(r[ix.odo]) : ''
                     };
                 });
 
                 run(async () => {
-                    const j = await api(
-                        'POST',
-                        '/api/import',
-                        recs
-                    );
-
-                    alert(
-                        j.added +
-                        ' records imported with new unique IDs.'
-                    );
+                    const j = await api('POST', '/api/import', recs);
+                    alert(j.added + ' records imported with new unique IDs.');
                 });
             };
 
@@ -914,97 +1556,43 @@
 
         $('ex').onclick = async () => {
             let data;
-
             try {
-                data = await api(
-                    'GET',
-                    '/api/records'
-                );
+                data = await api('GET', '/api/records');
             } catch (e) {
                 return alert(e.message);
             }
 
-            const q = s =>
-                '"' +
-                String(s).replace(/"/g, '""') +
-                '"';
+            const q = s => '"' + String(s).replace(/"/g, '""') + '"';
 
             const csv = [
                 'Unique ID,Date,Trip Number,Odometer,Truck No,Given Fuel,Location',
-
-                ...data.map(r =>
-                    [
-                        r.id,
-                        r.date,
-                        r.trip,
-                        r.odo ?? '',
-                        r.truck,
-                        r.fuel,
-                        r.loc
-                    ]
-                        .map(q)
-                        .join(',')
-                )
+                ...data.map(r => [r.id, r.date, r.trip, r.odo ?? '', r.truck, r.fuel, r.loc].map(q).join(','))
             ].join('\n');
 
             const a = document.createElement('a');
-
-            a.href =
-                URL.createObjectURL(
-                    new Blob(
-                        [csv],
-                        { type: 'text/csv' }
-                    )
-                );
-
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
             a.download = 'fuel-records.csv';
             a.click();
         };
 
         $('bk').onclick = async () => {
             let data;
-
             try {
-                data = await api(
-                    'GET',
-                    '/api/records'
-                );
+                data = await api('GET', '/api/records');
             } catch (e) {
                 return alert(e.message);
             }
 
-            const a =
-                document.createElement('a');
+            const a = document.createElement('a');
 
-            a.href =
-                URL.createObjectURL(
-                    new Blob(
-                        [
-                            JSON.stringify(
-                                {
-                                    app: 'fleet-fuel-manager',
-                                    version: 1,
-                                    exported:
-                                        new Date().toISOString(),
-                                    records: data
-                                },
-                                null,
-                                1
-                            )
-                        ],
-                        {
-                            type: 'application/json'
-                        }
-                    )
-                );
+            a.href = URL.createObjectURL(
+                new Blob(
+                    [JSON.stringify({ app: 'fleet-fuel-manager', version: 1, exported: new Date().toISOString(), records: data }, null, 1)],
+                    { type: 'application/json' }
+                )
+            );
 
-            a.download =
-                'fleet-fuel-backup-' +
-                new Date()
-                    .toISOString()
-                    .slice(0, 10) +
-                '.json';
-
+            a.download = 'fleet-fuel-backup-' + new Date().toISOString().slice(0, 10) + '.json';
             a.click();
         };
 
@@ -1015,80 +1603,40 @@
             $('rs').onclick = () => $('bfile').click();
         }
 
-        $('bfile').addEventListener(
-            'change',
-            e => {
-                const f =
-                    e.target.files[0];
+        $('bfile').addEventListener('change', e => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const rd = new FileReader();
 
-                if (!f) return;
+            rd.onload = () => {
+                let recs;
 
-                const rd =
-                    new FileReader();
-
-                rd.onload = () => {
-                    let recs;
-
-                    try {
-                        const j =
-                            JSON.parse(rd.result);
-
-                        recs =
-                            Array.isArray(j)
-                                ? j
-                                : j.records;
-
-                        if (!Array.isArray(recs)) {
-                            throw 0;
-                        }
-
-                    } catch (err) {
-                        alert(
-                            'That is not a valid backup file.'
-                        );
-
-                        return;
+                try {
+                    const j = JSON.parse(rd.result);
+                    recs = Array.isArray(j) ? j : j.records;
+                    if (!Array.isArray(recs)) {
+                        throw 0;
                     }
+                } catch (err) {
+                    alert('That is not a valid backup file.');
+                    return;
+                }
 
-                    if (
-                        !confirm(
-                            'Replace all current records on the server with ' +
-                            recs.length +
-                            ' records from this backup?'
-                        )
-                    ) {
-                        return;
-                    }
+                if (!confirm('Replace all current records on the server with ' + recs.length + ' records from this backup?')) {
+                    return;
+                }
 
-                    run(() =>
-                        api(
-                            'POST',
-                            '/api/restore',
-                            recs
-                        )
-                    );
-                };
+                run(() => api('POST', '/api/restore', recs));
+            };
 
-                rd.readAsText(f);
-                e.target.value = '';
-            }
-        );
+            rd.readAsText(f);
+            e.target.value = '';
+        });
 
         if ($('clr')) {
             $('clr').onclick = () => {
-                if (
-                    data.length &&
-                    confirm(
-                        'Delete ALL records on the server? Download a Backup first if unsure.'
-                    )
-                ) {
-                    run(() =>
-                        api(
-                            'POST',
-                            '/api/restore',
-                            []
-                        )
-                    );
+                if (data.length && confirm('Delete ALL records on the server? Download a Backup first if unsure.')) {
+                    run(() => api('POST', '/api/restore', []));
                 }
             };
         }
@@ -1103,26 +1651,12 @@
         (async () => {
             try {
                 data = await api('GET', '/api/records');
-
                 allData = data.slice();
                 allAt = Date.now();
-
-                status(
-                    true,
-                    'Connected · ' +
-                    data.length +
-                    ' records loaded · ' +
-                    new Date().toLocaleTimeString()
-                );
-
+                status(true, 'Connected · ' + data.length + ' records loaded · ' + new Date().toLocaleTimeString());
                 render();
-
             } catch (e) {
-                status(
-                    false,
-                    'Cannot reach server: ' + e.message
-                );
-
+                status(false, 'Cannot reach server: ' + e.message);
                 render();
             }
         })();
@@ -1130,15 +1664,31 @@
         /*
          * Refresh every 60 seconds.
          */
-        setInterval(
-            () => {
-                if (!$('q').value.trim()) {
-                    load();
-                }
-            },
-            60000
-        );
+        setInterval(() => {
+            if (!$('q').value.trim()) {
+                load();
+            }
+        }, 60000);
+    </script>
+    <script>
+        /* Design only: modules menu, dark mode and the date line. This does not touch any fuel data. */
+        (function () {
+            var g = function (i) { return document.getElementById(i) };
+            var MODULES = [{ n: "Fleet Management", d: "Trucks, trips and Excel uploads", h: "/fleet", i: "truck" }, { n: "Fuel Management", d: "Fuel given per trip and truck", h: "/fuel", i: "fuel" }, { n: "Procurement", d: "Coming soon", h: "", i: "box", soon: 1 }], CUR = "/fuel";
+            function ico(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>' }
+            function item(m, cn) { return '<a ' + (cn == "mi" ? 'role="menuitem" ' : '') + 'class="' + (cn == "mi" ? "mi " : "") + (m.h == CUR ? "on " : "") + (m.soon ? "soon" : "") + '" href="' + (m.h || "#") + '">' + ico(m.i) + (cn == "mi" ? '<span>' + m.n + '<small>' + m.d + '</small></span>' : m.n) + (m.soon ? '<span class="tag">SOON</span>' : '') + '</a>' }
+            g("nav").innerHTML = '<div class="sec">Operations</div>' + MODULES.map(function (m) { return item(m, "nav") }).join("");
+            g("menu").innerHTML = '<div class="mh">Modules</div>' + MODULES.map(function (m) { return item(m, "mi") }).join("");
+            function menu(o) { g("menu").hidden = !o; g("brand").setAttribute("aria-expanded", o) }
+            g("brand").onclick = function (e) { e.stopPropagation(); menu(g("menu").hidden) };
+            document.addEventListener("click", function (e) { if (!g("menu").contains(e.target)) menu(false) });
+            document.addEventListener("keydown", function (e) { if (e.key == "Escape") menu(false) });
+            function theme(t) { document.documentElement.setAttribute("data-theme", t); g("darkLbl").textContent = t == "dark" ? "Light mode" : "Dark mode" }
+            var th = ""; try { th = localStorage.getItem("ph_theme") || "" } catch (e) { }
+            theme(th || "light");
+            g("dark").onclick = function () { var t = document.documentElement.getAttribute("data-theme") == "dark" ? "light" : "dark"; theme(t); try { localStorage.setItem("ph_theme", t) } catch (e) { } };
+            g("today").textContent = "Today, " + new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+        })();
     </script>
 </body>
 </html>
-```
