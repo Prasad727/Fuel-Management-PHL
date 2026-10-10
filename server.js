@@ -65,9 +65,25 @@ async function firestoreStore() {
     catch (e) { throw new Error('FIREBASE_SERVICE_ACCOUNT is not valid JSON - paste the whole contents of the key file'); }
     admin.initializeApp({ credential: admin.credential.cert(cred) });
     const db = admin.firestore();
-    const col = db.collection('records'), cnt = db.collection('counters');
+    const col = db.collection('fuel_records'), cnt = db.collection('fuel_counters'); // fuel data lives in fuel_records (fleet data lives in the 'fleet' collection)
     try { await cnt.limit(1).get(); }
     catch (e) { throw new Error('Cannot reach Firestore (' + e.message + '). Did you click "Create database" in the Firebase console?'); }
+    // One-time, copy-only move of existing fuel data from the old collections (records, counters) into fuel_records and fuel_counters.
+    // Nothing is deleted from the old collections, and it never runs twice.
+    try {
+        const mark = cnt.doc('_migrated');
+        if (!(await mark.get()).exists) {
+            const old = await db.collection('records').get();
+            if (old.size && (await col.limit(1).get()).empty) {
+                const bw = db.bulkWriter();
+                old.docs.forEach(d => bw.set(col.doc(d.id), d.data()));
+                (await db.collection('counters').get()).docs.forEach(d => bw.set(cnt.doc(d.id), d.data()));
+                await bw.close();
+                console.log('Copied ' + old.size + ' fuel records into fuel_records');
+            }
+            await mark.set({ done: true, at: new Date().toISOString() });
+        }
+    } catch (e) { throw new Error('Could not move fuel data to fuel_records: ' + e.message); }
     const toRec = d => ({ id: d.id, ...d.data() });
     const notFound = e => e && (e.code === 5 || /NOT_FOUND/.test(e.message || ''));
     // Atomic counter: reserves k numbers for a day, so IDs stay unique even with several users
