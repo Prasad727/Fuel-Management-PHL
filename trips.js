@@ -1,105 +1,358 @@
-// Fleet trips storage + API (used by server.js). Same storage choice as fuel records:
-// Firestore when FIREBASE_SERVICE_ACCOUNT is set, otherwise data/trips.json.
-const fs = require('fs'), path = require('path'), crypto = require('crypto');
-const D = /^\d{4}-\d{2}-\d{2}$/;
-const nid = () => crypto.randomBytes(8).toString('hex');
-const keyOf = t => t.h.toLowerCase() + '|' + t.ld;
+//javascript
+// Fleet data backend
+// "zam" = Towards Zambia
+// "drc" = Towards DRC
+//
+// Each upload replaces the selected table only.
+// Storage: Firestore when FIREBASE_SERVICE_ACCOUNT is set,
+// otherwise a local JSON file.
+//
+// CHANGED: Supports both /api/trips and /api/fleet.
+// CHANGED: Normalizes old and new saved data formats.
+// CHANGED: Always returns both tables with rows arrays.
+// CHANGED: Keeps the other table unchanged when saving one table.
 
-function clean(b) {
-    const s = (v, n = 100) => String(v == null ? '' : v).trim().slice(0, n);
-    const o = { h: s(b.h).replace(/\s+/g, ' ').toUpperCase(), dir: b.dir === 'DRC' ? 'DRC' : 'ZAM', ld: s(b.ld), ll: s(b.ll), od: s(b.od), ol: s(b.ol), cl: s(b.cl), cc: b.cc === 'DRC' ? 'DRC' : 'ZAM', r: s(b.r, 200) };
-    if (!o.h) throw new Error('Horse is required');
-    if (!D.test(o.ld)) throw new Error('Loading date must be a valid date');
-    if (o.od && !D.test(o.od)) throw new Error('Date offloaded must be a valid date');
-    return o;
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+const emptyTable = () => ({
+    rows: [],
+    updated: ""
+});
+
+function normalizeTable(value) {
+    // CHANGED: Support older data saved directly as an array.
+    if (Array.isArray(value)) {
+        return {
+            rows: value,
+            updated: ""
+        };
+    }
+
+    // Current format: { rows: [], updated: "" }
+    if (value && Array.isArray(value.rows)) {
+        return {
+            rows: value.rows,
+            updated: value.updated || ""
+        };
+    }
+
+    return emptyTable();
+}
+
+function normalizeData(value) {
+    const data = value && typeof value === "object"
+        ? value
+        : {};
+
+    return {
+        zam: normalizeTable(
+            data.zam ||
+            data.towardsZambia ||
+            data.towards_zambia
+        ),
+        drc: normalizeTable(
+            data.drc ||
+            data.towardsDRC ||
+            data.towardsDrc ||
+            data.towards_drc
+        )
+    };
+}
+
+function rowKey(row) {
+    return String(row.h || "").trim().toUpperCase()
+        + "|" +
+        String(row.ld || "").trim();
+}
+
+function makeId(used) {
+    let id;
+
+    do {
+        id = "TR-" +
+            crypto.randomBytes(4).toString("hex").toUpperCase();
+    } while (used.has(id));
+
+    used.add(id);
+    return id;
+}
+
+function cleanRow(input) {
+    const b = input && typeof input === "object"
+        ? input
+        : {};
+
+    const str = (value, max = 100) =>
+        String(value == null ? "" : value)
+            .trim()
+            .slice(0, max);
+
+    const row = {
+        id: str(b.id, 30).replace(/[^\w-]/g, ""),
+        h: str(b.h).replace(/\s+/g, " ").toUpperCase(),
+        ld: str(b.ld),
+        ll: str(b.ll),  
+        od: str(b.od),
+        ol: str(b.ol),
+        cl: str(b.cl),
+        cc: b.cc === "DRC"
+            ? "DRC"
+            : b.cc === "ZAM"
+                ? "ZAM"
+                : "",
+        r: str(b.r, 200)
+    };
+
+    if (!row.h) {
+        throw new Error("Horse is required");
+    }
+
+    if (row.ld && !DATE_RE.test(row.ld)) {
+        throw new Error(
+            "Loading date is invalid for " + row.h
+        );
+    }
+
+    if (row.od && !DATE_RE.test(row.od)) {
+        throw new Error(
+            "Date offloaded is invalid for " + row.h
+        );
+    }
+
+    if (row.od && !row.ld) {
+        throw new Error(
+            "Date offloaded needs a loading date for " + row.h
+        );
+    }
+
+    if (row.od && row.od < row.ld) {
+        throw new Error(
+            "Date offloaded is before loading date for " + row.h
+        );
+    }
+
+    return row;
 }
 
 function fileStore() {
-    const DIR = process.env.DATA_DIR || path.join(__dirname, 'data'), FILE = path.join(DIR, 'trips.json');
-    fs.mkdirSync(DIR, { recursive: true });
-    let all = [];
-    try { all = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
-    const persist = () => { fs.writeFileSync(FILE + '.tmp', JSON.stringify(all, null, 1)); fs.renameSync(FILE + '.tmp', FILE); };
+    const directory =
+        process.env.DATA_DIR ||
+        path.join(__dirname, "data");
+
+    const file = path.join(directory, "fleetdata.json");
+
+    fs.mkdirSync(directory, { recursive: true });
+
+    let saved = {};
+
+    try {
+        saved = JSON.parse(
+            fs.readFileSync(file, "utf8")
+        );
+    } catch (error) {
+        if (error.code !== "ENOENT") {
+            throw new Error(
+                "Cannot read fleet data: " + error.message
+            );
+        }
+    }
+
+    function persist() {
+        const tempFile = file + ".tmp";
+
+        fs.writeFileSync(
+            tempFile,
+            JSON.stringify(saved, null, 2),
+            "utf8"
+        );
+
+        fs.renameSync(tempFile, file);
+    }
+
     return {
-        async list() { return all.slice(); },
-        async putMany(ts) { for (const t of ts) { const i = all.findIndex(x => x.id === t.id); i < 0 ? all.push(t) : (all[i] = t); } persist(); },
-        async del(id) { const i = all.findIndex(x => x.id === id); if (i < 0) return false; all.splice(i, 1); persist(); return true; },
-        async replaceAll(ts) { all = ts.slice(); persist(); }
+        async get() {
+            // CHANGED: Return the normalized format the frontend expects.
+            return normalizeData(saved);
+        },
+
+        async put(name, value) {
+            // CHANGED: Update only the selected table.
+            saved[name] = {
+                rows: value.rows,
+                updated: value.updated
+            };
+
+            persist();
+        }
     };
 }
 
 function firestoreStore() {
-    const db = require('firebase-admin').firestore(), col = db.collection('trips');
-    const write = async ts => { const bw = db.bulkWriter(); for (const { id, ...c } of ts) bw.set(col.doc(id), c); await bw.close(); };
+    const db = require("firebase-admin").firestore();
+
+    const ref = db
+        .collection("fleet")
+        .doc("current");
+
     return {
-        async list() { return (await col.get()).docs.map(d => ({ id: d.id, ...d.data() })); },
-        putMany: write,
-        async del(id) { const r = col.doc(id); if (!(await r.get()).exists) return false; await r.delete(); return true; },
-        async replaceAll(ts) { const bw = db.bulkWriter(); (await col.listDocuments()).forEach(r => bw.delete(r)); await bw.close(); await write(ts); }
+        async get() {
+            const snapshot = await ref.get();
+
+            const saved = snapshot.exists
+                ? snapshot.data()
+                : {};
+
+            // CHANGED: Normalize Firestore data too.
+            return normalizeData(saved);
+        },
+
+        async put(name, value) {
+            // Update only this table; preserve the other table.
+            await ref.set(
+                {
+                    [name]: {
+                        rows: value.rows,
+                        updated: value.updated
+                    }
+                },
+                { merge: true }
+            );
+        }
     };
 }
 
-function fileFleet() {
-    const DIR = process.env.DATA_DIR || path.join(__dirname, 'data'), FILE = path.join(DIR, 'fleet.json');
-    fs.mkdirSync(DIR, { recursive: true });
-    let a = [];
-    try { a = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
-    const w = () => fs.writeFileSync(FILE, JSON.stringify(a));
-    return {
-        async list() { return a.slice(); },
-        async add(hs) { for (const h of hs) if (!a.includes(h)) a.push(h); w(); },
-        async del(h) { const i = a.indexOf(h); if (i < 0) return false; a.splice(i, 1); w(); return true; }
-    };
-}
-function firestoreFleet() {
-    const db = require('firebase-admin').firestore(), col = db.collection('fleet'), id = h => h.replace(/\//g, '-');
-    return {
-        async list() { return (await col.get()).docs.map(d => d.data().h); },
-        async add(hs) { const bw = db.bulkWriter(); for (const h of hs) bw.set(col.doc(id(h)), { h }); await bw.close(); },
-        async del(h) { const r = col.doc(id(h)); if (!(await r.get()).exists) return false; await r.delete(); return true; }
-    };
-}
+module.exports = function createTrips(options) {
+    const { body, send } = options;
 
-module.exports = ({ body, send }) => {
-    const fb = !!process.env.FIREBASE_SERVICE_ACCOUNT;
-    const st = fb ? firestoreStore() : fileStore(), fl = fb ? firestoreFleet() : fileFleet();
-    // A truck already in the fleet list is never counted again. Only unknown trucks are added.
-    async function register(hs) {
-        const have = new Set(await fl.list()), nw = [...new Set(hs)].filter(h => !have.has(h));
-        if (nw.length) await fl.add(nw);
-        return nw.length;
-    }
+    const store = process.env.FIREBASE_SERVICE_ACCOUNT
+        ? firestoreStore()
+        : fileStore();
+
     return {
-        async handle(req, res, p, m) {
-            if (p === '/api/fleet' && m === 'GET') {
-                if (!(await fl.list()).length) await register((await st.list()).map(t => t.h)); // first run: build the list from existing trips
-                return send(res, 200, (await fl.list()).sort());
+        async handle(req, res, pathname, method) {
+            // CHANGED: Support both API base paths.
+            const isTrips =
+                pathname === "/api/trips" ||
+                pathname.startsWith("/api/trips/");
+
+            const isFleet =
+                pathname === "/api/fleet" ||
+                pathname.startsWith("/api/fleet/");
+
+            if (!isTrips && !isFleet) {
+                return send(res, 404, {
+                    error: "Not found"
+                });
             }
-            const fo = p.match(/^\/api\/fleet\/(.+)$/);
-            if (fo && m === 'DELETE') return (await fl.del(decodeURIComponent(fo[1]))) ? send(res, 200, { deleted: fo[1] }) : send(res, 404, { error: 'Truck not found' });
-            if (p === '/api/trips' && m === 'GET') return send(res, 200, await st.list());
-            if (p === '/api/trips' && m === 'POST') { const t = { id: nid(), ...clean(await body(req)) }; await st.putMany([t]); const nt = await register([t.h]); return send(res, 201, { ...t, newTrucks: nt }); }
-            if (p === '/api/trips/bulk' && m === 'POST') {
-                const b = await body(req); if (!Array.isArray(b.trips)) throw new Error('Expected a list of trips');
-                const inc = b.trips.map(clean), replace = b.mode === 'replace';
-                const map = new Map((replace ? [] : await st.list()).map(t => [keyOf(t), t]));
-                const changed = new Map(); let added = 0, updated = 0;
-                for (const c of inc) {
-                    const e = map.get(keyOf(c)), t = { id: e ? e.id : nid(), ...c };
-                    e ? updated++ : added++; map.set(keyOf(c), t); changed.set(t.id, t);
+
+            // GET /api/trips or GET /api/fleet
+            if (
+                (pathname === "/api/trips" ||
+                 pathname === "/api/fleet") &&
+                method === "GET"
+            ) {
+                // CHANGED: Both tables always have rows arrays.
+                return send(res, 200, await store.get());
+            }
+
+            // PUT /api/trips/zam, /api/trips/drc
+            // Also supports /api/fleet/zam and /api/fleet/drc.
+            const match = pathname.match(
+                /^\/api\/(?:trips|fleet)\/(zam|drc)$/
+            );
+
+            if (match && method === "PUT") {
+                const name = match[1];
+                const payload = await body(req);
+
+                if (
+                    !payload ||
+                    !Array.isArray(payload.rows)
+                ) {
+                    return send(res, 400, {
+                        error: "Expected an object containing a rows array"
+                    });
                 }
-                if (replace) await st.replaceAll([...map.values()]); else await st.putMany([...changed.values()]);
-                const newTrucks = await register(inc.map(c => c.h));
-                return send(res, 200, { added, updated, total: map.size, newTrucks });
+
+                if (payload.rows.length > 2000) {
+                    return send(res, 400, {
+                        error: "Too many rows (maximum 2000)"
+                    });
+                }
+
+                const incoming = payload.rows.map(cleanRow);
+                const currentData = await store.get();
+
+                const otherName = name === "zam"
+                    ? "drc"
+                    : "zam";
+
+                const currentTable = currentData[name];
+                const otherTable = currentData[otherName];
+
+                // Prevent IDs from colliding with IDs in the other table.
+                const used = new Set(
+                    otherTable.rows
+                        .map(row => row.id)
+                        .filter(Boolean)
+                );
+
+                // Preserve existing IDs where possible.
+                const previousIds = new Map();
+
+                currentTable.rows.forEach(row => {
+                    if (row.id) {
+                        previousIds.set(
+                            rowKey(row),
+                            row.id
+                        );
+                    }
+                });
+
+                let created = 0;
+
+                const rows = incoming.map(row => {
+                    let id = row.id;
+
+                    // Reuse a matching row's existing ID when appropriate.
+                    if (!id || used.has(id)) {
+                        id = previousIds.get(rowKey(row));
+
+                        if (!id || used.has(id)) {
+                            id = makeId(used);
+                            created++;
+                        }
+                    }
+
+                    used.add(id);
+
+                    return {
+                        ...row,
+                        id
+                    };
+                });
+
+                const result = {
+                    rows,
+                    updated: new Date().toISOString()
+                };
+
+                await store.put(name, result);
+
+                return send(res, 200, {
+                    ...result,
+                    created
+                });
             }
-            const one = p.match(/^\/api\/trips\/([\w-]+)$/);
-            if (one && m === 'PUT') {
-                const id = one[1], c = clean(await body(req));
-                if (!(await st.list()).some(t => t.id === id)) return send(res, 404, { error: 'Trip not found' });
-                await st.putMany([{ id, ...c }]); await register([c.h]); return send(res, 200, { id, ...c });
-            }
-            if (one && m === 'DELETE') return (await st.del(one[1])) ? send(res, 200, { deleted: one[1] }) : send(res, 404, { error: 'Trip not found' });
-            return send(res, 404, { error: 'Not found' });
+
+            return send(res, 404, {
+                error: "Not found"
+            });
         }
     };
 };
+
