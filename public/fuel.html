@@ -1234,15 +1234,11 @@
     <script>
         var lo = document.getElementById('logout');
         if (lo) {
-            lo.onclick = function () {
-                try { sessionStorage.clear(); } catch (e) { }
-                location.replace('/login.html');
+            lo.onclick = async function () {
+                try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
+                location.replace('/login');
             };
         }
-        window.addEventListener('pageshow', function (e) {
-            try { if (sessionStorage.getItem('ph_auth') !== '1') location.replace('/login.html'); }
-            catch (x) { location.replace('/login.html'); }
-        });
         const $ = id => document.getElementById(id);
         let data = [], editing = null;
 
