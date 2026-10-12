@@ -11,7 +11,7 @@ const prefixOf = d => 'FM-' + d.replace(/-/g, '') + '-';
 
 // ---------- Login (server side) ----------
 const USERS = {};
-(process.env.FLEET_USERS || '').split(',').forEach(s => {
+(process.env.PHL || '').split(',').forEach(s => {
     const i = s.indexOf(':');
     if (i > 0) USERS[s.slice(0, i).trim().toLowerCase()] = s.slice(i + 1).trim();
 });
