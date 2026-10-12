@@ -958,6 +958,23 @@
                 grid-template-columns: 1fr
             }
         }
+        /* Reduce font size in the table */
+        table {
+            font-size: 12px;
+        }
+
+            table th,
+            table td {
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+
+        /* Reduce font size in the input form */
+        .grid label,
+        .grid input,
+        .grid select {
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -989,6 +1006,12 @@
             <nav class="nav" id="nav" aria-label="Modules"></nav>
             <div class="sf">
                 <button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button>
+
+                <button class="dark" id="logout" type="button">
+                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                    <span>Log out</span>
+                </button>
+
                 <div class="user"><i>OP</i><div><b>Operations desk</b><small>Password protected</small></div></div>
             </div>
         </aside>
@@ -1068,6 +1091,17 @@
     </dialog>
 
     <script>
+        var lo = document.getElementById('logout');
+        if (lo) {
+            lo.onclick = function () {
+                try { sessionStorage.clear(); } catch (e) { }
+                location.replace('/login.html');
+            };
+        }
+        window.addEventListener('pageshow', function (e) {
+            try { if (sessionStorage.getItem('ph_auth') !== '1') location.replace('/login.html'); }
+            catch (x) { location.replace('/login.html'); }
+        });
         var DAY = 864e5, $ = function (i) { return document.getElementById(i) };
         var now = new Date(); now.setHours(0, 0, 0, 0);
         function iso(x) { return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0") }
