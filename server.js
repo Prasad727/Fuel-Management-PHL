@@ -1,9 +1,59 @@
 // Fleet Fuel Manager - backend (Node.js 16+)
 // Storage: Google Firestore when FIREBASE_SERVICE_ACCOUNT is set, otherwise a local file (data/records.json).
+//
+// LOGIN: handled on the server with a signed cookie (no passwords in the web pages or in Git).
+//   FLEET_USERS     = "operations:Pass1,admin:Pass2"   (passwords cannot contain commas)
+//   SESSION_SECRET  = any long random text (keeps people logged in across server restarts)
+//   FLEET_PASSWORD  = old single-password setting; still works (username "operations")
 const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), crypto = require('crypto');
 const PORT = process.env.PORT || 3000;
-const PASS = process.env.FLEET_PASSWORD || '';
 const prefixOf = d => 'FM-' + d.replace(/-/g, '') + '-';
+
+// ---------- Login (server side) ----------
+const USERS = {};
+(process.env.FLEET_USERS || '').split(',').forEach(s => {
+    const i = s.indexOf(':');
+    if (i > 0) USERS[s.slice(0, i).trim().toLowerCase()] = s.slice(i + 1).trim();
+});
+if (!Object.keys(USERS).length && process.env.FLEET_PASSWORD) USERS.operations = process.env.FLEET_PASSWORD;
+const AUTH_ON = Object.keys(USERS).length > 0;
+const SECRET = process.env.SESSION_SECRET || process.env.FLEET_PASSWORD || crypto.randomBytes(32).toString('hex');
+
+const sign = v => crypto.createHmac('sha256', SECRET).update(v).digest('base64url');
+const sha = v => crypto.createHash('sha256').update(String(v)).digest();
+const same = (a, b) => crypto.timingSafeEqual(sha(a), sha(b));
+
+function makeToken(user) {
+    const v = Buffer.from(user + '|' + (Date.now() + 12 * 3600e3)).toString('base64url');
+    return v + '.' + sign(v);
+}
+
+function authed(req) {
+    if (!AUTH_ON) return true;
+    const c = (req.headers.cookie || '').split(';').map(s => s.trim()).find(s => s.startsWith('ph_session='));
+    if (!c) return false;
+    const [v, sig] = c.slice(11).split('.');
+    if (!v || !sig) return false;
+    const good = sign(v);
+    if (sig.length !== good.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(good))) return false;
+    return Number(Buffer.from(v, 'base64url').toString().split('|')[1]) > Date.now();
+}
+
+const cookie = (val, age, req) =>
+    'ph_session=' + val + '; HttpOnly; SameSite=Strict; Path=/; Max-Age=' + age +
+    (req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : '');
+
+const tries = new Map(); // brute-force limit: 5 wrong tries = 1 minute lock
+const clientIp = req => (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+
+// Files visitors can open without logging in (everything else needs a login)
+const PUBLIC_FILES = {
+    '/login': ['login.html', 'text/html; charset=utf-8'],
+    '/login.html': ['login.html', 'text/html; charset=utf-8'],
+    '/phl-logo.png': ['phl-logo.png', 'image/png'],
+    '/phl-icon.png': ['phl-icon.png', 'image/png'],
+    '/favicon.png': ['favicon.png', 'image/png']
+};
 
 // Splits restored records into ones that keep their ID and ones that need a new ID
 function planRestore(items) {
@@ -131,14 +181,6 @@ function clean(b) {
     if (odo !== '' && (!isFinite(odo) || odo < 0)) throw new Error('Odometer must be a number, 0 or more');
     return { date, trip, truck, fuel, loc, odo };
 }
-function authed(req) {
-    if (!PASS) return true;
-    const [t, v] = (req.headers.authorization || '').split(' ');
-    if (t !== 'Basic' || !v) return false;
-    const pw = Buffer.from(v, 'base64').toString().split(':').slice(1).join(':');
-    const a = Buffer.from(pw), b = Buffer.from(PASS);
-    return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
 function body(req) {
     return new Promise((ok, no) => {
         let d = ''; req.on('data', c => { d += c; if (d.length > 10e6) { no(new Error('Request too large')); req.destroy(); } });
@@ -153,11 +195,48 @@ const PAGES = { '/': 'fleet.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html',
 let store, trips;
 const server = http.createServer(async (req, res) => {
     try {
-        if (!authed(req)) { res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Fleet Fuel Manager"' }); return res.end('Login required'); }
         const p = new URL(req.url, 'http://x').pathname, m = req.method;
+
+        // Public: login page and logo files
+        if (m === 'GET' && PUBLIC_FILES[p]) {
+            if ((p === '/login' || p === '/login.html') && authed(req)) { res.writeHead(302, { Location: '/' }); return res.end(); }
+            const [file, type] = PUBLIC_FILES[p];
+            res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-store' });
+            return res.end(fs.readFileSync(path.join(__dirname, 'public', file)));
+        }
+
+        // Login
+        if (p === '/api/login' && m === 'POST') {
+            const ip = clientIp(req), t = tries.get(ip) || { n: 0, until: 0 };
+            if (t.until > Date.now()) return send(res, 429, { error: 'Too many attempts. Try again in a minute.' });
+            const b = (await body(req)) || {};
+            const u = String(b.username || '').trim().toLowerCase(), pw = String(b.password || '');
+            if (Object.prototype.hasOwnProperty.call(USERS, u) && same(USERS[u], pw)) {
+                tries.delete(ip);
+                res.setHeader('Set-Cookie', cookie(makeToken(u), 12 * 3600, req));
+                return send(res, 200, { ok: true });
+            }
+            t.n++; if (t.n >= 5) { t.until = Date.now() + 60000; t.n = 0; }
+            tries.set(ip, t);
+            return send(res, 401, { error: 'Username or password is incorrect.' });
+        }
+
+        // Logout
+        if (p === '/api/logout' && m === 'POST') {
+            res.setHeader('Set-Cookie', cookie('', 0, req));
+            return send(res, 200, { ok: true });
+        }
+
+        // Everything below needs a login
+        if (!authed(req)) {
+            if (p.startsWith('/api/')) return send(res, 401, { error: 'Login required' });
+            res.writeHead(302, { Location: '/login' });
+            return res.end();
+        }
+
         if (!p.startsWith('/api/')) {
             if (!PAGES[p]) { res.writeHead(404); return res.end('Not found'); }
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
             return res.end(fs.readFileSync(path.join(__dirname, 'public', PAGES[p])));
         }
         if (p === '/api/fleet' || p.startsWith('/api/fleet/') || p.startsWith('/api/trips')) return await trips.handle(req, res, p, m);
@@ -197,6 +276,7 @@ const server = http.createServer(async (req, res) => {
         for (const l of Object.values(os.networkInterfaces()))
             for (const a of l) if (a.family === 'IPv4' && !a.internal) console.log('  On your network:   http://' + a.address + ':' + PORT);
         console.log('  Storage: ' + store.name);
-        console.log(PASS ? '  Password protection: ON' : '  Password protection: OFF (set FLEET_PASSWORD to turn on)');
+        console.log(AUTH_ON ? '  Login protection: ON (' + Object.keys(USERS).length + ' user(s))' : '  Login protection: OFF (set FLEET_USERS to turn on)');
+        if (AUTH_ON && !process.env.SESSION_SECRET) console.log('  Tip: set SESSION_SECRET so logins survive a server restart.');
     });
 })();
