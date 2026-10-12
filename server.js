@@ -198,12 +198,20 @@ const server = http.createServer(async (req, res) => {
         const p = new URL(req.url, 'http://x').pathname, m = req.method;
 
         // Public: login page and logo files
-        if (m === 'GET' && PUBLIC_FILES[p]) {
-            if ((p === '/login' || p === '/login.html') && authed(req)) { res.writeHead(302, { Location: '/' }); return res.end(); }
-            const [file, type] = PUBLIC_FILES[p];
-            res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-store' });
-            return res.end(fs.readFileSync(path.join(__dirname, 'public', file)));
+        const [file, type] = PUBLIC_FILES[p];
+        const filePath = path.join(__dirname, 'public', file);
+
+        if (!fs.existsSync(filePath)) {
+            console.error('Public file not found:', filePath);
+            res.writeHead(404);
+            return res.end('File not found');
         }
+
+        res.writeHead(200, {
+            'Content-Type': type,
+            'Cache-Control': 'no-store'
+        });
+        return res.end(fs.readFileSync(filePath));
 
         // Login
         if (p === '/api/login' && m === 'POST') {
@@ -261,8 +269,18 @@ const server = http.createServer(async (req, res) => {
             if (m === 'DELETE') return (await store.remove(id)) ? send(res, 200, { deleted: id }) : send(res, 404, { error: 'Record not found' });
         }
         send(res, 404, { error: 'Not found' });
-    } catch (e) { console.error(e.message); send(res, 400, { error: e.message }); }
-});
+    } catch (e) {
+        console.error('Request error:', e.message);
+
+        if (res.headersSent || res.writableEnded || res.destroyed) {
+            if (!res.writableEnded && !res.destroyed) {
+                res.end();
+            }
+            return;
+        }
+
+        send(res, 400, { error: e.message });
+    };
 
 (async () => {
     try { store = process.env.FIREBASE_SERVICE_ACCOUNT ? await firestoreStore() : fileStore(); }
