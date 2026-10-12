@@ -1129,6 +1129,23 @@
             draw();
             return Object.assign({}, res || {}, { rows: savedRows, created: res && res.created != null ? res.created : 0 });
         }
+        //logout function
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (response.ok) {
+                    window.location.replace('/login');
+                } else {
+                    alert('Logout failed. Please try again.');
+                }
+            } catch (error) {
+                alert('Unable to contact the server. Please try again.');
+            }
+        }
         /* A truck is LOADED when it has a loading date and no offloading date. Otherwise it is EMPTY. */
         function loaded(t) { return !!t.ld && !t.od }
         function days(t) { return t.ld ? Math.round(((t.od ? pd(t.od) : now) - pd(t.ld)) / DAY) : null }
