@@ -1091,6 +1091,8 @@
     </dialog>
 
     <script>
+        var r = await fetch(url, { method: method || "GET", headers: { "Content-Type": "application/json" }, body: d ? JSON.stringify(d) : undefined });
+        if (r.status === 401) { location.replace("/login"); throw new Error("Login required"); }
         var lo = document.getElementById('logout');
         if (lo) {
             lo.onclick = async function () {

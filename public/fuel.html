@@ -1232,6 +1232,8 @@
     </div>
 
     <script>
+        const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json' }, body: b === undefined ? undefined : JSON.stringify(b) });
+        if (r.status === 401) { location.replace('/login'); throw new Error('Login required'); }
         var lo = document.getElementById('logout');
         if (lo) {
             lo.onclick = async function () {
