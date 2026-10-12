@@ -1149,12 +1149,6 @@
             <nav class="nav" id="nav" aria-label="Modules"></nav>
             <div class="sf">
                 <button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button>
-
-                <button class="dark" id="logout" type="button">
-                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                    <span>Log out</span>
-                </button>
-
                 <div class="user"><i>OP</i><div><b>Operations desk</b><small>Password protected</small></div></div>
             </div>
         </aside>
@@ -1232,15 +1226,6 @@
     </div>
 
     <script>
-        const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json' }, body: b === undefined ? undefined : JSON.stringify(b) });
-        if (r.status === 401) { location.replace('/login'); throw new Error('Login required'); }
-        var lo = document.getElementById('logout');
-        if (lo) {
-            lo.onclick = async function () {
-                try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
-                location.replace('/login');
-            };
-        }
         const $ = id => document.getElementById(id);
         let data = [], editing = null;
 

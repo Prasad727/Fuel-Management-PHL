@@ -1091,15 +1091,6 @@
     </dialog>
 
     <script>
-        var r = await fetch(url, { method: method || "GET", headers: { "Content-Type": "application/json" }, body: d ? JSON.stringify(d) : undefined });
-        if (r.status === 401) { location.replace("/login"); throw new Error("Login required"); }
-        var lo = document.getElementById('logout');
-        if (lo) {
-            lo.onclick = async function () {
-                try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
-                location.replace('/login');
-            };
-        }
         var DAY = 864e5, $ = function (i) { return document.getElementById(i) };
         var now = new Date(); now.setHours(0, 0, 0, 0);
         function iso(x) { return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0") }
