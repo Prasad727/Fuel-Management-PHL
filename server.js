@@ -198,20 +198,29 @@ const server = http.createServer(async (req, res) => {
         const p = new URL(req.url, 'http://x').pathname, m = req.method;
 
         // Public: login page and logo files
-        const [file, type] = PUBLIC_FILES[p];
-        const filePath = path.join(__dirname, 'public', file);
+        // Public: login page and logo files
+        if (m === 'GET' && PUBLIC_FILES[p]) {
+            if ((p === '/login' || p === '/login.html') && authed(req)) {
+                res.writeHead(302, { Location: '/' });
+                return res.end();
+            }
 
-        if (!fs.existsSync(filePath)) {
-            console.error('Public file not found:', filePath);
-            res.writeHead(404);
-            return res.end('File not found');
+            const [file, type] = PUBLIC_FILES[p];
+            const filePath = path.join(__dirname, 'public', file);
+
+            if (!fs.existsSync(filePath)) {
+                console.error('Public file not found:', filePath);
+                res.writeHead(404);
+                return res.end('File not found');
+            }
+
+            res.writeHead(200, {
+                'Content-Type': type,
+                'Cache-Control': 'no-store'
+            });
+
+            return res.end(fs.readFileSync(filePath));
         }
-
-        res.writeHead(200, {
-            'Content-Type': type,
-            'Cache-Control': 'no-store'
-        });
-        return res.end(fs.readFileSync(filePath));
 
         // Login
         if (p === '/api/login' && m === 'POST') {
@@ -280,7 +289,8 @@ const server = http.createServer(async (req, res) => {
         }
 
         send(res, 400, { error: e.message });
-    };
+    }
+    });
 
 (async () => {
     try { store = process.env.FIREBASE_SERVICE_ACCOUNT ? await firestoreStore() : fileStore(); }
