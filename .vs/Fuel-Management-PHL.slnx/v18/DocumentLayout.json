@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:public\\fleet.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:public\\login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,7 +42,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
+              "Title": "fleet.html",
+              "DocumentMoniker": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\fleet.html",
+              "RelativeDocumentMoniker": "public\\fleet.html",
+              "ToolTip": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\fleet.html",
+              "RelativeToolTip": "public\\fleet.html",
+              "ViewState": "AgIAAIwDAAAAAAAAAAAUwJwDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-09T11:26:10.608Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "login.html",
+              "DocumentMoniker": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\login.html",
+              "RelativeDocumentMoniker": "public\\login.html",
+              "ToolTip": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\login.html",
+              "RelativeToolTip": "public\\login.html",
+              "ViewState": "AgIAADgBAAAAAAAAAAAAAFgBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-12T21:34:10.058Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "trips.js",
               "DocumentMoniker": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\trips.js",
               "RelativeDocumentMoniker": "trips.js",
@@ -46,38 +76,24 @@
               "RelativeToolTip": "trips.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-10-12T14:34:53.797Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-12T14:34:53.797Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "server.js",
               "DocumentMoniker": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\server.js",
               "RelativeDocumentMoniker": "server.js",
               "ToolTip": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\server.js",
               "RelativeToolTip": "server.js",
-              "ViewState": "AgIAAP4AAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAKwAAAAAAAAAAAAqwCQBAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-10-12T14:34:51.883Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "fleet.html",
-              "DocumentMoniker": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\fleet.html",
-              "RelativeDocumentMoniker": "public\\fleet.html",
-              "ToolTip": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\fleet.html*",
-              "RelativeToolTip": "public\\fleet.html*",
-              "ViewState": "AgIAAC8EAAAAAAAAAAAiwEUEAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-10-09T11:26:10.608Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "fuel.html",
               "DocumentMoniker": "C:\\Users\\admin-pc\\source\\repos\\Prasad727\\Fuel-Management-PHL\\public\\fuel.html",
               "RelativeDocumentMoniker": "public\\fuel.html",
@@ -85,8 +101,7 @@
               "RelativeToolTip": "public\\fuel.html",
               "ViewState": "AgIAAI4GAAAAAAAAAAAkwKwGAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-10-08T14:35:04.543Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-08T14:35:04.543Z"
             }
           ]
         }

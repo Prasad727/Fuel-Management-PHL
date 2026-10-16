@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professional Hauliers - Fleet Master View</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8f7f3;
+            --card: #fff;
+            --ink: #14130f;
+            --mute: #6b6a63;
+            --mute2: #a3a29a;
+            --line: #e8e6df;
+            --soft: #f3f2ed;
+            --yel: #fbbf24;
+            --yink: #1c1400;
+            --ybg: #fef3c7;
+            --yfg: #92400e;
+            --gbg: #dcfce7;
+            --gfg: #15803d;
+            --obg: #ffedd5;
+            --ofg: #c2410c;
+            --rbg: #fee2e2;
+            --rfg: #b91c1c;
+            --red: #e5483d;
+            --org: #f97316;
+            --grn: #22a55b;
+            --side: #111110;
+            --sideline: #262623;
+            --sideink: #a8a79f
+        }
+
+            :root[data-theme=dark] {
+                --bg: #0c0c0b;
+                --card: #171715;
+                --ink: #f4f3ee;
+                --mute: #9a998f;
+                --mute2: #6d6c64;
+                --line: #2a2a27;
+                --soft: #1f1f1c;
+                --side: #070706;
+                --sideline: #22221f;
+                --ybg: #3a2d08;
+                --yfg: #fcd34d;
+                --gbg: #123524;
+                --gfg: #86efac;
+                --obg: #47290c;
+                --ofg: #fdba74;
+                --rbg: #4a1a1a;
+                --rfg: #fca5a5
+            }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.45 Inter,"Segoe UI",system-ui,sans-serif
+        }
+
+        .ic {
+            width: 18px;
+            height: 18px;
+            flex: none
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh
+        }
+
+        .side {
+            background: var(--side);
+            color: var(--sideink);
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--yel);
+            color: var(--yink);
+            display: grid;
+            place-items: center
+        }
+
+        .brand b {
+            display: block;
+            color: #fff;
+            font-size: 13.5px;
+            line-height: 1.15;
+            letter-spacing: .04em;
+            font-weight: 800
+        }
+
+        .brand small {
+            font-size: 12px;
+            color: #8d8c84
+        }
+
+        .sec {
+            font-size: 11.5px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #77766e;
+            padding: 8px 10px 6px;
+            font-weight: 600;
+            margin-top: 18px
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--sideink);
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 11px;
+            font-weight: 500
+        }
+
+            .nav a:hover {
+                background: #1c1c1a;
+                color: #fff
+            }
+
+            .nav a.on {
+                background: var(--yel);
+                color: var(--yink)
+            }
+
+        .sf {
+            margin-top: auto;
+            border-top: 1px solid var(--sideline);
+            padding-top: 14px
+        }
+
+        .dark {
+            background: none;
+            border: 0;
+            color: var(--sideink);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 11px;
+            cursor: pointer;
+            font: 500 15px Inter,sans-serif;
+            width: 100%
+        }
+
+            .dark:hover {
+                background: #1c1c1a;
+                color: #fff
+            }
+
+        .head {
+            padding: 30px 40px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 38px;
+            line-height: 1.1;
+            letter-spacing: -.025em;
+            font-weight: 800
+        }
+
+        .today {
+            color: var(--mute);
+            font-weight: 500;
+            margin: 0 0 8px
+        }
+
+        .head p {
+            margin: 0;
+            color: var(--mute);
+            max-width: 640px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font: 600 14px Inter,sans-serif;
+            padding: 10px 15px;
+            border-radius: 11px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            color: var(--ink);
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+            .btn:hover {
+                background: var(--soft)
+            }
+
+            .btn.pri {
+                background: var(--yel);
+                border-color: var(--yel);
+                color: var(--yink);
+                font-weight: 700
+            }
+
+                .btn.pri:hover {
+                    filter: brightness(.96)
+                }
+
+        button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid var(--yel);
+            outline-offset: 2px
+        }
+
+        .body {
+            padding: 28px 40px 44px;
+            max-width: 1700px
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 16px;
+            margin-bottom: 22px
+        }
+
+        .k {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px 22px
+        }
+
+        .kh {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--mute)
+        }
+
+        .chip {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--soft);
+            color: var(--mute)
+        }
+
+            .chip.y {
+                background: var(--ybg);
+                color: var(--yfg)
+            }
+
+            .chip.g {
+                background: var(--gbg);
+                color: var(--gfg)
+            }
+
+            .chip.r {
+                background: var(--rbg);
+                color: var(--rfg)
+            }
+
+        .k b {
+            display: block;
+            font-size: 40px;
+            line-height: 1;
+            margin: 18px 0 12px;
+            letter-spacing: -.03em;
+            font-weight: 800
+        }
+
+        .k span {
+            color: var(--mute);
+            font-size: 14px
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            overflow: hidden
+        }
+
+        .ph {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--line)
+        }
+
+            .ph h2 {
+                margin: 0;
+                font-size: 18px
+            }
+
+        .bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .msg {
+            margin: 14px 24px 0;
+            background: var(--gbg);
+            color: var(--gfg);
+            border-radius: 12px;
+            padding: 11px 15px;
+            font-size: 14px
+        }
+
+            .msg.err {
+                background: var(--rbg);
+                color: var(--rfg)
+            }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: flex-end;
+            padding: 20px 24px
+        }
+
+            .tools > label {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                font-size: 13.5px;
+                font-weight: 500;
+                flex: 1 1 170px
+            }
+
+        input, select {
+            font: inherit;
+            font-size: 14.5px;
+            padding: 11px 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--ink);
+            width: 100%
+        }
+
+        .rst {
+            background: none;
+            border: 0;
+            color: var(--mute);
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            font: 500 14.5px Inter,sans-serif;
+            cursor: pointer;
+            padding: 11px 12px
+        }
+
+        .cap {
+            padding: 0 24px 8px;
+            color: var(--mute);
+            font-size: 14px
+        }
+
+        #cards, #dCards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(190px,1fr));
+            gap: 12px;
+            padding: 8px 24px 28px
+        }
+
+        .tc {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: inset 4px 0 0 var(--ac,transparent);
+            transition: .12s;
+            font-size: 13px
+        }
+
+            .tc:hover {
+                box-shadow: inset 4px 0 0 var(--ac,transparent),0 4px 14px rgba(0,0,0,.12);
+                transform: translateY(-1px)
+            }
+
+            .tc.r {
+                --ac: var(--red)
+            }
+
+            .tc.o {
+                --ac: var(--org)
+            }
+
+            .tc.g {
+                --ac: var(--grn)
+            }
+
+        .tch {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            padding: 11px 12px 11px 16px;
+            background: var(--soft);
+            border-bottom: 1px solid var(--line)
+        }
+
+        .horse {
+            font: 700 13.5px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            letter-spacing: .02em
+        }
+
+        .sub {
+            font-size: 11.5px;
+            color: var(--mute)
+        }
+
+        .b {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 9px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 11.5px;
+            white-space: nowrap;
+            background: var(--soft);
+            color: var(--mute);
+            border: 1px solid var(--line)
+        }
+
+            .b i {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: currentColor
+            }
+
+            .b.g {
+                background: var(--gbg);
+                color: var(--gfg);
+                border-color: transparent
+            }
+
+            .b.o {
+                background: var(--obg);
+                color: var(--ofg);
+                border-color: transparent
+            }
+
+            .b.y {
+                background: var(--ybg);
+                color: var(--yfg);
+                border-color: transparent
+            }
+
+            .b.r {
+                background: var(--rbg);
+                color: var(--rfg);
+                border-color: transparent
+            }
+
+        .mini {
+            padding: 4px 12px 12px 16px
+        }
+
+            .mini > div {
+                padding: 8px 0;
+                border-bottom: 1px solid var(--line)
+            }
+
+                .mini > div:last-child {
+                    border-bottom: 0;
+                    padding-bottom: 0
+                }
+
+        .rt {
+            color: var(--mute);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px
+        }
+
+        .pg {
+            display: flex;
+            gap: 3px
+        }
+
+            .pg i {
+                flex: 1;
+                height: 5px;
+                border-radius: 3px;
+                background: var(--line)
+            }
+
+        .dash {
+            color: var(--mute2)
+        }
+
+        .tdet {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+            .tdet h3 {
+                grid-column: 1/-1;
+                margin: 0;
+                font-size: 13px;
+                letter-spacing: .06em;
+                text-transform: uppercase;
+                color: var(--mute)
+            }
+
+            .tdet small {
+                grid-column: 1/-1;
+                color: var(--mute);
+                font-size: 12px
+            }
+
+        .det {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 6px 14px
+        }
+
+            .det div {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+                padding: 8px 0;
+                border-bottom: 1px solid var(--line);
+                font-size: 13.5px;
+                color: var(--ink)
+            }
+
+                .det div:last-child {
+                    border: 0
+                }
+
+            .det span {
+                color: var(--mute)
+            }
+
+            .det b {
+                font-weight: 600
+            }
+
+        .k.link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: .12s
+        }
+
+            .k.link:hover {
+                border-color: var(--yel);
+                box-shadow: 0 6px 18px rgba(0,0,0,.08)
+            }
+
+            .k.link .more {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                color: var(--yfg);
+                font-weight: 600
+            }
+
+        .go {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--yel);
+            color: var(--yink);
+            transition: .12s
+        }
+
+        .k.link:hover .go {
+            transform: translateX(3px)
+        }
+
+        .nav a .end {
+            margin-left: auto;
+            opacity: .7
+        }
+
+        .cnt {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 10px;
+            border-radius: 99px;
+            background: var(--ybg);
+            color: var(--yfg);
+            font-size: 13px;
+            vertical-align: middle
+        }
+
+        .pager {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 4px 24px 26px
+        }
+
+            .pager button {
+                min-width: 38px;
+                height: 38px;
+                padding: 0 10px;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: var(--card);
+                color: var(--ink);
+                font: 600 14px Inter,sans-serif;
+                cursor: pointer
+            }
+
+                .pager button:hover {
+                    background: var(--soft)
+                }
+
+                .pager button.on {
+                    background: var(--yel);
+                    border-color: var(--yel);
+                    color: var(--yink)
+                }
+
+                .pager button:disabled {
+                    opacity: .4;
+                    cursor: default
+                }
+
+            .pager span {
+                color: var(--mute);
+                padding: 0 4px
+            }
+
+        .empty {
+            padding: 48px;
+            text-align: center;
+            color: var(--mute);
+            grid-column: 1/-1
+        }
+
+        .foot {
+            padding: 14px 24px;
+            border-top: 1px solid var(--line);
+            color: var(--mute);
+            font-size: 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+            .foot .b {
+                border: 1px solid
+            }
+
+        dialog {
+            border: 0;
+            border-radius: 20px;
+            background: var(--card);
+            color: var(--ink);
+            width: min(660px,94vw);
+            padding: 26px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.35)
+        }
+
+            dialog::backdrop {
+                background: #0009
+            }
+
+            dialog h2 {
+                margin: 0 0 16px;
+                font-size: 20px
+            }
+
+            dialog label {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--mute)
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+
+        .wide {
+            grid-column: 1/-1
+        }
+
+        .acts {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 20px
+        }
+
+        @media(max-width:1200px) {
+            .kpis {
+                grid-template-columns: repeat(2,1fr)
+            }
+        }
+
+        @media(max-width:860px) {
+            .app {
+                grid-template-columns: 1fr
+            }
+
+            .side {
+                position: relative;
+                height: auto;
+                flex-direction: row;
+                padding: 10px 14px
+            }
+
+            .nav, .sf, .sec {
+                display: none
+            }
+
+            .head, .body {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            h1 {
+                font-size: 28px
+            }
+
+            .kpis {
+                grid-template-columns: repeat(2,1fr)
+            }
+        }
+
+        @media(max-width:520px) {
+            .grid, .tdet {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></symbol>
+            <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></symbol>
+            <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
+            <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></symbol>
+            <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></symbol>
+            <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></symbol>
+            <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></symbol>
+            <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></symbol>
+        </defs>
+    </svg>
+    <div class="app">
+        <aside class="side">
+            <div class="brand"><span class="logo"><svg class="ic"><use href="#i-truck" /></svg></span><span><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span></div>
+            <nav class="nav" id="nav"></nav>
+            <div class="sf"><button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button></div>
+        </aside>
+        <main>
+            <header class="head">
+                <div><h1 id="h1">Fleet Master View</h1><div class="today" id="today"></div><p id="hp">Pick a date to see every trip started or in progress. Trips with a returned date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.</p></div>
+                <button class="btn pri" id="bAdd"><svg class="ic"><use href="#i-plus" /></svg>Add trip</button>
+            </header>
+            <div class="body">
+                <div id="vMain">
+                    <section class="kpis" id="kpis"></section>
+                    <section class="panel">
+                        <div class="ph">
+                            <h2>Trip cards</h2><div class="bar">
+                                <button class="btn" id="bUp"><svg class="ic"><use href="#i-up" /></svg>Bulk upload Excel</button>
+                                <button class="btn" id="bTpl"><svg class="ic"><use href="#i-down" /></svg>Download template</button>
+                                <button class="btn" id="bExp"><svg class="ic"><use href="#i-down" /></svg>Export data</button>
+                                <button class="btn" id="bDemo" title="Fills the page with 100 sample trips. Not saved.">Preview 100 cards</button>
+                                <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+                            </div>
+                        </div>
+                        <div id="msg" class="msg" role="status" hidden></div>
+                        <div class="tools">
+                            <label>From date<input id="qFrom" type="date"></label><label>To date (optional)<input id="qTo" type="date"></label>
+                            <label>Show<select id="view"><option>All Activity</option><option>Started</option><option>In Progress</option><option>Delayed / Overdue</option></select></label>
+                            <label>Search<input id="q" type="search" placeholder="Truck, driver, route, trip ID"></label>
+                            <button class="rst" id="reset"><svg class="ic"><use href="#i-reset" /></svg>Today</button>
+                        </div>
+                        <div class="cap" id="cap"></div><div id="cards"></div>
+                        <div class="foot">Click any card to see driver, contact and all stage dates. Card edge colour:<span class="b g">On time</span><span class="b o">Almost late</span><span class="b r">Late / overdue</span></div>
+                    </section>
+                </div>
+                <div id="vDone" hidden>
+                    <section class="panel">
+                        <div class="ph">
+                            <div class="bar" style="align-items:center"><button class="btn" id="bBack"><svg class="ic"><use href="#i-left" /></svg>Back to Fleet Master View</button><h2>Completed trips<span class="cnt" id="dCnt">0</span></h2></div>
+                            <div class="bar"><button class="btn" id="bExpDone"><svg class="ic"><use href="#i-down" /></svg>Export completed</button></div>
+                        </div>
+                        <div class="tools">
+                            <label>Returned in month<input id="dMonth" type="month"></label><label>Search<input id="dq" type="search" placeholder="Truck, driver, route, trip ID"></label>
+                            <button class="rst" id="dReset"><svg class="ic"><use href="#i-reset" /></svg>Clear filters</button>
+                        </div>
+                        <div class="cap" id="dCap"></div><div id="dCards"></div><nav class="pager" id="pager" aria-label="Pages"></nav>
+                        <div class="foot">A trip shows here once it has a returned / completed date. Newest first, 100 cards per page. Click a card to view or edit it.</div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    <dialog id="dlg">
+        <form id="frm" onsubmit="return false">
+            <h2 id="dT">Add trip</h2><div class="grid">
+                <label>Trip ID<input name="id" readonly></label><label>Truck<select name="truck"></select></label>
+                <div class="wide tdet">
+                    <h3>Truck &amp; driver details</h3>
+                    <label>Registration no.<input name="kreg"></label><label>Driver name<input name="kdriver"></label>
+                    <label>Driver contact<input name="kcontact" type="tel"></label><label>Truck type<input name="ktype" list="ktypes"></label>
+                    <label>Truck status<select name="kstatus"><option>Active</option><option>Idle</option><option>Under Maintenance</option><option>Inactive</option></select></label><span></span>
+                    <small>These details belong to the truck, so a change here shows on every trip for this truck.</small>
+                </div><datalist id="ktypes"><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Box Body</option><option>Lowbed</option></datalist><label class="wide">Route (Origin - Destination)<input name="route"></label>
+                <label>Planned trip days<input name="plan" type="number" min="1"></label><span></span>
+                <label>Dispatched date<input name="d" type="date"></label><label>Loading date<input name="l" type="date"></label>
+                <label>In transit date<input name="t" type="date"></label><label>Unloading date<input name="u" type="date"></label>
+                <label>Delivered date<input name="v" type="date"></label><label>Returned / completed date<input name="r" type="date"></label>
+                <label class="wide">Notes<input name="n"></label>
+            </div>
+            <div class="acts"><button type="button" class="btn" id="dDel" style="color:var(--rfg)">Delete</button><span><button type="button" class="btn" id="dX">Cancel</button> <button type="button" class="btn pri" id="dS">Save</button></span></div>
+        </form>
+    </dialog>
+    <script>
+        const SEED = { "trucks": [{ "id": "TRK-001", "reg": "MH-12-AB-1234", "driver": "Ramesh Kumar", "contact": "+91 98765 43210", "type": "Flatbed", "status": "Active" }, { "id": "TRK-002", "reg": "MH-12-AB-1235", "driver": "Prasad", "contact": "+91 98765 43210", "type": "Flatbed", "status": "Idle" }, { "id": "TRK-003", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-004", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-005", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-006", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-007", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-008", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-009", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-010", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-011", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-012", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-013", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-014", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-015", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-016", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-017", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-018", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-019", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-020", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-021", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-022", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-023", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-024", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-025", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-026", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-027", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-028", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-029", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-030", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-031", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-032", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-033", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-034", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-035", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-036", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-037", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-038", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-039", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-040", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-041", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-042", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-043", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-044", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-045", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-046", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-047", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-048", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-049", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-050", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-051", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-052", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-053", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-054", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-055", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-056", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-057", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-058", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-059", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-060", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-061", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-062", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-063", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-064", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-065", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-066", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-067", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-068", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-069", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-070", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-071", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-072", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-073", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-074", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-075", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-076", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-077", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-078", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-079", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-080", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-081", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-082", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-083", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-084", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-085", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-086", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-087", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-088", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-089", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-090", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-091", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-092", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-093", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-094", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-095", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-096", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-097", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-098", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-099", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-100", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-101", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-102", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-103", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-104", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-105", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-106", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-107", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-108", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-109", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-110", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-111", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-112", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-113", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-114", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-115", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-116", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-117", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-118", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-119", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-120", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-121", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-122", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-123", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-124", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-125", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-126", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-127", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-128", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-129", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-130", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-131", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-132", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-133", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-134", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-135", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-136", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-137", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-138", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-139", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-140", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-141", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-142", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-143", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-144", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-145", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-146", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-147", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-148", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-149", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-150", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-151", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-152", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-153", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-154", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-155", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-156", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-157", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-158", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-159", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-160", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-161", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-162", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-163", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-164", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-165", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-166", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-167", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-168", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-169", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-170", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-171", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-172", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-173", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-174", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-175", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-176", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-177", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-178", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-179", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-180", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-181", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-182", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-183", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-184", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-185", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-186", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-187", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-188", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-189", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-190", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-191", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-192", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-193", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-194", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-195", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-196", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-197", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-198", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-199", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-200", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }], "trips": [{ "id": "TRIP-0001", "truck": "TRK-001", "route": "Mumbai - Delhi", "plan": 15, "d": "2026-08-01", "l": "2026-08-01", "t": "2026-08-02", "u": "2026-08-16", "v": "2026-08-17", "r": "2026-08-20", "n": "Example row - replace with real data (delay shown vs. 15-day plan)." }] };
+        const KEY = 'fleet_master_v2', ST = ['Dispatched', 'Loading', 'In Transit', 'Unloading', 'Delivered', 'Returned/Available'], K = ['d', 'l', 't', 'u', 'v', 'r'];
+        const STY = { 'Returned/Available': 'g', 'Delivered': 'g', 'Unloading': 'o', 'In Transit': 'y', 'Loading': 'y', 'Dispatched': '', 'Not Started': '' };
+        const $ = i => document.getElementById(i); let D;
+        const now = new Date(); now.setHours(0, 0, 0, 0);
+        const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+        const today = () => iso(now), days = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+        const fmt = d => d ? new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const dash = v => v ? esc(v) : '<span class="dash">&mdash;</span>';
+        /* Storage: on the server -> /api/master (separate Firebase project). Opened as a plain file -> this browser only. */
+        let MODE = 'local', DEMO = false;
+        async function api(method, url, data) {
+            const r = await fetch(url, { method, credentials: 'same-origin', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined });
+            if (r.status === 401) { location.href = '/login'; throw new Error('Please log in again.') }
+            let j = null; try { j = await r.json() } catch (e) { }
+            if (!r.ok) throw new Error((j && j.error) || ('Server error ' + r.status)); return j
+        }
+        function loadLocal() { try { D = JSON.parse(localStorage.getItem(KEY)) } catch (e) { D = null } if (!D) D = JSON.parse(JSON.stringify(SEED)) }
+        async function load() {
+            if (location.protocol === 'http:' || location.protocol === 'https:') {
+                try {
+                    const j = await api('GET', '/api/master'); MODE = 'server';
+                    if (!j.trucks.length) { await api('POST', '/api/master/bulk', { trucks: SEED.trucks, trips: [] }); j.trucks = SEED.trucks.map(x => ({ ...x })) }
+                    D = { trucks: j.trucks.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })), trips: j.trips }; return
+                }
+                catch (e) { if (/log in/.test(e.message)) throw e; say('Could not reach the server (' + esc(e.message) + '). Showing data saved in this browser only - changes will NOT reach the server.', true) }
+            }
+            MODE = 'local'; loadLocal()
+        }
+        function save() { if (MODE === 'local' && !DEMO) try { localStorage.setItem(KEY, JSON.stringify(D)) } catch (e) { } }
+        function blocked() { if (DEMO) { say('This is the 100-card preview, so nothing is saved. Refresh the page to go back to your real data and edit it.', true); return true } return false }
+        function say(t, err) { const m = $('msg'); m.hidden = false; m.className = 'msg' + (err ? ' err' : ''); m.innerHTML = t }
+        function info(t, to) { let s = 'Not Started'; K.forEach((k, i) => { if (t[k] && t[k] <= to) s = ST[i] }); const done = !!(t.r && t.r <= to); return { s, done, run: done ? days(t.d, t.r) : (t.d ? days(t.d, to) : null) } }
+        function calc() {
+            const f = $('qFrom').value || today(), to = $('qTo').value >= f && $('qTo').value ? $('qTo').value : f, v = $('view').value, q = $('q').value.toLowerCase(), out = [], n = { st: 0, co: 0, ip: 0, dl: 0 };
+            D.trips.forEach(t => {
+                if (!t.d) return; const i = info(t, to), st = t.d >= f && t.d <= to, co = t.r && t.r >= f && t.r <= to, ip = t.d <= to && !t.r, late = ip && i.run > t.plan;
+                if (st) n.st++; if (co) n.co++; if (ip) n.ip++; if (late) n.dl++;
+                const m = !t.r && { 'All Activity': st || ip, Started: st, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = D.trucks.find(x => x.id === t.truck) || {};
+                if (m && (!q || [t.truck, t.route, tr.driver, tr.reg, t.id].join(' ').toLowerCase().includes(q))) out.push({ t, tr, i });
+            });
+            return { f, to, n, out }
+        }
+        function card(t, tr, i) {
+            const lbl = i.s === 'Returned/Available' ? 'Completed' : i.s, late = i.run > t.plan, warn = !late && i.run >= t.plan - 3 && !i.done;
+            const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : ''), pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
+            const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
+            return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse">${esc(t.id.replace('TRIP-', ''))}</b><div class="sub">${esc(tr.reg || t.truck)}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
+      <div class="mini"><div class="rt">${dash(t.route)}</div>
+      <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
+      <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
+      <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
+        }
+        function render() {
+            const { f, to, n, out } = calc();
+            const K4 = [['Trips started', n.st, 'Dispatched in this period', 'y'], ['Trips completed', doneTrips().length, n.co + ' returned in this period', 'link'], ['In progress', n.ip, 'Still on the road at end date', ''], ['Delayed / overdue', n.dl, 'Past planned trip days', 'r']];
+            $('kpis').innerHTML = K4.map(x => x[3] === 'link'
+                ? `<a class="k link" href="#completed" data-go="done" role="button" title="Open all completed trips"><div class="kh">${x[0]}<span class="go" aria-hidden="true"><svg class="ic"><use href="#i-right"/></svg></span></div><b>${x[1]}</b><span style="display:block;color:var(--mute);font-size:14px;margin-bottom:6px">${x[2]}</span><span class="more">View all completed trips <svg class="ic" style="width:15px;height:15px"><use href="#i-right"/></svg></span></a>`
+                : `<div class="k"><div class="kh">${x[0]}<span class="chip ${x[3]}"><svg class="ic"><use href="#i-truck"/></svg></span></div><b>${x[1]}</b><span>${x[2]}</span></div>`).join('');
+            $('cap').textContent = `Showing ${fmt(f)}${to > f ? ' to ' + fmt(to) : ''} · ${$('view').value} · ${out.length} trip card(s)`;
+            $('cards').innerHTML = out.length ? out.map(({ t, tr, i }) => card(t, tr, i)).join('') : '<div class="empty">No trips match this date and filter.</div>'
+        }
+        /* completed trips page */
+        const PER = 100; let page = 1;
+        const doneTrips = () => D.trips.filter(t => t.d && t.r).sort((a, b) => b.r.localeCompare(a.r) || String(b.id).localeCompare(String(a.id)));
+        function renderDone() {
+            const m = $('dMonth').value, q = $('dq').value.toLowerCase(), all = doneTrips();
+            const L = all.map(t => ({ t, tr: D.trucks.find(x => x.id === t.truck) || {} })).filter(({ t, tr }) => (!m || t.r.slice(0, 7) === m) && (!q || [t.truck, t.route, tr.driver, tr.reg, t.id].join(' ').toLowerCase().includes(q)));
+            const pages = Math.max(1, Math.ceil(L.length / PER)); if (page > pages) page = pages; if (page < 1) page = 1;
+            const st = (page - 1) * PER, sl = L.slice(st, st + PER);
+            $('dCnt').textContent = all.length;
+            $('dCap').textContent = L.length ? `Showing ${st + 1}–${st + sl.length} of ${L.length} completed trip(s)${m || q ? ' (filtered)' : ''} · Page ${page} of ${pages}` : '';
+            $('dCards').innerHTML = sl.length ? sl.map(({ t, tr }) => card(t, tr, info(t, t.r))).join('') : `<div class="empty">${all.length ? 'No completed trips match this filter.' : 'No completed trips yet. A trip appears here once it has a returned date.'}</div>`;
+            pager(pages)
+        }
+        function pager(pages) {
+            if (pages < 2) { $('pager').innerHTML = ''; return }
+            const set = new Set([1, pages]); for (let k = page - 2; k <= page + 2; k++)if (k >= 1 && k <= pages) set.add(k);
+            let h = `<button data-p="${page - 1}" ${page === 1 ? 'disabled' : ''} aria-label="Previous page">&lsaquo; Prev</button>`, prev = 0;
+            [...set].sort((x, y) => x - y).forEach(k => { if (k - prev > 1) h += '<span>&hellip;</span>'; h += `<button data-p="${k}" class="${k === page ? 'on' : ''}" ${k === page ? 'aria-current="page"' : ''}>${k}</button>`; prev = k });
+            $('pager').innerHTML = h + `<button data-p="${page + 1}" ${page === pages ? 'disabled' : ''} aria-label="Next page">Next &rsaquo;</button>`
+        }
+        $('pager').onclick = e => { const b = e.target.closest('[data-p]'); if (b && !b.disabled) { page = +b.dataset.p; renderDone(); $('vDone').scrollIntoView({ behavior: 'smooth', block: 'start' }) } };
+        ['dMonth', 'dq'].forEach(i => $(i).addEventListener('input', () => { page = 1; renderDone() }));
+        $('dReset').onclick = () => { $('dMonth').value = ''; $('dq').value = ''; page = 1; renderDone() };
+        $('dCards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openForm(b.dataset.e) };
+        $('bBack').onclick = () => go('main');
+        let VIEW = (() => { try { return location.hash === '#completed' ? 'done' : 'main' } catch (e) { return 'main' } })();
+        const isDone = () => VIEW === 'done';
+        function go(v) { VIEW = v; page = 1; try { history.replaceState(null, '', v === 'done' ? '#completed' : location.pathname + location.search) } catch (e) { } route() }
+        document.addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); go(a.dataset.go) } });
+        function refresh() { isDone() ? renderDone() : render() }
+        function route() {
+            const d = isDone(); $('vMain').hidden = d; $('vDone').hidden = !d; $('bAdd').hidden = d;
+            $('h1').textContent = d ? 'Completed Trips' : 'Fleet Master View';
+            $('hp').textContent = d ? 'Every trip that has a returned / completed date, stored here so you can check it any time. 100 cards per page.' : 'Pick a date to see every trip started or in progress. Trips with a returned date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.';
+            renderNav(d); refresh(); try { window.scrollTo(0, 0) } catch (e) { }
+        }
+        window.addEventListener('hashchange', () => { const v = location.hash === '#completed' ? 'done' : 'main'; if (v !== VIEW) { VIEW = v; page = 1; route() } });
+        /* edit dialog */
+        const dlg = $('dlg'), frm = $('frm'); let editing = null;
+        function openForm(id) {
+            const t = D.trips.find(x => x.id === id), o = t || { id: MODE === 'server' ? '' : nextId(), truck: D.trucks[0].id, route: '', plan: 15, n: '' }; editing = !!t;
+            $('dT').textContent = t ? 'Edit trip' : 'Add trip'; $('dDel').style.visibility = t ? 'visible' : 'hidden';
+            frm.elements.truck.innerHTML = D.trucks.map(x => `<option>${esc(x.id)}</option>`).join('');
+            ['id', 'truck', 'route', 'plan', 'n', ...K].forEach(k => frm.elements[k].value = o[k] || ''); frm.elements.id.placeholder = 'Given when you save'; showDet(); dlg.showModal()
+        }
+        const KF = [['kreg', 'reg'], ['kdriver', 'driver'], ['kcontact', 'contact'], ['ktype', 'type'], ['kstatus', 'status']];
+        function showDet() { const tr = D.trucks.find(x => x.id === frm.elements.truck.value) || {}; KF.forEach(([f, k]) => frm.elements[f].value = tr[k] || (k === 'status' ? 'Active' : '')) }
+        frm.elements.truck.onchange = showDet;
+        function nextId() { let m = 0; D.trips.forEach(t => { m = Math.max(m, parseInt(String(t.id).replace(/\D/g, '')) || 0) }); return 'TRIP-' + String(m + 1).padStart(4, '0') }
+        $('bAdd').onclick = () => openForm(); $('dX').onclick = () => dlg.close();
+        $('dS').onclick = async () => {
+            if (blocked()) return; const o = {};['id', 'truck', 'route', 'n', ...K].forEach(k => o[k] = frm.elements[k].value.trim()); o.plan = +frm.elements.plan.value || 15;
+            if (o.r && !o.d) { alert('A returned date needs a dispatched date.'); return }
+            if (o.r && o.r < o.d) { alert('The returned date is before the dispatched date.'); return }
+            const info = {}; KF.forEach(([f, k]) => info[k] = frm.elements[f].value.trim());
+            if (MODE === 'server') {
+                const b = $('dS'); b.disabled = true; b.textContent = 'Saving...';
+                try { const { id, ...rest } = o, isNew = !editing, r = await api(isNew ? 'POST' : 'PUT', isNew ? '/api/master/trips' : '/api/master/trips/' + encodeURIComponent(id), { ...rest, truckInfo: info }); Object.assign(o, r) }
+                catch (e) { alert('Not saved: ' + e.message); return } finally { b.disabled = false; b.textContent = 'Save' }
+            }
+            const tk = D.trucks.find(x => x.id === o.truck); if (tk) Object.assign(tk, info);
+            const i = D.trips.findIndex(x => x.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o; save(); dlg.close(); refresh(); say(o.r ? 'Trip ' + esc(o.id) + ' is completed and has moved to <a href="#completed" data-go="done" style="color:inherit;font-weight:700">Completed Trips &rarr;</a>' : 'Trip ' + esc(o.id) + ' saved.')
+        };
+        $('dDel').onclick = async () => { if (blocked()) return; if (confirm('Delete this trip?')) { if (MODE === 'server') { try { await api('DELETE', '/api/master/trips/' + encodeURIComponent(frm.elements.id.value)) } catch (e) { alert('Not deleted: ' + e.message); return } } D.trips = D.trips.filter(x => x.id !== frm.elements.id.value); save(); dlg.close(); refresh() } };
+        $('cards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openForm(b.dataset.e) };
+        /* Excel: template, export, bulk upload */
+        const TH = ['Trip ID', 'Truck ID', 'Route (Origin - Destination)', 'Planned Trip Days', 'Dispatched Date', 'Loading Date', 'In Transit Date', 'Unloading Date', 'Delivered Date', 'Returned/Available Date', 'Notes'],
+            KH = ['Truck ID', 'Registration No.', 'Driver Name', 'Driver Contact', 'Truck Type', 'Truck Status'];
+        function book(trips, trucks, name, help) {
+            const wb = XLSX.utils.book_new(), a = XLSX.utils.aoa_to_sheet([TH].concat(trips)), b = XLSX.utils.aoa_to_sheet([KH].concat(trucks));
+            a['!cols'] = TH.map(() => ({ wch: 22 })); b['!cols'] = KH.map(() => ({ wch: 20 })); XLSX.utils.book_append_sheet(wb, a, 'Trips'); XLSX.utils.book_append_sheet(wb, b, 'Trucks');
+            if (help) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(help.map(x => [x])), 'Instructions'); XLSX.writeFile(wb, name)
+        }
+        const trow = t => [t.id, t.truck, t.route, t.plan, ...K.map(k => t[k]), t.n], krow = x => [x.id, x.reg, x.driver, x.contact, x.type, x.status];
+        $('bTpl').onclick = () => book([['', 'TRK-003', 'Lusaka - Lubumbashi', 15, '2026-10-05', '2026-10-05', '2026-10-06', '', '', '', 'Example: still in transit'], ['', 'TRK-004', 'Kolwezi - Lusaka', 15, '2026-09-20', '2026-09-20', '2026-09-21', '2026-10-02', '2026-10-03', '2026-10-06', 'Example: completed']], D.trucks.map(krow), 'fleet_master_bulk_template.xlsx',
+            ['How bulk upload works', 'Sheet "Trips": one row per trip. Truck ID is required and must exist on the "Trucks" sheet (or already in the page).', 'Trip ID: leave EMPTY for new trips. A new ID is created. If a Trip ID already exists, that trip is UPDATED.', 'Dates: yyyy-mm-dd or normal Excel dates. Fill each stage date as the trip reaches it: Dispatched, Loading, In Transit, Unloading, Delivered, Returned/Available.', 'A trip is COMPLETED when it has a Returned/Available date.', 'Planned Trip Days: leave empty for 15.', 'Sheet "Trucks" (optional): add or update trucks by Truck ID with registration, driver, contact, type and status.', 'Upload ADDS and UPDATES only. Nothing is deleted. Delete the two example rows before you upload.']);
+        $('bExp').onclick = () => book(D.trips.map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx');
+        $('bExpDone').onclick = () => { const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
+        $('bUp').onclick = () => { if (!blocked()) $('file').click() };
+        function toIso(v) {
+            if (v === '' || v == null) return ''; if (v instanceof Date) return iso(new Date(v.getTime() + 432e5));
+            if (typeof v == 'number') { const u = new Date(Math.round((v - 25569) * 864e5)); return u.getUTCFullYear() + '-' + String(u.getUTCMonth() + 1).padStart(2, '0') + '-' + String(u.getUTCDate()).padStart(2, '0') }
+            const s = String(v).trim(); let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+            m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/); if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0'); return null
+        }
+        function key(o, names) { for (const k of Object.keys(o)) if (names.includes(k.toLowerCase().replace(/[^a-z]/g, ''))) return o[k]; return '' }
+        const rows = (wb, n) => { const s = wb.Sheets[n] || (n === 'Trips' ? wb.Sheets[wb.SheetNames[0]] : null); return s ? XLSX.utils.sheet_to_json(s, { defval: '', raw: true }) : [] };
+        $('file').onchange = e => {
+            const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
+            rd.onload = async () => {
+                const before = JSON.stringify(D); try {
+                    const wb = XLSX.read(rd.result, { type: 'array', cellDates: true }), bad = [], tks = []; let nt = 0;
+                    rows(wb, 'Trucks').forEach(r => { const id = String(key(r, ['truckid', 'id'])).trim(); if (!id) return; const o = { id, reg: String(key(r, ['registrationno', 'registration', 'reg', 'horse'])).trim(), driver: String(key(r, ['drivername', 'driver'])).trim(), contact: String(key(r, ['drivercontact', 'contact'])).trim(), type: String(key(r, ['trucktype', 'type'])).trim(), status: String(key(r, ['truckstatus', 'status'])).trim() || 'Active' }, i = D.trucks.findIndex(x => x.id === id); tks.push({ ...o, status: String(key(r, ['truckstatus', 'status'])).trim() }); i < 0 ? (D.trucks.push(o), nt++) : D.trucks[i] = Object.assign(D.trucks[i], Object.fromEntries(Object.entries(o).filter(([k, v]) => v))) });
+                    const inc = []; rows(wb, 'Trips').forEach((r, i) => {
+                        const ln = i + 2, tk = String(key(r, ['truckid', 'truck'])).trim(); if (!tk && !key(r, ['tripid', 'id'])) return;
+                        if (!tk) return bad.push('row ' + ln + ': Truck ID missing'); if (!D.trucks.some(x => x.id === tk)) return bad.push('row ' + ln + ': ' + esc(tk) + ' not found');
+                        const o = { id: String(key(r, ['tripid', 'id'])).trim(), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), row: ln };
+                        const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading']], ['t', ['intransitdate', 'intransit']], ['u', ['unloadingdate', 'unloading']], ['v', ['delivereddate', 'delivered']], ['r', ['returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
+                        for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + k); o[k] = x }
+                        if (o.r && !o.d) return bad.push('row ' + ln + ': returned date needs a dispatched date'); if (o.r && o.r < o.d) return bad.push('row ' + ln + ': returned date before dispatched date'); inc.push(o)
+                    });
+                    const upd = inc.filter(o => o.id && D.trips.some(t => t.id === o.id)).length, why = bad.length ? ' Skipped ' + bad.length + ': ' + esc(bad.slice(0, 5).join('; ')) + (bad.length > 5 ? '; ...' : '') : '';
+                    if (!inc.length && !tks.length) { D = JSON.parse(before); say('Nothing was uploaded.' + (why || ' No rows found. Download the template and fill it in.'), true); return }
+                    if (!confirm('Import ' + inc.length + ' trips (' + (inc.length - upd) + ' new, ' + upd + ' updated) and ' + nt + ' new trucks? Nothing is deleted.')) { D = JSON.parse(before); return }
+                    if (MODE === 'server') { say('Uploading...'); try { await api('POST', '/api/master/bulk', { trucks: tks, trips: inc }); await load() } catch (x) { D = JSON.parse(before); say('Upload failed, nothing was saved: ' + esc(x.message), true); e.target.value = ''; return } refresh() }
+                    else { inc.forEach(o => { delete o.row; if (!o.id) o.id = nextId(); const i = D.trips.findIndex(t => t.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o }); save(); refresh() }
+                    say('Upload done: ' + (inc.length - upd) + ' trips added, ' + upd + ' updated, ' + nt + ' trucks added.' + why, bad.length > 0)
+                } catch (x) { D = JSON.parse(before); say('Upload failed: ' + esc(x.message), true) } e.target.value = ''
+            }; rd.readAsArrayBuffer(f)
+        };
+        /* preview, filters, theme, modules */
+        $('bDemo').onclick = () => {
+            DEMO = true; const b = Date.parse(($('qFrom').value || today()) + 'T00:00'), I = n => new Date(b + n * 864e5).toISOString().slice(0, 10), R = ['Mumbai - Delhi', 'Lusaka - Lubumbashi', 'Kolwezi - Lusaka', 'Ndola - Kitwe', 'Kapiri - Solwezi', 'Chingola - Kasumbalesa'];
+            D.trips = []; for (let i = 0; i < 100; i++) { const stg = Math.floor(Math.random() * 6), s = -Math.floor(Math.random() * 18), t = { id: 'TRIP-' + String(i + 1).padStart(4, '0'), truck: D.trucks[i].id, route: R[i % 6], plan: 15, n: '' }; let c = s; K.forEach((k, j) => { if (j <= stg) { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) } else t[k] = '' }); if (t.r && t.r > I(0)) t.r = ''; D.trips.push(t) }
+            for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: D.trucks[(i + 100) % D.trucks.length].id, route: R[i % 6], plan: 15, n: '' }; let c = -(25 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
+            refresh(); say('Showing 100 sample trips on the board plus 250 older completed trips (see Completed Trips, 3 pages). They are not saved. Refresh the page to go back to your data.')
+        };
+        ['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', render)); $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; render() };
+        function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); $('darkLbl').textContent = t == 'dark' ? 'Light mode' : 'Dark mode' }
+        let th = ''; try { th = localStorage.getItem('ph_theme') || '' } catch (e) { } applyTheme(th || 'light');
+        $('dark').onclick = () => { const t = document.documentElement.getAttribute('data-theme') == 'dark' ? 'light' : 'dark'; applyTheme(t); try { localStorage.setItem('ph_theme', t) } catch (e) { } };
+        const MODULES = [{ n: 'Fleet Management', h: '/fleet' }, { n: 'Fuel Management', h: '/fuel' }, { n: 'Fleet Master View', h: '#main', v: 'main' }, { n: 'Completed Trips', h: '#completed', v: 'done', i: 'i-check', arrow: 1 }];
+        function renderNav(d) { $('nav').innerHTML = '<div class="sec" style="margin-top:0">Operations</div>' + MODULES.map(m => `<a class="${(m.v === 'done' && d) || (m.v === 'main' && !d) ? 'on' : ''}" href="${m.h}"${m.v ? ` data-go="${m.v}"` : ''}><svg class="ic"><use href="#${m.i || 'i-truck'}"/></svg>${m.n}${m.arrow ? '<svg class="ic end"><use href="#i-right"/></svg>' : ''}</a>`).join('') }
+        (async () => {
+            $('today').textContent = 'Today, ' + fmt(today()); $('cards').innerHTML = '<div class="empty">Loading trips...</div>';
+            try { await load() } catch (e) { return }
+            $('today').textContent = 'Today, ' + fmt(today()) + (MODE === 'server' ? ' · Saved on the server' : ' · Saved in this browser only');
+            $('qFrom').value = today(); route()
+        })();
+    </script>
+</body>
+</html>

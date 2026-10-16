@@ -5,13 +5,16 @@
 //   FLEET_USERS     = "operations:Pass1,admin:Pass2"   (passwords cannot contain commas)
 //   SESSION_SECRET  = any long random text (keeps people logged in across server restarts)
 //   FLEET_PASSWORD  = old single-password setting; still works (username "operations")
+//
+// FLEET MASTER VIEW (/master) is saved in a SEPARATE Firebase project:
+//   MASTER_FIREBASE_SERVICE_ACCOUNT = whole contents of the NEW project's service-account key file (see master.js)
 const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), crypto = require('crypto');
 const PORT = process.env.PORT || 3000;
 const prefixOf = d => 'FM-' + d.replace(/-/g, '') + '-';
 
 // ---------- Login (server side) ----------
 const USERS = {};
-(process.env.PHL || '').split(',').forEach(s => {
+(process.env.FLEET_USERS || process.env.PHL || '').split(',').forEach(s => {
     const i = s.indexOf(':');
     if (i > 0) USERS[s.slice(0, i).trim().toLowerCase()] = s.slice(i + 1).trim();
 });
@@ -190,9 +193,9 @@ function body(req) {
 const send = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
 
 // Pages: address -> file inside the public folder
-const PAGES = { '/': 'fleet.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html', '/index.html': 'fuel.html' };
+const PAGES = { '/': 'fleet.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html', '/index.html': 'fuel.html', '/master': 'fleet_master_view.html' };
 
-let store, trips;
+let store, trips, master;
 const server = http.createServer(async (req, res) => {
     try {
         const p = new URL(req.url, 'http://x').pathname, m = req.method;
@@ -256,6 +259,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
             return res.end(fs.readFileSync(path.join(__dirname, 'public', PAGES[p])));
         }
+        if (p === '/api/master' || p.startsWith('/api/master/')) return await master.handle(req, res, p, m);
         if (p === '/api/fleet' || p.startsWith('/api/fleet/') || p.startsWith('/api/trips')) return await trips.handle(req, res, p, m);
         if (p === '/api/records' && m === 'GET') {
             const since = new URL(req.url, 'http://x').searchParams.get('since');
@@ -290,7 +294,7 @@ const server = http.createServer(async (req, res) => {
 
         send(res, 400, { error: e.message });
     }
-    });
+});
 
 (async () => {
     try { store = process.env.FIREBASE_SERVICE_ACCOUNT ? await firestoreStore() : fileStore(); }
@@ -299,11 +303,15 @@ const server = http.createServer(async (req, res) => {
     const makeTrips = require('./trips.js');
     if (typeof makeTrips !== 'function') { console.error('trips.js did not load correctly. Make sure it is the file from the chat and sits next to server.js.'); process.exit(1); }
     trips = makeTrips({ body, send });
+    // Fleet Master View: its own Firebase project (MASTER_FIREBASE_SERVICE_ACCOUNT)
+    try { master = await require('./master.js')({ body, send }); }
+    catch (e) { console.error('Could not start Fleet Master storage: ' + e.message); process.exit(1); }
     server.listen(PORT, '0.0.0.0', () => {
         console.log('\nFleet Fuel Manager is running.\n  On this computer:  http://localhost:' + PORT);
         for (const l of Object.values(os.networkInterfaces()))
             for (const a of l) if (a.family === 'IPv4' && !a.internal) console.log('  On your network:   http://' + a.address + ':' + PORT);
         console.log('  Storage: ' + store.name);
+        console.log('  Fleet Master storage: ' + master.name);
         console.log(AUTH_ON ? '  Login protection: ON (' + Object.keys(USERS).length + ' user(s))' : '  Login protection: OFF (set FLEET_USERS to turn on)');
         if (AUTH_ON && !process.env.SESSION_SECRET) console.log('  Tip: set SESSION_SECRET so logins survive a server restart.');
     });
