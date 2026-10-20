@@ -10,9 +10,10 @@
 //   go   : only for Fleet Master View pages (switches view without reloading)
 (function () {
     var MODULES = [
-        { name: 'Fleet Management', desc: 'Trucks, trips and Excel uploads', link: '/fleet', icon: 'truck' },
-        { name: 'Fleet Master View', desc: 'Trip cards, drivers and stages', link: '/master', icon: 'grid', go: 'main' },
+        { name: 'Fleet Master View', desc: 'Trip cards, drivers and stages', link: '/master', icon: 'grid', go: 'main', head: true },
+        { name: 'Current Trips', desc: 'Trips started or on the road', link: '/master', icon: 'truck', go: 'main', sub: true },
         { name: 'Completed Trips', desc: 'Trips with a returned date', link: '/master#completed', icon: 'check', go: 'done', sub: true },
+        { name: 'Fleet Management', desc: 'Trucks, trips and Excel uploads', link: '/fleet', icon: 'truck' },
         { name: 'Fuel Management', desc: 'Fuel given per trip and truck', link: '/fuel', icon: 'fuel' },
         { name: 'Procurement', desc: 'Coming soon', link: '', icon: 'box', soon: true }
     ];
