@@ -808,11 +808,8 @@
         </defs>
     </svg>
     <div class="app">
-        <aside class="side">
-            <div class="brand"><span class="logo"><svg class="ic"><use href="#i-truck" /></svg></span><span><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span></div>
-            <nav class="nav" id="nav"></nav>
-            <div class="sf"><button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button></div>
-        </aside>
+        <aside class="side" id="side"></aside>
+        <script src="/menu.js"></script>
         <main>
             <header class="head">
                 <div><h1 id="h1">Fleet Master View</h1><div class="today" id="today"></div><p id="hp">Pick a date to see every trip started or in progress. Trips with a returned date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.</p></div>
@@ -1060,18 +1057,8 @@
             for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: D.trucks[(i + 100) % D.trucks.length].id, route: R[i % 6], plan: 15, n: '' }; let c = -(25 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
             refresh(); say('Showing 100 sample trips on the board plus 250 older completed trips (see Completed Trips, 3 pages). They are not saved. Refresh the page to go back to your data.')
         };
-        ['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', render)); $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; render() };
-        function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); $('darkLbl').textContent = t == 'dark' ? 'Light mode' : 'Dark mode' }
-        let th = ''; try { th = localStorage.getItem('ph_theme') || '' } catch (e) { } applyTheme(th || 'light');
-        $('dark').onclick = () => { const t = document.documentElement.getAttribute('data-theme') == 'dark' ? 'light' : 'dark'; applyTheme(t); try { localStorage.setItem('ph_theme', t) } catch (e) { } };
-        const MODULES = [{ n: 'Fleet Management', h: '/fleet' }, { n: 'Fuel Management', h: '/fuel' }, { n: 'Fleet Master View', h: '#main', v: 'main' }, { n: 'Completed Trips', h: '#completed', v: 'done', i: 'i-check', arrow: 1 }];
-        function renderNav(d) { $('nav').innerHTML = '<div class="sec" style="margin-top:0">Operations</div>' + MODULES.map(m => `<a class="${(m.v === 'done' && d) || (m.v === 'main' && !d) ? 'on' : ''}" href="${m.h}"${m.v ? ` data-go="${m.v}"` : ''}><svg class="ic"><use href="#${m.i || 'i-truck'}"/></svg>${m.n}${m.arrow ? '<svg class="ic end"><use href="#i-right"/></svg>' : ''}</a>`).join('') }
-        (async () => {
-            $('today').textContent = 'Today, ' + fmt(today()); $('cards').innerHTML = '<div class="empty">Loading trips...</div>';
-            try { await load() } catch (e) { return }
-            $('today').textContent = 'Today, ' + fmt(today()) + (MODE === 'server' ? ' · Saved on the server' : ' · Saved in this browser only');
-            $('qFrom').value = today(); route()
-        })();
+['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', render)); $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; render() };
+        function renderNav() { if (window.PHMenu) PHMenu.refresh() }
     </script>
 </body>
 </html>

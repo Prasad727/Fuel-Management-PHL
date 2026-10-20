@@ -1139,19 +1139,8 @@
         </defs>
     </svg>
     <div class="app">
-        <aside class="side">
-            <button class="brand" id="brand" aria-haspopup="menu" aria-expanded="false" aria-controls="menu">
-                <span class="logo"><svg class="ic"><use href="#i-truck" /></svg></span>
-                <span class="bt"><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span>
-                <svg class="ic"><use href="#i-chev" /></svg>
-            </button>
-            <div class="menu" id="menu" role="menu" hidden></div>
-            <nav class="nav" id="nav" aria-label="Modules"></nav>
-            <div class="sf">
-                <button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button>
-                <div class="user"><i>OP</i><div><b>Operations desk</b><small>Password protected</small></div></div>
-            </div>
-        </aside>
+        <aside class="side" id="side"></aside>
+        <script src="/menu.js"></script>
         <main class="main">
             <header class="head">
                 <div>
@@ -1198,7 +1187,7 @@
                         <button class="btn" id="bk" title="Download a full backup of all records"><svg class="ic"><use href="#i-file" /></svg>Backup</button>
 
                         <!--<button class="btn" id="rs" title="Restore from a backup file">Restore</button>
-                        <button class="btn" id="clr">Clear all</button> -->
+                    <button class="btn" id="clr">Clear all</button> -->
 
                         <input type="file" id="bfile" accept=".json,application/json" hidden>
                         <input type="file" id="file" accept=".csv,text/csv" hidden>
@@ -1688,24 +1677,7 @@
         }, 60000);
     </script>
     <script>
-        /* Design only: modules menu, dark mode and the date line. This does not touch any fuel data. */
-        (function () {
-            var g = function(i) { return document.getElementById(i) };
-            var MODULES = [{ n: "Fleet Management", d: "Trucks, trips and Excel uploads", h: "/fleet", i: "truck" }, { n: "Fleet Master View", d: "Trips, trucks and drivers", h: "/master", i: "gauge" }, { n: "Fuel Management", d: "Fuel given per trip and truck", h: "/fuel", i: "fuel" }, { n: "Procurement", d: "Coming soon", h: "", i: "box", soon: 1 }], CUR = "/fuel";
-            function ico(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>' }
-            function item(m, cn) { return '<a ' + (cn == "mi" ? 'role="menuitem" ' : '') + 'class="' + (cn == "mi" ? "mi " : "") + (m.h == CUR ? "on " : "") + (m.soon ? "soon" : "") + '" href="' + (m.h || "#") + '">' + ico(m.i) + (cn == "mi" ? '<span>' + m.n + '<small>' + m.d + '</small></span>' : m.n) + (m.soon ? '<span class="tag">SOON</span>' : '') + '</a>' }
-            g("nav").innerHTML = '<div class="sec">Operations</div>' + MODULES.map(function (m) { return item(m, "nav") }).join("");
-            g("menu").innerHTML = '<div class="mh">Modules</div>' + MODULES.map(function (m) { return item(m, "mi") }).join("");
-            function menu(o) { g("menu").hidden = !o; g("brand").setAttribute("aria-expanded", o) }
-            g("brand").onclick = function (e) { e.stopPropagation(); menu(g("menu").hidden) };
-            document.addEventListener("click", function (e) { if (!g("menu").contains(e.target)) menu(false) });
-            document.addEventListener("keydown", function (e) { if (e.key == "Escape") menu(false) });
-            function theme(t) { document.documentElement.setAttribute("data-theme", t); g("darkLbl").textContent = t == "dark" ? "Light mode" : "Dark mode" }
-            var th = ""; try { th = localStorage.getItem("ph_theme") || "" } catch (e) { }
-            theme(th || "light");
-            g("dark").onclick = function () { var t = document.documentElement.getAttribute("data-theme") == "dark" ? "light" : "dark"; theme(t); try { localStorage.setItem("ph_theme", t) } catch (e) { } };
-            g("today").textContent = "Today, " + new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-        })();
+        document.getElementById("today").textContent = "Today, " + new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
     </script>
 </body>
 </html>

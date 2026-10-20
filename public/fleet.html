@@ -996,25 +996,8 @@
         </defs>
     </svg>
     <div class="app">
-        <aside class="side">
-            <button class="brand" id="brand" aria-haspopup="menu" aria-expanded="false" aria-controls="menu">
-                <span class="logo"><svg class="ic"><use href="#i-truck" /></svg></span>
-                <span class="bt"><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span>
-                <svg class="ic"><use href="#i-chev" /></svg>
-            </button>
-            <div class="menu" id="menu" role="menu" hidden></div>
-            <nav class="nav" id="nav" aria-label="Modules"></nav>
-            <div class="sf">
-                <button class="dark" id="dark"><svg class="ic"><use href="#i-moon" /></svg><span id="darkLbl">Dark mode</span></button>
-
-                <button class="dark" id="logout" type="button">
-                    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                    <span>Log out</span>
-                </button>
-
-                <div class="user"><i>OP</i><div><b>Operations desk</b><small>Password protected</small></div></div>
-            </div>
-        </aside>
+        <aside class="side" id="side"></aside>
+        <script src="/menu.js"></script>
         <main class="main">
             <header class="head">
                 <div>
@@ -1270,24 +1253,9 @@
             };
             rd.readAsArrayBuffer(f)
         };
-/* Modules menu: add a module here and it appears in the sidebar and in the menu that opens from the company name */
-var MODULES = [{ n: "Fleet Management", d: "Trucks, trips and Excel uploads", h: "/fleet", i: "truck" }, { n: "Fleet Master View", d: "Trips, trucks and drivers", h: "/master", i: "gauge" }, { n: "Fuel Management", d: "Fuel given per trip and truck", h: "/fuel", i: "fuel" }, { n: "Procurement", d: "Coming soon", h: "", i: "box", soon: 1 }], CUR = "/fleet";
-        function ico(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>' }
-        function item(m, cn) { return '<a ' + (cn == "mi" ? 'role="menuitem" ' : '') + 'class="' + (cn == "mi" ? "mi " : "") + (m.h == CUR ? "on " : "") + (m.soon ? "soon" : "") + '" href="' + (m.h || "#") + '">' + ico(m.i) + (cn == "mi" ? '<span>' + m.n + '<small>' + m.d + '</small></span>' : m.n) + (m.soon ? '<span class="tag">SOON</span>' : '') + '</a>' }
-        $("nav").innerHTML = '<div class="sec">Operations</div>' + MODULES.map(function (m) { return item(m, "nav") }).join("");
-        $("menu").innerHTML = '<div class="mh">Modules</div>' + MODULES.map(function (m) { return item(m, "mi") }).join("");
-        function menu(open) { $("menu").hidden = !open; $("brand").setAttribute("aria-expanded", open) }
-        $("brand").onclick = function (e) { e.stopPropagation(); menu($("menu").hidden) };
-        document.addEventListener("click", function (e) { if (!$("menu").contains(e.target)) menu(false) });
-        document.addEventListener("keydown", function (e) { if (e.key == "Escape") menu(false) });
-        /* Status filter, reset, theme */
         function setSeg() { [].forEach.call($("seg").children, function (b) { b.className = b.dataset.v == statV ? "on" : "" }) }
         $("seg").onclick = function (e) { if (e.target.dataset && e.target.dataset.v !== undefined) { statV = e.target.dataset.v; setSeg(); draw() } };
         $("reset").onclick = function () { ["qTruck", "qLoc", "qDate"].forEach(function (i) { $(i).value = "" }); $("sort").value = ""; statV = ""; setSeg(); draw() };
-        function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); $("darkLbl").textContent = t == "dark" ? "Light mode" : "Dark mode" }
-        var th = ""; try { th = localStorage.getItem("ph_theme") || "" } catch (e) { }
-        applyTheme(th || "light");
-        $("dark").onclick = function () { var t = document.documentElement.getAttribute("data-theme") == "dark" ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("ph_theme", t) } catch (e) { } };
         $("today").textContent = "Today, " + fmt(now);
         draw(); reload().catch(function (x) { say("Could not load trucks: " + esc(x.message), true) });
     </script>
