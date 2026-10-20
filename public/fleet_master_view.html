@@ -89,92 +89,9 @@
             height: 100vh
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 6px
+        main {
+            min-width: 0
         }
-
-        .logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: var(--yel);
-            color: var(--yink);
-            display: grid;
-            place-items: center
-        }
-
-        .brand b {
-            display: block;
-            color: #fff;
-            font-size: 13.5px;
-            line-height: 1.15;
-            letter-spacing: .04em;
-            font-weight: 800
-        }
-
-        .brand small {
-            font-size: 12px;
-            color: #8d8c84
-        }
-
-        .sec {
-            font-size: 11.5px;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-            color: #77766e;
-            padding: 8px 10px 6px;
-            font-weight: 600;
-            margin-top: 18px
-        }
-
-        .nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--sideink);
-            text-decoration: none;
-            padding: 11px 12px;
-            border-radius: 11px;
-            font-weight: 500
-        }
-
-            .nav a:hover {
-                background: #1c1c1a;
-                color: #fff
-            }
-
-            .nav a.on {
-                background: var(--yel);
-                color: var(--yink)
-            }
-
-        .sf {
-            margin-top: auto;
-            border-top: 1px solid var(--sideline);
-            padding-top: 14px
-        }
-
-        .dark {
-            background: none;
-            border: 0;
-            color: var(--sideink);
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 10px 12px;
-            border-radius: 11px;
-            cursor: pointer;
-            font: 500 15px Inter,sans-serif;
-            width: 100%
-        }
-
-            .dark:hover {
-                background: #1c1c1a;
-                color: #fff
-            }
 
         .head {
             padding: 30px 40px 24px;
@@ -562,35 +479,6 @@
                 font-size: 12px
             }
 
-        .det {
-            background: var(--soft);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 6px 14px
-        }
-
-            .det div {
-                display: flex;
-                justify-content: space-between;
-                gap: 10px;
-                padding: 8px 0;
-                border-bottom: 1px solid var(--line);
-                font-size: 13.5px;
-                color: var(--ink)
-            }
-
-                .det div:last-child {
-                    border: 0
-                }
-
-            .det span {
-                color: var(--mute)
-            }
-
-            .det b {
-                font-weight: 600
-            }
-
         .k.link {
             display: block;
             text-decoration: none;
@@ -625,11 +513,6 @@
 
         .k.link:hover .go {
             transform: translateX(3px)
-        }
-
-        .nav a .end {
-            margin-left: auto;
-            opacity: .7
         }
 
         .cnt {
@@ -765,11 +648,8 @@
                 position: relative;
                 height: auto;
                 flex-direction: row;
+                align-items: center;
                 padding: 10px 14px
-            }
-
-            .nav, .sf, .sec {
-                display: none
             }
 
             .head, .body {
@@ -794,17 +674,15 @@
     </style>
 </head>
 <body>
-    <svg width="0" height="0" style="position:absolute">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
             <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></symbol>
             <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></symbol>
             <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></symbol>
             <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
-            <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></symbol>
             <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></symbol>
             <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></symbol>
             <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></symbol>
-            <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></symbol>
         </defs>
     </svg>
     <div class="app">
@@ -820,7 +698,8 @@
                     <section class="kpis" id="kpis"></section>
                     <section class="panel">
                         <div class="ph">
-                            <h2>Trip cards</h2><div class="bar">
+                            <h2>Trip cards</h2>
+                            <div class="bar">
                                 <button class="btn" id="bUp"><svg class="ic"><use href="#i-up" /></svg>Bulk upload Excel</button>
                                 <button class="btn" id="bTpl"><svg class="ic"><use href="#i-down" /></svg>Download template</button>
                                 <button class="btn" id="bExp"><svg class="ic"><use href="#i-down" /></svg>Export data</button>
@@ -830,26 +709,31 @@
                         </div>
                         <div id="msg" class="msg" role="status" hidden></div>
                         <div class="tools">
-                            <label>From date<input id="qFrom" type="date"></label><label>To date (optional)<input id="qTo" type="date"></label>
+                            <label>From date<input id="qFrom" type="date"></label>
+                            <label>To date (optional)<input id="qTo" type="date"></label>
                             <label>Show<select id="view"><option>All Activity</option><option>Started</option><option>In Progress</option><option>Delayed / Overdue</option></select></label>
                             <label>Search<input id="q" type="search" placeholder="Truck, driver, route, trip ID"></label>
                             <button class="rst" id="reset"><svg class="ic"><use href="#i-reset" /></svg>Today</button>
                         </div>
-                        <div class="cap" id="cap"></div><div id="cards"></div>
+                        <div class="cap" id="cap"></div>
+                        <div id="cards"></div>
                         <div class="foot">Click any card to see driver, contact and all stage dates. Card edge colour:<span class="b g">On time</span><span class="b o">Almost late</span><span class="b r">Late / overdue</span></div>
                     </section>
                 </div>
                 <div id="vDone" hidden>
                     <section class="panel">
                         <div class="ph">
-                            <div class="bar" style="align-items:center"><button class="btn" id="bBack"><svg class="ic"><use href="#i-left" /></svg>Back to Fleet Master View</button><h2>Completed trips<span class="cnt" id="dCnt">0</span></h2></div>
+                            <div class="bar" style="align-items:center"><button class="btn" id="bBack"><svg class="ic"><use href="#i-left" /></svg>Back to Current Trips</button><h2>Completed trips<span class="cnt" id="dCnt">0</span></h2></div>
                             <div class="bar"><button class="btn" id="bExpDone"><svg class="ic"><use href="#i-down" /></svg>Export completed</button></div>
                         </div>
                         <div class="tools">
-                            <label>Returned in month<input id="dMonth" type="month"></label><label>Search<input id="dq" type="search" placeholder="Truck, driver, route, trip ID"></label>
+                            <label>Returned in month<input id="dMonth" type="month"></label>
+                            <label>Search<input id="dq" type="search" placeholder="Truck, driver, route, trip ID"></label>
                             <button class="rst" id="dReset"><svg class="ic"><use href="#i-reset" /></svg>Clear filters</button>
                         </div>
-                        <div class="cap" id="dCap"></div><div id="dCards"></div><nav class="pager" id="pager" aria-label="Pages"></nav>
+                        <div class="cap" id="dCap"></div>
+                        <div id="dCards"></div>
+                        <nav class="pager" id="pager" aria-label="Pages"></nav>
                         <div class="foot">A trip shows here once it has a returned / completed date. Newest first, 100 cards per page. Click a card to view or edit it.</div>
                     </section>
                 </div>
@@ -858,26 +742,42 @@
     </div>
     <dialog id="dlg">
         <form id="frm" onsubmit="return false">
-            <h2 id="dT">Add trip</h2><div class="grid">
-                <label>Trip ID<input name="id" readonly></label><label>Truck<select name="truck"></select></label>
+            <h2 id="dT">Add trip</h2>
+            <div class="grid">
+                <label>Trip ID<input name="id" readonly></label>
+                <label>Truck<select name="truck"></select></label>
                 <div class="wide tdet">
                     <h3>Truck &amp; driver details</h3>
-                    <label>Registration no.<input name="kreg"></label><label>Driver name<input name="kdriver"></label>
-                    <label>Driver contact<input name="kcontact" type="tel"></label><label>Truck type<input name="ktype" list="ktypes"></label>
-                    <label>Truck status<select name="kstatus"><option>Active</option><option>Idle</option><option>Under Maintenance</option><option>Inactive</option></select></label><span></span>
+                    <label>Registration no.<input name="kreg"></label>
+                    <label>Driver name<input name="kdriver"></label>
+                    <label>Driver contact<input name="kcontact" type="tel"></label>
+                    <label>Truck type<input name="ktype" list="ktypes"></label>
+                    <label>Truck status<select name="kstatus"><option>Active</option><option>Idle</option><option>Maintenance</option><option>Inactive</option></select></label><span></span>
                     <small>These details belong to the truck, so a change here shows on every trip for this truck.</small>
-                </div><datalist id="ktypes"><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Box Body</option><option>Lowbed</option></datalist><label class="wide">Route (Origin - Destination)<input name="route"></label>
+                </div>
+                <datalist id="ktypes"><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Box Body</option><option>Lowbed</option><option>Container</option><option>Refrigerated</option></datalist>
+                <label class="wide">Route (Origin - Destination)<input name="route"></label>
                 <label>Planned trip days<input name="plan" type="number" min="1"></label><span></span>
-                <label>Dispatched date<input name="d" type="date"></label><label>Loading date<input name="l" type="date"></label>
-                <label>In transit date<input name="t" type="date"></label><label>Unloading date<input name="u" type="date"></label>
-                <label>Delivered date<input name="v" type="date"></label><label>Returned / completed date<input name="r" type="date"></label>
+                <label>Dispatched date<input name="d" type="date"></label>
+                <label>Loading date<input name="l" type="date"></label>
+                <label>In transit date<input name="t" type="date"></label>
+                <label>Unloading date<input name="u" type="date"></label>
+                <label>Delivered date<input name="v" type="date"></label>
+                <label>Returned / completed date<input name="r" type="date"></label>
                 <label class="wide">Notes<input name="n"></label>
             </div>
             <div class="acts"><button type="button" class="btn" id="dDel" style="color:var(--rfg)">Delete</button><span><button type="button" class="btn" id="dX">Cancel</button> <button type="button" class="btn pri" id="dS">Save</button></span></div>
         </form>
     </dialog>
     <script>
-        const SEED = { "trucks": [{ "id": "TRK-001", "reg": "MH-12-AB-1234", "driver": "Ramesh Kumar", "contact": "+91 98765 43210", "type": "Flatbed", "status": "Active" }, { "id": "TRK-002", "reg": "MH-12-AB-1235", "driver": "Prasad", "contact": "+91 98765 43210", "type": "Flatbed", "status": "Idle" }, { "id": "TRK-003", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-004", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-005", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-006", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-007", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-008", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-009", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-010", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-011", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-012", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-013", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-014", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-015", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-016", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-017", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-018", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-019", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-020", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-021", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-022", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-023", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-024", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-025", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-026", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-027", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-028", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-029", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-030", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-031", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-032", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-033", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-034", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-035", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-036", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-037", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-038", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-039", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-040", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-041", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-042", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-043", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-044", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-045", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-046", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-047", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-048", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-049", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-050", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-051", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-052", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-053", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-054", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-055", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-056", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-057", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-058", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-059", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-060", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-061", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-062", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-063", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-064", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-065", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-066", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-067", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-068", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-069", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-070", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-071", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-072", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-073", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-074", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-075", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-076", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-077", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-078", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-079", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-080", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-081", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-082", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-083", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-084", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-085", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-086", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-087", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-088", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-089", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-090", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-091", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-092", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-093", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-094", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-095", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-096", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-097", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-098", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-099", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-100", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-101", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-102", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-103", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-104", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-105", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-106", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-107", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-108", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-109", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-110", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-111", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-112", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-113", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-114", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-115", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-116", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-117", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-118", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-119", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-120", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-121", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-122", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-123", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-124", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-125", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-126", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-127", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-128", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-129", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-130", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-131", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-132", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-133", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-134", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-135", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-136", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-137", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-138", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-139", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-140", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-141", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-142", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-143", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-144", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-145", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-146", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-147", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-148", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-149", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-150", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-151", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-152", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-153", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-154", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-155", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-156", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-157", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-158", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-159", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-160", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-161", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-162", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-163", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-164", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-165", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-166", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-167", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-168", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-169", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-170", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-171", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-172", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-173", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-174", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-175", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-176", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-177", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-178", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-179", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-180", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-181", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-182", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-183", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-184", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-185", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-186", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-187", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-188", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-189", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-190", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-191", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-192", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-193", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-194", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-195", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-196", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-197", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-198", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-199", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }, { "id": "TRK-200", "reg": "", "driver": "", "contact": "", "type": "", "status": "Active" }], "trips": [{ "id": "TRIP-0001", "truck": "TRK-001", "route": "Mumbai - Delhi", "plan": 15, "d": "2026-08-01", "l": "2026-08-01", "t": "2026-08-02", "u": "2026-08-16", "v": "2026-08-17", "r": "2026-08-20", "n": "Example row - replace with real data (delay shown vs. 15-day plan)." }] };
+        /* Starting trucks (only used the very first time, when the database has no trucks yet): TRK-001 ... TRK-200 */
+        const SEED = {
+            trucks: Array.from({ length: 200 }, (_, i) => ({ id: 'TRK-' + String(i + 1).padStart(3, '0'), reg: '', driver: '', contact: '', type: '', status: 'Active' })),
+            trips: [{ id: 'TRIP-0001', truck: 'TRK-001', route: 'Mumbai - Delhi', plan: 15, d: '2026-08-01', l: '2026-08-01', t: '2026-08-02', u: '2026-08-16', v: '2026-08-17', r: '2026-08-20', n: 'Example row - replace with real data (delay shown vs. 15-day plan).' }]
+        };
+        Object.assign(SEED.trucks[0], { reg: 'MH-12-AB-1234', driver: 'Ramesh Kumar', contact: '+91 98765 43210', type: 'Flatbed' });
+        Object.assign(SEED.trucks[1], { reg: 'MH-12-AB-1235', driver: 'Prasad', contact: '+91 98765 43210', type: 'Flatbed', status: 'Idle' });
+
         const KEY = 'fleet_master_v2', ST = ['Dispatched', 'Loading', 'In Transit', 'Unloading', 'Delivered', 'Returned/Available'], K = ['d', 'l', 't', 'u', 'v', 'r'];
         const STY = { 'Returned/Available': 'g', 'Delivered': 'g', 'Unloading': 'o', 'In Transit': 'y', 'Loading': 'y', 'Dispatched': '', 'Not Started': '' };
         const $ = i => document.getElementById(i); let D;
@@ -887,13 +787,15 @@
         const fmt = d => d ? new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
         const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
         const dash = v => v ? esc(v) : '<span class="dash">&mdash;</span>';
+
         /* Storage: on the server -> /api/master (separate Firebase project). Opened as a plain file -> this browser only. */
         let MODE = 'local', DEMO = false;
         async function api(method, url, data) {
             const r = await fetch(url, { method, credentials: 'same-origin', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined });
             if (r.status === 401) { location.href = '/login'; throw new Error('Please log in again.') }
             let j = null; try { j = await r.json() } catch (e) { }
-            if (!r.ok) throw new Error((j && j.error) || ('Server error ' + r.status)); return j
+            if (!r.ok) throw new Error((j && j.error) || ('Server error ' + r.status));
+            return j
         }
         function loadLocal() { try { D = JSON.parse(localStorage.getItem(KEY)) } catch (e) { D = null } if (!D) D = JSON.parse(JSON.stringify(SEED)) }
         async function load() {
@@ -901,7 +803,8 @@
                 try {
                     const j = await api('GET', '/api/master'); MODE = 'server';
                     if (!j.trucks.length) { await api('POST', '/api/master/bulk', { trucks: SEED.trucks, trips: [] }); j.trucks = SEED.trucks.map(x => ({ ...x })) }
-                    D = { trucks: j.trucks.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })), trips: j.trips }; return
+                    D = { trucks: j.trucks.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })), trips: j.trips };
+                    return
                 }
                 catch (e) { if (/log in/.test(e.message)) throw e; say('Could not reach the server (' + esc(e.message) + '). Showing data saved in this browser only - changes will NOT reach the server.', true) }
             }
@@ -910,11 +813,14 @@
         function save() { if (MODE === 'local' && !DEMO) try { localStorage.setItem(KEY, JSON.stringify(D)) } catch (e) { } }
         function blocked() { if (DEMO) { say('This is the 100-card preview, so nothing is saved. Refresh the page to go back to your real data and edit it.', true); return true } return false }
         function say(t, err) { const m = $('msg'); m.hidden = false; m.className = 'msg' + (err ? ' err' : ''); m.innerHTML = t }
+
+        /* Trip status on a given date */
         function info(t, to) { let s = 'Not Started'; K.forEach((k, i) => { if (t[k] && t[k] <= to) s = ST[i] }); const done = !!(t.r && t.r <= to); return { s, done, run: done ? days(t.d, t.r) : (t.d ? days(t.d, to) : null) } }
         function calc() {
             const f = $('qFrom').value || today(), to = $('qTo').value >= f && $('qTo').value ? $('qTo').value : f, v = $('view').value, q = $('q').value.toLowerCase(), out = [], n = { st: 0, co: 0, ip: 0, dl: 0 };
             D.trips.forEach(t => {
-                if (!t.d) return; const i = info(t, to), st = t.d >= f && t.d <= to, co = t.r && t.r >= f && t.r <= to, ip = t.d <= to && !t.r, late = ip && i.run > t.plan;
+                if (!t.d) return;
+                const i = info(t, to), st = t.d >= f && t.d <= to, co = t.r && t.r >= f && t.r <= to, ip = t.d <= to && !t.r, late = ip && i.run > t.plan;
                 if (st) n.st++; if (co) n.co++; if (ip) n.ip++; if (late) n.dl++;
                 const m = !t.r && { 'All Activity': st || ip, Started: st, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = D.trucks.find(x => x.id === t.truck) || {};
                 if (m && (!q || [t.truck, t.route, tr.driver, tr.reg, t.id].join(' ').toLowerCase().includes(q))) out.push({ t, tr, i });
@@ -923,13 +829,14 @@
         }
         function card(t, tr, i) {
             const lbl = i.s === 'Returned/Available' ? 'Completed' : i.s, late = i.run > t.plan, warn = !late && i.run >= t.plan - 3 && !i.done;
-            const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : ''), pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
+            const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : '');
+            const pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
             const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
             return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse">${esc(t.id.replace('TRIP-', ''))}</b><div class="sub">${esc(tr.reg || t.truck)}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
-          <div class="mini"><div class="rt">${dash(t.route)}</div>
-          <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
-          <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
-          <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
+              <div class="mini"><div class="rt">${dash(t.route)}</div>
+              <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
+              <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
+              <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
         }
         function render() {
             const { f, to, n, out } = calc();
@@ -940,7 +847,8 @@
             $('cap').textContent = `Showing ${fmt(f)}${to > f ? ' to ' + fmt(to) : ''} · ${$('view').value} · ${out.length} trip card(s)`;
             $('cards').innerHTML = out.length ? out.map(({ t, tr, i }) => card(t, tr, i)).join('') : '<div class="empty">No trips match this date and filter.</div>'
         }
-        /* completed trips page */
+
+        /* Completed trips view */
         const PER = 100; let page = 1;
         const doneTrips = () => D.trips.filter(t => t.d && t.r).sort((a, b) => b.r.localeCompare(a.r) || String(b.id).localeCompare(String(a.id)));
         function renderDone() {
@@ -955,7 +863,7 @@
         }
         function pager(pages) {
             if (pages < 2) { $('pager').innerHTML = ''; return }
-            const set = new Set([1, pages]); for (let k = page - 2; k <= page + 2; k++)if (k >= 1 && k <= pages) set.add(k);
+            const set = new Set([1, pages]); for (let k = page - 2; k <= page + 2; k++) if (k >= 1 && k <= pages) set.add(k);
             let h = `<button data-p="${page - 1}" ${page === 1 ? 'disabled' : ''} aria-label="Previous page">&lsaquo; Prev</button>`, prev = 0;
             [...set].sort((x, y) => x - y).forEach(k => { if (k - prev > 1) h += '<span>&hellip;</span>'; h += `<button data-p="${k}" class="${k === page ? 'on' : ''}" ${k === page ? 'aria-current="page"' : ''}>${k}</button>`; prev = k });
             $('pager').innerHTML = h + `<button data-p="${page + 1}" ${page === pages ? 'disabled' : ''} aria-label="Next page">Next &rsaquo;</button>`
@@ -965,25 +873,32 @@
         $('dReset').onclick = () => { $('dMonth').value = ''; $('dq').value = ''; page = 1; renderDone() };
         $('dCards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openForm(b.dataset.e) };
         $('bBack').onclick = () => go('main');
-        let VIEW = (() => { try { return location.hash === '#completed' ? 'done' : 'main' } catch (e) { return 'main' } })();
+
+        /* Switching between Current Trips and Completed Trips (no page reload) */
+        let VIEW = location.hash === '#completed' ? 'done' : 'main';
         const isDone = () => VIEW === 'done';
         function go(v) { VIEW = v; page = 1; try { history.replaceState(null, '', v === 'done' ? '#completed' : location.pathname + location.search) } catch (e) { } route() }
         document.addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); go(a.dataset.go) } });
-        function refresh() { isDone() ? renderDone() : render() }
+        function refresh() { if (D) isDone() ? renderDone() : render() }
         function route() {
             const d = isDone(); $('vMain').hidden = d; $('vDone').hidden = !d; $('bAdd').hidden = d;
-            $('h1').textContent = d ? 'Completed Trips' : 'Fleet Master View';
+            $('h1').textContent = d ? 'Completed Trips' : 'Current Trips';
             $('hp').textContent = d ? 'Every trip that has a returned / completed date, stored here so you can check it any time. 100 cards per page.' : 'Pick a date to see every trip started or in progress. Trips with a returned date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.';
-            renderNav(d); refresh(); try { window.scrollTo(0, 0) } catch (e) { }
+            if (window.PHMenu) PHMenu.refresh();
+            refresh(); try { window.scrollTo(0, 0) } catch (e) { }
         }
         window.addEventListener('hashchange', () => { const v = location.hash === '#completed' ? 'done' : 'main'; if (v !== VIEW) { VIEW = v; page = 1; route() } });
-        /* edit dialog */
-        const dlg = $('dlg'), frm = $('frm'); let editing = null;
+
+        /* Add / edit trip */
+        const dlg = $('dlg'), frm = $('frm'); let editing = false;
         function openForm(id) {
-            const t = D.trips.find(x => x.id === id), o = t || { id: MODE === 'server' ? '' : nextId(), truck: D.trucks[0].id, route: '', plan: 15, n: '' }; editing = !!t;
+            if (!D) return;
+            const t = D.trips.find(x => x.id === id), o = t || { id: MODE === 'server' ? '' : nextId(), truck: (D.trucks[0] || {}).id || '', route: '', plan: 15, n: '' };
+            editing = !!t;
             $('dT').textContent = t ? 'Edit trip' : 'Add trip'; $('dDel').style.visibility = t ? 'visible' : 'hidden';
             frm.elements.truck.innerHTML = D.trucks.map(x => `<option>${esc(x.id)}</option>`).join('');
-            ['id', 'truck', 'route', 'plan', 'n', ...K].forEach(k => frm.elements[k].value = o[k] || ''); frm.elements.id.placeholder = 'Given when you save'; showDet(); dlg.showModal()
+            ['id', 'truck', 'route', 'plan', 'n', ...K].forEach(k => frm.elements[k].value = o[k] || '');
+            frm.elements.id.placeholder = 'Given when you save'; showDet(); dlg.showModal()
         }
         const KF = [['kreg', 'reg'], ['kdriver', 'driver'], ['kcontact', 'contact'], ['ktype', 'type'], ['kstatus', 'status']];
         function showDet() { const tr = D.trucks.find(x => x.id === frm.elements.truck.value) || {}; KF.forEach(([f, k]) => frm.elements[f].value = tr[k] || (k === 'status' ? 'Active' : '')) }
@@ -991,28 +906,43 @@
         function nextId() { let m = 0; D.trips.forEach(t => { m = Math.max(m, parseInt(String(t.id).replace(/\D/g, '')) || 0) }); return 'TRIP-' + String(m + 1).padStart(4, '0') }
         $('bAdd').onclick = () => openForm(); $('dX').onclick = () => dlg.close();
         $('dS').onclick = async () => {
-            if (blocked()) return; const o = {};['id', 'truck', 'route', 'n', ...K].forEach(k => o[k] = frm.elements[k].value.trim()); o.plan = +frm.elements.plan.value || 15;
+            if (blocked()) return;
+            const o = {};['id', 'truck', 'route', 'n', ...K].forEach(k => o[k] = frm.elements[k].value.trim()); o.plan = +frm.elements.plan.value || 15;
             if (o.r && !o.d) { alert('A returned date needs a dispatched date.'); return }
             if (o.r && o.r < o.d) { alert('The returned date is before the dispatched date.'); return }
-            const info = {}; KF.forEach(([f, k]) => info[k] = frm.elements[f].value.trim());
+            const tinfo = {}; KF.forEach(([f, k]) => tinfo[k] = frm.elements[f].value.trim());
             if (MODE === 'server') {
                 const b = $('dS'); b.disabled = true; b.textContent = 'Saving...';
-                try { const { id, ...rest } = o, isNew = !editing, r = await api(isNew ? 'POST' : 'PUT', isNew ? '/api/master/trips' : '/api/master/trips/' + encodeURIComponent(id), { ...rest, truckInfo: info }); Object.assign(o, r) }
-                catch (e) { alert('Not saved: ' + e.message); return } finally { b.disabled = false; b.textContent = 'Save' }
+                try {
+                    const { id, ...rest } = o, isNew = !editing;
+                    const r = await api(isNew ? 'POST' : 'PUT', isNew ? '/api/master/trips' : '/api/master/trips/' + encodeURIComponent(id), { ...rest, truckInfo: tinfo });
+                    Object.assign(o, r)
+                }
+                catch (e) { alert('Not saved: ' + e.message); return }
+                finally { b.disabled = false; b.textContent = 'Save' }
             }
-            const tk = D.trucks.find(x => x.id === o.truck); if (tk) Object.assign(tk, info);
-            const i = D.trips.findIndex(x => x.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o; save(); dlg.close(); refresh(); say(o.r ? 'Trip ' + esc(o.id) + ' is completed and has moved to <a href="#completed" data-go="done" style="color:inherit;font-weight:700">Completed Trips &rarr;</a>' : 'Trip ' + esc(o.id) + ' saved.')
+            const tk = D.trucks.find(x => x.id === o.truck); if (tk) Object.assign(tk, tinfo);
+            const i = D.trips.findIndex(x => x.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o;
+            save(); dlg.close(); refresh();
+            say(o.r ? 'Trip ' + esc(o.id) + ' is completed and has moved to <a href="#completed" data-go="done" style="color:inherit;font-weight:700">Completed Trips &rarr;</a>' : 'Trip ' + esc(o.id) + ' saved.')
         };
-        $('dDel').onclick = async () => { if (blocked()) return; if (confirm('Delete this trip?')) { if (MODE === 'server') { try { await api('DELETE', '/api/master/trips/' + encodeURIComponent(frm.elements.id.value)) } catch (e) { alert('Not deleted: ' + e.message); return } } D.trips = D.trips.filter(x => x.id !== frm.elements.id.value); save(); dlg.close(); refresh() } };
+        $('dDel').onclick = async () => {
+            if (blocked()) return;
+            if (!confirm('Delete this trip?')) return;
+            if (MODE === 'server') { try { await api('DELETE', '/api/master/trips/' + encodeURIComponent(frm.elements.id.value)) } catch (e) { alert('Not deleted: ' + e.message); return } }
+            D.trips = D.trips.filter(x => x.id !== frm.elements.id.value); save(); dlg.close(); refresh()
+        };
         $('cards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openForm(b.dataset.e) };
-        /* Excel: template, export, bulk upload */
+
+        /* Excel: template (all current data), export, bulk upload. Sheets: "Trip Log" and "Truck Master" */
         const TH = ['Trip ID', 'Truck ID', 'Route (Origin - Destination)', 'Planned Trip Days', 'Dispatched Date', 'Loading Date', 'In Transit Date', 'Unloading Date', 'Delivered Date', 'Returned/Available Date', 'Notes'],
             KH = ['Truck ID', 'Registration No.', 'Driver Name', 'Driver Contact', 'Truck Type', 'Truck Status'];
         function book(trips, trucks, name, help) {
             const wb = XLSX.utils.book_new(), a = XLSX.utils.aoa_to_sheet([TH].concat(trips)), b = XLSX.utils.aoa_to_sheet([KH].concat(trucks));
             a['!cols'] = TH.map(() => ({ wch: 22 })); b['!cols'] = KH.map(() => ({ wch: 20 }));
             if (help) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(help.map(x => [x])), 'Instructions');
-            XLSX.utils.book_append_sheet(wb, a, 'Trip Log'); XLSX.utils.book_append_sheet(wb, b, 'Truck Master'); XLSX.writeFile(wb, name)
+            XLSX.utils.book_append_sheet(wb, a, 'Trip Log'); XLSX.utils.book_append_sheet(wb, b, 'Truck Master');
+            XLSX.writeFile(wb, name)
         }
         const trow = t => [t.id, t.truck, t.route, t.plan, ...K.map(k => t[k]), t.n], krow = x => [x.id, x.reg, x.driver, x.contact, x.type, x.status];
         const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
@@ -1026,55 +956,98 @@
             'Truck Master: registration, driver, contact, type and status per truck. Blank cells do not wipe details already saved.',
             'Upload ADDS and UPDATES only. Nothing is deleted.'];
         const EXAMPLE = [['', 'TRK-003', 'Lusaka - Lubumbashi', 15, '2026-10-05', '2026-10-05', '2026-10-06', '', '', '', 'Example: still in transit'], ['', 'TRK-004', 'Kolwezi - Lusaka', 15, '2026-09-20', '2026-09-20', '2026-09-21', '2026-10-02', '2026-10-03', '2026-10-06', 'Example: completed']];
-        $('bTpl').onclick = () => book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP);
-        $('bExp').onclick = () => book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx');
-        $('bExpDone').onclick = () => { const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
-        $('bUp').onclick = () => { if (!blocked()) $('file').click() };
+        const ready = () => { if (!D) { alert('Still loading, please wait a moment.'); return false } return true };
+        $('bTpl').onclick = () => { if (ready()) book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP) };
+        $('bExp').onclick = () => { if (ready()) book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx') };
+        $('bExpDone').onclick = () => { if (!ready()) return; const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
+        $('bUp').onclick = () => { if (ready() && !blocked()) $('file').click() };
+
         function toIso(v) {
-            if (v === '' || v == null) return ''; if (v instanceof Date) return iso(new Date(v.getTime() + 432e5));
+            if (v === '' || v == null) return '';
+            if (v instanceof Date) return iso(new Date(v.getTime() + 432e5));
             if (typeof v == 'number') { const u = new Date(Math.round((v - 25569) * 864e5)); return u.getUTCFullYear() + '-' + String(u.getUTCMonth() + 1).padStart(2, '0') + '-' + String(u.getUTCDate()).padStart(2, '0') }
-            const s = String(v).trim(); let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return m[1] + '-' + m[2].padStart(2,
+            const s = String(v).trim(); let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+            m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+            if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+            return null
+        }
         function key(o, names) { for (const k of Object.keys(o)) if (names.includes(k.toLowerCase().replace(/[^a-z]/g, ''))) return o[k]; return '' }
         const SHEETS = { Trips: ['Trip Log', 'Trips'], Trucks: ['Truck Master', 'Trucks'] };
-        const rows = (wb, n) => { const nm = SHEETS[n].find(x => wb.Sheets[x]); return nm ? XLSX.utils.sheet_to_json(wb.Sheets[nm], { defval: '', raw: true }) : [] };        $('file').onchange = e => {
+        const rows = (wb, n) => { const nm = SHEETS[n].find(x => wb.Sheets[x]); return nm ? XLSX.utils.sheet_to_json(wb.Sheets[nm], { defval: '', raw: true }) : [] };
+
+        $('file').onchange = e => {
             const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
             rd.onload = async () => {
-                const before = JSON.stringify(D); try {
+                const before = JSON.stringify(D);
+                try {
                     const wb = XLSX.read(rd.result, { type: 'array', cellDates: true }), bad = [], tks = []; let nt = 0;
-                    rows(wb, 'Trucks').forEach(r => { const id = String(key(r, ['truckid', 'id'])).trim(); if (!id) return; const o = { id, reg: String(key(r, ['registrationno', 'registration', 'reg', 'horse'])).trim(), driver: String(key(r, ['drivername', 'driver'])).trim(), contact: String(key(r, ['drivercontact', 'contact'])).trim(), type: String(key(r, ['trucktype', 'type'])).trim(), status: String(key(r, ['truckstatus', 'status'])).trim() || 'Active' }, i = D.trucks.findIndex(x => x.id === id); tks.push({ ...o, status: String(key(r, ['truckstatus', 'status'])).trim() }); i < 0 ? (D.trucks.push(o), nt++) : D.trucks[i] = Object.assign(D.trucks[i], Object.fromEntries(Object.entries(o).filter(([k, v]) => v))) });
-                    const inc = []; rows(wb, 'Trips').forEach((r, i) => {
-                        const ln = i + 2, tk = String(key(r, ['truckid', 'truck'])).trim(); if (!tk && !key(r, ['tripid', 'id'])) return;
-                        if (!tk) return bad.push('row ' + ln + ': Truck ID missing'); if (!D.trucks.some(x => x.id === tk)) return bad.push('row ' + ln + ': ' + esc(tk) + ' not found');
+                    rows(wb, 'Trucks').forEach(r => {
+                        const id = String(key(r, ['truckid', 'id'])).trim(); if (!id) return;
+                        const st = String(key(r, ['truckstatus', 'status'])).trim();
+                        const o = { id, reg: String(key(r, ['registrationno', 'registration', 'reg', 'horse'])).trim(), driver: String(key(r, ['drivername', 'driver'])).trim(), contact: String(key(r, ['drivercontact', 'contact'])).trim(), type: String(key(r, ['trucktype', 'type'])).trim(), status: st || 'Active' };
+                        const i = D.trucks.findIndex(x => x.id === id);
+                        tks.push({ ...o, status: st });
+                        if (i < 0) { D.trucks.push(o); nt++ } else D.trucks[i] = Object.assign(D.trucks[i], Object.fromEntries(Object.entries(o).filter(([k, v]) => v)))
+                    });
+                    const inc = [];
+                    rows(wb, 'Trips').forEach((r, i) => {
+                        const ln = i + 2, tk = String(key(r, ['truckid', 'truck'])).trim();
+                        if (!tk && !key(r, ['tripid', 'id'])) return;
+                        if (!tk) return bad.push('row ' + ln + ': Truck ID missing');
+                        if (!D.trucks.some(x => x.id === tk)) return bad.push('row ' + ln + ': ' + esc(tk) + ' not found');
                         const o = { id: String(key(r, ['tripid', 'id'])).trim(), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), row: ln };
                         const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading']], ['t', ['intransitdate', 'intransit']], ['u', ['unloadingdate', 'unloading']], ['v', ['delivereddate', 'delivered']], ['r', ['returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
                         for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + k); o[k] = x }
-                        if (o.r && !o.d) return bad.push('row ' + ln + ': returned date needs a dispatched date'); if (o.r && o.r < o.d) return bad.push('row ' + ln + ': returned date before dispatched date'); inc.push(o)
+                        if (o.r && !o.d) return bad.push('row ' + ln + ': returned date needs a dispatched date');
+                        if (o.r && o.r < o.d) return bad.push('row ' + ln + ': returned date before dispatched date');
+                        inc.push(o)
                     });
-                    const upd = inc.filter(o => o.id && D.trips.some(t => t.id === o.id)).length, why = bad.length ? ' Skipped ' + bad.length + ': ' + esc(bad.slice(0, 5).join('; ')) + (bad.length > 5 ? '; ...' : '') : '';
-                    if (!inc.length && !tks.length) { D = JSON.parse(before); say('Nothing was uploaded.' + (why || ' No rows found. Download the template and fill it in.'), true); return }
-                    if (!confirm('Import ' + inc.length + ' trips (' + (inc.length - upd) + ' new, ' + upd + ' updated) and ' + nt + ' new trucks? Nothing is deleted.')) { D = JSON.parse(before); return }
-                    if (MODE === 'server') { say('Uploading...'); try { await api('POST', '/api/master/bulk', { trucks: tks, trips: inc }); await load() } catch (x) { D = JSON.parse(before); say('Upload failed, nothing was saved: ' + esc(x.message), true); e.target.value = ''; return } refresh() }
-                    else { inc.forEach(o => { delete o.row; if (!o.id) o.id = nextId(); const i = D.trips.findIndex(t => t.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o }); save(); refresh() }
+                    const upd = inc.filter(o => o.id && D.trips.some(t => t.id === o.id)).length;
+                    const why = bad.length ? ' Skipped ' + bad.length + ': ' + esc(bad.slice(0, 5).join('; ')) + (bad.length > 5 ? '; ...' : '') : '';
+                    if (!inc.length && !tks.length) { D = JSON.parse(before); say('Nothing was uploaded.' + (why || ' No "Trip Log" or "Truck Master" rows found. Download the template and fill it in.'), true); e.target.value = ''; return }
+                    if (!confirm('Import ' + inc.length + ' trips (' + (inc.length - upd) + ' new, ' + upd + ' updated) and ' + tks.length + ' trucks (' + nt + ' new)? Nothing is deleted.')) { D = JSON.parse(before); e.target.value = ''; return }
+                    if (MODE === 'server') {
+                        say('Uploading...');
+                        try { await api('POST', '/api/master/bulk', { trucks: tks, trips: inc }); await load() }
+                        catch (x) { D = JSON.parse(before); say('Upload failed, nothing was saved: ' + esc(x.message), true); e.target.value = ''; return }
+                        refresh()
+                    } else {
+                        inc.forEach(o => { delete o.row; if (!o.id) o.id = nextId(); const i = D.trips.findIndex(t => t.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o });
+                        save(); refresh()
+                    }
                     say('Upload done: ' + (inc.length - upd) + ' trips added, ' + upd + ' updated, ' + nt + ' trucks added.' + why, bad.length > 0)
-                } catch (x) { D = JSON.parse(before); say('Upload failed: ' + esc(x.message), true) } e.target.value = ''
-            }; rd.readAsArrayBuffer(f)
+                } catch (x) { D = JSON.parse(before); say('Upload failed: ' + esc(x.message), true) }
+                e.target.value = ''
+            };
+            rd.readAsArrayBuffer(f)
         };
-        /* preview, filters, theme, modules */
+
+        /* 100-card preview (not saved) */
         $('bDemo').onclick = () => {
-            DEMO = true; const b = Date.parse(($('qFrom').value || today()) + 'T00:00'), I = n => new Date(b + n * 864e5).toISOString().slice(0, 10), R = ['Mumbai - Delhi', 'Lusaka - Lubumbashi', 'Kolwezi - Lusaka', 'Ndola - Kitwe', 'Kapiri - Solwezi', 'Chingola - Kasumbalesa'];
-            D.trips = []; for (let i = 0; i < 100; i++) { const stg = Math.floor(Math.random() * 6), s = -Math.floor(Math.random() * 18), t = { id: 'TRIP-' + String(i + 1).padStart(4, '0'), truck: D.trucks[i].id, route: R[i % 6], plan: 15, n: '' }; let c = s; K.forEach((k, j) => { if (j <= stg) { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) } else t[k] = '' }); if (t.r && t.r > I(0)) t.r = ''; D.trips.push(t) }
-            for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: D.trucks[(i + 100) % D.trucks.length].id, route: R[i % 6], plan: 15, n: '' }; let c = -(25 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
+            if (!ready()) return;
+            DEMO = true;
+            const b = Date.parse(($('qFrom').value || today()) + 'T00:00'), I = n => new Date(b + n * 864e5).toISOString().slice(0, 10), R = ['Lusaka - Lubumbashi', 'Kolwezi - Lusaka', 'Ndola - Kitwe', 'Kapiri - Solwezi', 'Chingola - Kasumbalesa', 'Lusaka - Kolwezi'];
+            const T = i => D.trucks[i % D.trucks.length].id;
+            D.trips = [];
+            for (let i = 0; i < 100; i++) { const stg = Math.floor(Math.random() * 6), s = -Math.floor(Math.random() * 18), t = { id: 'TRIP-' + String(i + 1).padStart(4, '0'), truck: T(i), route: R[i % 6], plan: 15, n: '' }; let c = s; K.forEach((k, j) => { if (j <= stg) { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) } else t[k] = '' }); if (t.r && t.r > I(0)) t.r = ''; D.trips.push(t) }
+            for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: T(i + 100), route: R[i % 6], plan: 15, n: '' }; let c = -(25 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
             refresh(); say('Showing 100 sample trips on the board plus 250 older completed trips (see Completed Trips, 3 pages). They are not saved. Refresh the page to go back to your data.')
         };
-        ['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', render)); $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; render() };
-        function renderNav() { if (window.PHMenu) PHMenu.refresh() }
+
+        /* Filters */
+        ['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', () => { if (D) render() }));
+        $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; if (D) render() };
+
+        /* Start: load trips, then show the right view */
         (async () => {
-            $('today').textContent = 'Today, ' + fmt(today()); $('cards').innerHTML = '<div class="empty">Loading trips...</div>';
+            $('today').textContent = 'Today, ' + fmt(today());
+            $('cards').innerHTML = '<div class="empty">Loading trips...</div>';
+            $('qFrom').value = today();
             try { await load() } catch (e) { return }
             $('today').textContent = 'Today, ' + fmt(today()) + (MODE === 'server' ? ' · Saved on the server' : ' · Saved in this browser only');
-            $('qFrom').value = today(); route()
+            route()
         })();
     </script>
-    
 </body>
 </html>
