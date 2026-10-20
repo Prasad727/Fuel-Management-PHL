@@ -926,10 +926,10 @@
             const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : ''), pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
             const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
             return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse">${esc(t.id.replace('TRIP-', ''))}</b><div class="sub">${esc(tr.reg || t.truck)}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
-      <div class="mini"><div class="rt">${dash(t.route)}</div>
-      <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
-      <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
-      <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
+          <div class="mini"><div class="rt">${dash(t.route)}</div>
+          <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
+          <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
+          <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
         }
         function render() {
             const { f, to, n, out } = calc();
@@ -1010,24 +1010,33 @@
             KH = ['Truck ID', 'Registration No.', 'Driver Name', 'Driver Contact', 'Truck Type', 'Truck Status'];
         function book(trips, trucks, name, help) {
             const wb = XLSX.utils.book_new(), a = XLSX.utils.aoa_to_sheet([TH].concat(trips)), b = XLSX.utils.aoa_to_sheet([KH].concat(trucks));
-            a['!cols'] = TH.map(() => ({ wch: 22 })); b['!cols'] = KH.map(() => ({ wch: 20 })); XLSX.utils.book_append_sheet(wb, a, 'Trips'); XLSX.utils.book_append_sheet(wb, b, 'Trucks');
-            if (help) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(help.map(x => [x])), 'Instructions'); XLSX.writeFile(wb, name)
+            a['!cols'] = TH.map(() => ({ wch: 22 })); b['!cols'] = KH.map(() => ({ wch: 20 }));
+            if (help) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(help.map(x => [x])), 'Instructions');
+            XLSX.utils.book_append_sheet(wb, a, 'Trip Log'); XLSX.utils.book_append_sheet(wb, b, 'Truck Master'); XLSX.writeFile(wb, name)
         }
         const trow = t => [t.id, t.truck, t.route, t.plan, ...K.map(k => t[k]), t.n], krow = x => [x.id, x.reg, x.driver, x.contact, x.type, x.status];
-        $('bTpl').onclick = () => book([['', 'TRK-003', 'Lusaka - Lubumbashi', 15, '2026-10-05', '2026-10-05', '2026-10-06', '', '', '', 'Example: still in transit'], ['', 'TRK-004', 'Kolwezi - Lusaka', 15, '2026-09-20', '2026-09-20', '2026-09-21', '2026-10-02', '2026-10-03', '2026-10-06', 'Example: completed']], D.trucks.map(krow), 'fleet_master_bulk_template.xlsx',
-            ['How bulk upload works', 'Sheet "Trips": one row per trip. Truck ID is required and must exist on the "Trucks" sheet (or already in the page).', 'Trip ID: leave EMPTY for new trips. A new ID is created. If a Trip ID already exists, that trip is UPDATED.', 'Dates: yyyy-mm-dd or normal Excel dates. Fill each stage date as the trip reaches it: Dispatched, Loading, In Transit, Unloading, Delivered, Returned/Available.', 'A trip is COMPLETED when it has a Returned/Available date.', 'Planned Trip Days: leave empty for 15.', 'Sheet "Trucks" (optional): add or update trucks by Truck ID with registration, driver, contact, type and status.', 'Upload ADDS and UPDATES only. Nothing is deleted. Delete the two example rows before you upload.']);
-        $('bExp').onclick = () => book(D.trips.map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx');
+        const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+        const HELP = ['How this template works',
+            'This file contains ALL your current trips (Trip Log) and trucks (Truck Master). Edit it and upload it back with "Bulk upload Excel".',
+            'Trip Log: one row per trip. Truck ID is required and must exist in Truck Master.',
+            'Trip ID filled in = that trip is UPDATED. Trip ID empty = a NEW trip with a new ID.',
+            'Fill each stage date as the trip reaches it: Dispatched, Loading, In Transit, Unloading, Delivered, Returned/Available. Dates: yyyy-mm-dd or normal Excel dates.',
+            'A trip shows as a card once it has a Dispatched date. It moves to Completed Trips once it has a Returned/Available date.',
+            'Planned Trip Days: leave empty for 15.',
+            'Truck Master: registration, driver, contact, type and status per truck. Blank cells do not wipe details already saved.',
+            'Upload ADDS and UPDATES only. Nothing is deleted.'];
+        const EXAMPLE = [['', 'TRK-003', 'Lusaka - Lubumbashi', 15, '2026-10-05', '2026-10-05', '2026-10-06', '', '', '', 'Example: still in transit'], ['', 'TRK-004', 'Kolwezi - Lusaka', 15, '2026-09-20', '2026-09-20', '2026-09-21', '2026-10-02', '2026-10-03', '2026-10-06', 'Example: completed']];
+        $('bTpl').onclick = () => book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP);
+        $('bExp').onclick = () => book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx');
         $('bExpDone').onclick = () => { const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
         $('bUp').onclick = () => { if (!blocked()) $('file').click() };
         function toIso(v) {
             if (v === '' || v == null) return ''; if (v instanceof Date) return iso(new Date(v.getTime() + 432e5));
             if (typeof v == 'number') { const u = new Date(Math.round((v - 25569) * 864e5)); return u.getUTCFullYear() + '-' + String(u.getUTCMonth() + 1).padStart(2, '0') + '-' + String(u.getUTCDate()).padStart(2, '0') }
-            const s = String(v).trim(); let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
-            m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/); if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0'); return null
-        }
+            const s = String(v).trim(); let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return m[1] + '-' + m[2].padStart(2,
         function key(o, names) { for (const k of Object.keys(o)) if (names.includes(k.toLowerCase().replace(/[^a-z]/g, ''))) return o[k]; return '' }
-        const rows = (wb, n) => { const s = wb.Sheets[n] || (n === 'Trips' ? wb.Sheets[wb.SheetNames[0]] : null); return s ? XLSX.utils.sheet_to_json(s, { defval: '', raw: true }) : [] };
-        $('file').onchange = e => {
+        const SHEETS = { Trips: ['Trip Log', 'Trips'], Trucks: ['Truck Master', 'Trucks'] };
+        const rows = (wb, n) => { const nm = SHEETS[n].find(x => wb.Sheets[x]); return nm ? XLSX.utils.sheet_to_json(wb.Sheets[nm], { defval: '', raw: true }) : [] };        $('file').onchange = e => {
             const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
             rd.onload = async () => {
                 const before = JSON.stringify(D); try {
@@ -1057,8 +1066,15 @@
             for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: D.trucks[(i + 100) % D.trucks.length].id, route: R[i % 6], plan: 15, n: '' }; let c = -(25 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
             refresh(); say('Showing 100 sample trips on the board plus 250 older completed trips (see Completed Trips, 3 pages). They are not saved. Refresh the page to go back to your data.')
         };
-['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', render)); $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; render() };
+        ['qFrom', 'qTo', 'view', 'q'].forEach(i => $(i).addEventListener('input', render)); $('reset').onclick = () => { $('qFrom').value = today(); $('qTo').value = ''; $('q').value = ''; $('view').value = 'All Activity'; render() };
         function renderNav() { if (window.PHMenu) PHMenu.refresh() }
+        (async () => {
+            $('today').textContent = 'Today, ' + fmt(today()); $('cards').innerHTML = '<div class="empty">Loading trips...</div>';
+            try { await load() } catch (e) { return }
+            $('today').textContent = 'Today, ' + fmt(today()) + (MODE === 'server' ? ' · Saved on the server' : ' · Saved in this browser only');
+            $('qFrom').value = today(); route()
+        })();
     </script>
+    
 </body>
 </html>
