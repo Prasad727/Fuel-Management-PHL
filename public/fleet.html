@@ -1270,8 +1270,8 @@
             };
             rd.readAsArrayBuffer(f)
         };
-        /* Modules menu: add a module here and it appears in the sidebar and in the menu that opens from the company name */
-        var MODULES = [{ n: "Fleet Management", d: "Trucks, trips and Excel uploads", h: "/fleet", i: "truck" }, { n: "Fuel Management", d: "Fuel given per trip and truck", h: "/fuel", i: "fuel" }, { n: "Procurement", d: "Coming soon", h: "", i: "box", soon: 1 }], CUR = "/fleet";
+/* Modules menu: add a module here and it appears in the sidebar and in the menu that opens from the company name */
+var MODULES = [{ n: "Fleet Management", d: "Trucks, trips and Excel uploads", h: "/fleet", i: "truck" }, { n: "Fleet Master View", d: "Trips, trucks and drivers", h: "/master", i: "gauge" }, { n: "Fuel Management", d: "Fuel given per trip and truck", h: "/fuel", i: "fuel" }, { n: "Procurement", d: "Coming soon", h: "", i: "box", soon: 1 }], CUR = "/fleet";
         function ico(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>' }
         function item(m, cn) { return '<a ' + (cn == "mi" ? 'role="menuitem" ' : '') + 'class="' + (cn == "mi" ? "mi " : "") + (m.h == CUR ? "on " : "") + (m.soon ? "soon" : "") + '" href="' + (m.h || "#") + '">' + ico(m.i) + (cn == "mi" ? '<span>' + m.n + '<small>' + m.d + '</small></span>' : m.n) + (m.soon ? '<span class="tag">SOON</span>' : '') + '</a>' }
         $("nav").innerHTML = '<div class="sec">Operations</div>' + MODULES.map(function (m) { return item(m, "nav") }).join("");
