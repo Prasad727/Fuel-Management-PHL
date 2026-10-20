@@ -48,16 +48,15 @@ const cookie = (val, age, req) =>
 
 const tries = new Map(); // brute-force limit: 5 wrong tries = 1 minute lock
 const clientIp = req => (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
-
 // Files visitors can open without logging in (everything else needs a login)
 const PUBLIC_FILES = {
+    '/menu.js': ['menu.js', 'application/javascript; charset=utf-8'],
     '/login': ['login.html', 'text/html; charset=utf-8'],
     '/login.html': ['login.html', 'text/html; charset=utf-8'],
     '/phl-logo.png': ['phl-logo.png', 'image/png'],
     '/phl-icon.png': ['phl-icon.png', 'image/png'],
     '/favicon.png': ['favicon.png', 'image/png']
 };
-
 // Splits restored records into ones that keep their ID and ones that need a new ID
 function planRestore(items) {
     const seen = new Set(), max = {}, keep = [], missing = [];
