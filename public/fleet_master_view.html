@@ -787,6 +787,7 @@
         const fmt = d => d ? new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
         const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
         const dash = v => v ? esc(v) : '<span class="dash">&mdash;</span>';
+        const idc = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim(); /* tidy IDs like "BCH  6062 ZM" -> "BCH 6062 ZM" */
 
         /* Storage: on the server -> /api/master (separate Firebase project). Opened as a plain file -> this browser only. */
         let MODE = 'local', DEMO = false;
@@ -833,10 +834,10 @@
             const pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
             const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
             return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse">${esc(t.id.replace('TRIP-', ''))}</b><div class="sub">${esc(tr.reg || t.truck)}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
-              <div class="mini"><div class="rt">${dash(t.route)}</div>
-              <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
-              <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
-              <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
+                  <div class="mini"><div class="rt">${dash(t.route)}</div>
+                  <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
+                  <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
+                  <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
         }
         function render() {
             const { f, to, n, out } = calc();
@@ -983,7 +984,7 @@
                 try {
                     const wb = XLSX.read(rd.result, { type: 'array', cellDates: true }), bad = [], tks = []; let nt = 0;
                     rows(wb, 'Trucks').forEach(r => {
-                        const id = String(key(r, ['truckid', 'id'])).trim(); if (!id) return;
+                        const id = idc(key(r, ['truckid', 'id'])); if (!id) return;
                         const st = String(key(r, ['truckstatus', 'status'])).trim();
                         const o = { id, reg: String(key(r, ['registrationno', 'registration', 'reg', 'horse'])).trim(), driver: String(key(r, ['drivername', 'driver'])).trim(), contact: String(key(r, ['drivercontact', 'contact'])).trim(), type: String(key(r, ['trucktype', 'type'])).trim(), status: st || 'Active' };
                         const i = D.trucks.findIndex(x => x.id === id);
@@ -992,11 +993,11 @@
                     });
                     const inc = [];
                     rows(wb, 'Trips').forEach((r, i) => {
-                        const ln = i + 2, tk = String(key(r, ['truckid', 'truck'])).trim();
+                        const ln = i + 2, tk = idc(key(r, ['truckid', 'truck']));
                         if (!tk && !key(r, ['tripid', 'id'])) return;
                         if (!tk) return bad.push('row ' + ln + ': Truck ID missing');
                         if (!D.trucks.some(x => x.id === tk)) return bad.push('row ' + ln + ': ' + esc(tk) + ' not found');
-                        const o = { id: String(key(r, ['tripid', 'id'])).trim(), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), row: ln };
+                        const o = { id: idc(key(r, ['tripid', 'id'])), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), row: ln };
                         const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading']], ['t', ['intransitdate', 'intransit']], ['u', ['unloadingdate', 'unloading']], ['v', ['delivereddate', 'delivered']], ['r', ['returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
                         for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + k); o[k] = x }
                         if (o.r && !o.d) return bad.push('row ' + ln + ': returned date needs a dispatched date');

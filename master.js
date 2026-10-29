@@ -19,11 +19,13 @@ const fs = require('fs'), path = require('path');
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/, STAGES = ['d', 'l', 't', 'u', 'v', 'r'];
 const str = (v, n = 100) => String(v == null ? '' : v).trim().slice(0, n);
+// IDs may contain letters, numbers, spaces, dots, dashes and underscores (e.g. truck "BCH 6062 ZM"). Extra spaces are squeezed to one.
+const ID = /^[\w][\w .-]{0,39}$/, idc = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, 40);
 const tripNo = id => { const m = /^TRIP-(\d+)$/.exec(id || ''); return m ? +m[1] : 0; };
 const tripId = n => 'TRIP-' + String(n).padStart(4, '0');
 
 function cleanTrip(b) {
-    const t = { truck: str(b.truck), route: str(b.route, 150), plan: Math.round(Number(b.plan)) || 15, n: str(b.n, 500) };
+    const t = { truck: idc(b.truck), route: str(b.route, 150), plan: Math.round(Number(b.plan)) || 15, n: str(b.n, 500) };
     if (!t.truck) throw new Error('Truck ID is required');
     if (t.plan < 1 || t.plan > 365) throw new Error('Planned trip days must be between 1 and 365');
     for (const k of STAGES) {
@@ -125,8 +127,8 @@ module.exports = async function makeMaster({ body, send }) {
         }
         let mt = p.match(/^\/api\/master\/trips\/([^/]+)$/);
         if (mt) {
-            const id = decodeURIComponent(mt[1]);
-            if (!/^[\w.-]{1,40}$/.test(id)) throw new Error('Invalid trip ID');
+            const id = idc(decodeURIComponent(mt[1]));
+            if (!ID.test(id)) throw new Error('Invalid trip ID');
             if (m === 'PUT') {
                 const b = await body(req), t = cleanTrip(b); await checkTruck(t.truck);
                 if (b.truckInfo) await store.putTruck(t.truck, cleanTruck(b.truckInfo));
@@ -137,8 +139,8 @@ module.exports = async function makeMaster({ body, send }) {
         }
         mt = p.match(/^\/api\/master\/trucks\/([^/]+)$/);
         if (mt && m === 'PUT') {
-            const id = decodeURIComponent(mt[1]);
-            if (!/^[\w.-]{1,40}$/.test(id)) throw new Error('Invalid truck ID');
+            const id = idc(decodeURIComponent(mt[1]));
+            if (!ID.test(id)) throw new Error('Invalid truck ID');
             return send(res, 200, await store.putTruck(id, cleanTruck(await body(req))));
         }
         if (p === '/api/master/bulk' && m === 'POST') {
@@ -147,7 +149,7 @@ module.exports = async function makeMaster({ body, send }) {
             // Check everything first, so a bad row never leaves a half-done upload
             const have = new Set((await store.all()).trucks.map(x => x.id));
             const truckPairs = tk.map((x, i) => {
-                const id = str(x.id); if (!/^[\w.-]{1,40}$/.test(id)) throw new Error('Trucks row ' + (i + 2) + ': invalid truck ID');
+                const id = idc(x.id); if (!ID.test(id)) throw new Error('Trucks row ' + (i + 2) + ': invalid truck ID "' + id + '" (use letters, numbers, spaces, - . _ only)');
                 const o = cleanTruck(x);
                 if (have.has(id)) for (const k of Object.keys(o)) if (str(x[k]) === '') delete o[k]; // blank cells do not wipe stored details
                 return [id, o];
@@ -156,7 +158,7 @@ module.exports = async function makeMaster({ body, send }) {
             const clean = tp.map((x, i) => {
                 let t; try { t = cleanTrip(x); } catch (e) { throw new Error('Trips row ' + (x.row || i + 2) + ': ' + e.message); }
                 if (!known.has(t.truck)) throw new Error('Trips row ' + (x.row || i + 2) + ': truck ' + t.truck + ' does not exist');
-                const id = str(x.id); if (id && !/^[\w.-]{1,40}$/.test(id)) throw new Error('Trips row ' + (x.row || i + 2) + ': invalid trip ID');
+                const id = idc(x.id); if (id && !ID.test(id)) throw new Error('Trips row ' + (x.row || i + 2) + ': invalid trip ID "' + id + '" (use letters, numbers, spaces, - . _ only)');
                 return [id, t];
             });
             const need = clean.filter(([id]) => !id).length, ids = need ? await store.newIds(need) : [];
