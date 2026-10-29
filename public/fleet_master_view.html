@@ -312,7 +312,7 @@
 
         #cards, #dCards {
             display: grid;
-            grid-template-columns: repeat(auto-fill,minmax(190px,1fr));
+            grid-template-columns: repeat(auto-fill,minmax(230px,1fr));
             gap: 12px;
             padding: 8px 24px 28px
         }
@@ -616,6 +616,161 @@
                 color: var(--mute)
             }
 
+        .leg {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--mute);
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 4px;
+            margin-top: 4px
+        }
+
+        .drv {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .lg {
+            padding: 7px 0 7px 10px !important;
+            border-left: 3px solid var(--line);
+            margin: 2px 0
+        }
+
+            .lg.y {
+                border-left-color: var(--yel)
+            }
+
+            .lg.o {
+                border-left-color: var(--org)
+            }
+
+            .lg.g {
+                border-left-color: var(--grn)
+            }
+
+            .lg b {
+                font-size: 12.5px
+            }
+
+            .lg .lgd {
+                font-weight: 700;
+                white-space: nowrap
+            }
+
+            .lg.run .lgd {
+                color: var(--yfg)
+            }
+
+            .lg.o.run .lgd {
+                color: var(--ofg)
+            }
+
+            .lg .rt {
+                font-size: 12px
+            }
+
+        #det {
+            width: min(720px,94vw)
+        }
+
+        .dh {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 14px
+        }
+
+            .dh h2 {
+                margin: 0
+            }
+
+            .dh .sub {
+                font-size: 13px;
+                margin-top: 3px
+            }
+
+        .dinfo {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px 16px;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px
+        }
+
+            .dinfo div, .dleg dl div {
+                font-size: 13.5px;
+                font-weight: 600
+            }
+
+            .dinfo small, .dleg dt {
+                display: block;
+                font-size: 11.5px;
+                font-weight: 500;
+                color: var(--mute);
+                text-transform: uppercase;
+                letter-spacing: .04em
+            }
+
+        .dleg {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--line)
+        }
+
+            .dleg.y {
+                border-left-color: var(--yel)
+            }
+
+            .dleg.o {
+                border-left-color: var(--org)
+            }
+
+            .dleg.g {
+                border-left-color: var(--grn)
+            }
+
+            .dleg h3 {
+                margin: 0 0 10px;
+                font-size: 15px;
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                align-items: center
+            }
+
+            .dleg dl {
+                display: grid;
+                grid-template-columns: repeat(4,1fr);
+                gap: 10px 16px;
+                margin: 0
+            }
+
+            .dleg dd {
+                margin: 3px 0 0;
+                font-size: 14px;
+                font-weight: 600
+            }
+
+            .dleg.emp dl {
+                grid-template-columns: repeat(2,1fr)
+            }
+
+        @media(max-width:620px) {
+            .dinfo, .dleg dl {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -690,7 +845,7 @@
         <script src="/menu.js"></script>
         <main>
             <header class="head">
-                <div><h1 id="h1">Fleet Master View</h1><div class="today" id="today"></div><p id="hp">Pick a date to see every trip started or in progress. Trips with a returned date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.</p></div>
+                <div><h1 id="h1">Fleet Master View</h1><div class="today" id="today"></div><p id="hp">Pick a date to see every trip started or in progress. Trips with an Offloading 2 date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.</p></div>
                 <button class="btn pri" id="bAdd"><svg class="ic"><use href="#i-plus" /></svg>Add trip</button>
             </header>
             <div class="body">
@@ -727,19 +882,23 @@
                             <div class="bar"><button class="btn" id="bExpDone"><svg class="ic"><use href="#i-down" /></svg>Export completed</button></div>
                         </div>
                         <div class="tools">
-                            <label>Returned in month<input id="dMonth" type="month"></label>
+                            <label>Completed in month<input id="dMonth" type="month"></label>
                             <label>Search<input id="dq" type="search" placeholder="Truck, driver, route, trip ID"></label>
                             <button class="rst" id="dReset"><svg class="ic"><use href="#i-reset" /></svg>Clear filters</button>
                         </div>
                         <div class="cap" id="dCap"></div>
                         <div id="dCards"></div>
                         <nav class="pager" id="pager" aria-label="Pages"></nav>
-                        <div class="foot">A trip shows here once it has a returned / completed date. Newest first, 100 cards per page. Click a card to view or edit it.</div>
+                        <div class="foot">A trip shows here once it has an Offloading 2 (completed) date. Newest first, 100 cards per page. Click a card to view or edit it.</div>
                     </section>
                 </div>
             </div>
         </main>
     </div>
+    <dialog id="det">
+        <div id="detBody"></div>
+        <div class="acts"><span></span><span><button type="button" class="btn" id="detX">Close</button> <button type="button" class="btn pri" id="detE">Edit trip</button></span></div>
+    </dialog>
     <dialog id="dlg">
         <form id="frm" onsubmit="return false">
             <h2 id="dT">Add trip</h2>
@@ -749,21 +908,32 @@
                 <div class="wide tdet">
                     <h3>Truck &amp; driver details</h3>
                     <label>Registration no.<input name="kreg"></label>
+                    <label>Trailer no.<input name="ktrailer"></label>
                     <label>Driver name<input name="kdriver"></label>
                     <label>Driver contact<input name="kcontact" type="tel"></label>
+                    <label>Passport no.<input name="kpassport"></label>
+                    <label>Licence no.<input name="klicence"></label>
+                    <label>Licence category<input name="kcategory" placeholder="e.g. D,G"></label>
+                    <label>Licence issue no.<input name="kissue"></label>
                     <label>Truck type<input name="ktype" list="ktypes"></label>
-                    <label>Truck status<select name="kstatus"><option>Active</option><option>Idle</option><option>Maintenance</option><option>Inactive</option></select></label><span></span>
+                    <label>Truck status<select name="kstatus"><option>Active</option><option>Idle</option><option>Maintenance</option><option>Inactive</option></select></label>
                     <small>These details belong to the truck, so a change here shows on every trip for this truck.</small>
                 </div>
-                <datalist id="ktypes"><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Box Body</option><option>Lowbed</option><option>Container</option><option>Refrigerated</option></datalist>
+                <datalist id="ktypes"><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Box Body</option><option>Lowbed</option><option>Container</option><option>Refrigerated</option><option>SINO</option></datalist>
                 <label class="wide">Route (Origin - Destination)<input name="route"></label>
                 <label>Planned trip days<input name="plan" type="number" min="1"></label><span></span>
+                <div class="wide leg">Trip 1 · NB (Northbound)</div>
                 <label>Dispatched date<input name="d" type="date"></label>
                 <label>Loading date<input name="l" type="date"></label>
+                <label class="wide">Loading location<input name="lp" placeholder="e.g. Ndola"></label>
                 <label>In transit date<input name="t" type="date"></label>
-                <label>Unloading date<input name="u" type="date"></label>
+                <label>Offloading date<input name="u" type="date"></label>
+                <div class="wide leg">Trip 2 · SB (Southbound)</div>
+                <label>Loading date 2<input name="l2" type="date"></label>
+                <label>Loading location 2<input name="lp2" placeholder="e.g. Kolwezi"></label>
+                <label>In transit date 2<input name="t2" type="date"></label><span></span>
                 <label>Delivered date<input name="v" type="date"></label>
-                <label>Returned / completed date<input name="r" type="date"></label>
+                <label>Offloading date 2 (trip completed)<input name="r" type="date"></label>
                 <label class="wide">Notes<input name="n"></label>
             </div>
             <div class="acts"><button type="button" class="btn" id="dDel" style="color:var(--rfg)">Delete</button><span><button type="button" class="btn" id="dX">Cancel</button> <button type="button" class="btn pri" id="dS">Save</button></span></div>
@@ -778,8 +948,9 @@
         Object.assign(SEED.trucks[0], { reg: 'MH-12-AB-1234', driver: 'Ramesh Kumar', contact: '+91 98765 43210', type: 'Flatbed' });
         Object.assign(SEED.trucks[1], { reg: 'MH-12-AB-1235', driver: 'Prasad', contact: '+91 98765 43210', type: 'Flatbed', status: 'Idle' });
 
-        const KEY = 'fleet_master_v2', ST = ['Dispatched', 'Loading', 'In Transit', 'Unloading', 'Delivered', 'Returned/Available'], K = ['d', 'l', 't', 'u', 'v', 'r'];
-        const STY = { 'Returned/Available': 'g', 'Delivered': 'g', 'Unloading': 'o', 'In Transit': 'y', 'Loading': 'y', 'Dispatched': '', 'Not Started': '' };
+        /* Trip stages in order. The last one (Offloading 2) means the trip is completed. Keys u/v/r are kept from the old layout so saved trips still work. */
+        const KEY = 'fleet_master_v2', ST = ['Dispatched', 'Loading', 'In Transit', 'Offloading', 'Loading 2', 'In Transit 2', 'Delivered', 'Offloading 2'], K = ['d', 'l', 't', 'u', 'l2', 't2', 'v', 'r'];
+        const STY = { 'Offloading 2': 'g', 'Delivered': 'g', 'In Transit 2': 'y', 'Loading 2': 'y', 'Offloading': 'o', 'In Transit': 'y', 'Loading': 'y', 'Dispatched': '', 'Not Started': '' };
         const $ = i => document.getElementById(i); let D;
         const now = new Date(); now.setHours(0, 0, 0, 0);
         const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
@@ -816,50 +987,70 @@
         function say(t, err) { const m = $('msg'); m.hidden = false; m.className = 'msg' + (err ? ' err' : ''); m.innerHTML = t }
 
         /* Trip status on a given date */
-        function info(t, to) { let s = 'Not Started'; K.forEach((k, i) => { if (t[k] && t[k] <= to) s = ST[i] }); const done = !!(t.r && t.r <= to); return { s, done, run: done ? days(t.d, t.r) : (t.d ? days(t.d, to) : null) } }
+        const start = t => t.d || t.l; /* a trip starts on its Dispatched date, or its Loading date if there is no dispatch date */
+        function info(t, to) { let s = 'Not Started'; K.forEach((k, i) => { if (t[k] && t[k] <= to) s = ST[i] }); const done = !!(t.r && t.r <= to), s0 = start(t); return { s, done, run: done ? days(s0, t.r) : (s0 ? days(s0, to) : null) } }
+        /* The three parts of a round trip, counted from the dates:
+           Trip 1 NB = Loading -> Offloading, Empty = Offloading -> Loading 2 (waiting to load), Trip 2 SB = Loading 2 -> Offloading 2.
+           A part that has started but not finished keeps counting up to the view date. */
+        function legs(t, to) {
+            const has = k => t[k] && t[k] <= to;
+            const part = (n, a, b, runTxt, runCls, waitTxt) => {
+                if (!has(a)) return { n, txt: waitTxt, cls: '' };
+                if (!has(b)) return { n, txt: runTxt, d: days(t[a], to), run: 1, cls: runCls, from: t[a] };
+                return { n, d: days(t[a], t[b]), cls: 'g', from: t[a], until: t[b] };
+            };
+            const e = part('Empty', 'u', 'l2', 'Waiting to load', 'o', has('l') ? 'After offloading' : '');
+            if (e.until) e.cls = '';
+            return [part('Trip 1 · NB', 'l', 'u', 'Loaded', 'y', 'Not loaded yet'), e, part('Trip 2 · SB', 'l2', 'r', 'Loaded', 'y', has('u') ? 'Not loaded yet' : '')];
+        }
+        const dd = n => n + (n === 1 ? ' day' : ' days');
+        function legRow(x) {
+            const when = x.from ? fmt(x.from).slice(0, 6) + ' &rarr; ' + (x.until ? fmt(x.until).slice(0, 6) : 'now') : '';
+            return `<div class="lg ${x.cls}${x.run ? ' run' : ''}"><div class="row"><b>${x.n}</b><span class="lgd">${x.d == null ? '<span class="dash">&mdash;</span>' : dd(x.d)}</span></div><div class="rt">${[x.txt ? esc(x.txt) : '', when].filter(Boolean).join(' · ') || '&nbsp;'}</div></div>`
+        }
         function calc() {
             const f = $('qFrom').value || today(), to = $('qTo').value >= f && $('qTo').value ? $('qTo').value : f, v = $('view').value, q = $('q').value.toLowerCase(), out = [], n = { st: 0, co: 0, ip: 0, dl: 0 };
             D.trips.forEach(t => {
-                if (!t.d) return;
-                const i = info(t, to), st = t.d >= f && t.d <= to, co = t.r && t.r >= f && t.r <= to, ip = t.d <= to && !t.r, late = ip && i.run > t.plan;
+                const s0 = start(t); if (!s0) return;
+                const i = info(t, to), st = s0 >= f && s0 <= to, co = t.r && t.r >= f && t.r <= to, ip = s0 <= to && !t.r, late = ip && i.run > t.plan;
                 if (st) n.st++; if (co) n.co++; if (ip) n.ip++; if (late) n.dl++;
                 const m = !t.r && { 'All Activity': st || ip, Started: st, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = D.trucks.find(x => x.id === t.truck) || {};
-                if (m && (!q || [t.truck, t.route, tr.driver, tr.reg, t.id].join(' ').toLowerCase().includes(q))) out.push({ t, tr, i });
+                if (m && (!q || [t.truck, t.route, tr.driver, tr.reg, tr.trailer, t.lp, t.lp2, t.id].join(' ').toLowerCase().includes(q))) out.push({ t, tr, i });
             });
             return { f, to, n, out }
         }
-        function card(t, tr, i) {
-            const lbl = i.s === 'Returned/Available' ? 'Completed' : i.s, late = i.run > t.plan, warn = !late && i.run >= t.plan - 3 && !i.done;
+        function card(t, tr, i, to) {
+            const lbl = i.s === 'Offloading 2' ? 'Completed' : i.s, late = i.run > t.plan, warn = !late && i.run >= t.plan - 3 && !i.done;
             const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : '');
             const pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
             const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
             return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse">${esc(t.id.replace('TRIP-', ''))}</b><div class="sub">${esc(tr.reg || t.truck)}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
-                  <div class="mini"><div class="rt">${dash(t.route)}</div>
+                  <div class="mini"><div><div class="drv" title="${esc(tr.driver || '')}">${dash(tr.driver)}</div><div class="rt">${tr.contact ? esc(tr.contact) : '<span class="dash">No contact</span>'}</div><div class="rt">Trailer: ${tr.trailer ? esc(tr.trailer) : '&mdash;'}</div></div><div class="rt">${dash(t.route)}</div>
                   <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
-                  <div class="row"><span>${t.d ? fmt(t.d) : '&mdash;'} &rarr; ${t.r ? fmt(t.r) : '&mdash;'}</span></div>
-                  <div class="row"><span class="rt">${i.done ? 'Days taken' : 'Days running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
+                  ${legs(t, to).map(legRow).join('')}
+                  <div class="row"><span class="rt">${i.done ? 'Total days' : 'Total running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
         }
         function render() {
             const { f, to, n, out } = calc();
-            const K4 = [['Trips started', n.st, 'Dispatched in this period', 'y'], ['Trips completed', doneTrips().length, n.co + ' returned in this period', 'link'], ['In progress', n.ip, 'Still on the road at end date', ''], ['Delayed / overdue', n.dl, 'Past planned trip days', 'r']];
+            const K4 = [['Trips started', n.st, 'Dispatched in this period', 'y'], ['Trips completed', doneTrips().length, n.co + ' completed in this period', 'link'], ['In progress', n.ip, 'Still on the road at end date', ''], ['Delayed / overdue', n.dl, 'Past planned trip days', 'r']];
             $('kpis').innerHTML = K4.map(x => x[3] === 'link'
                 ? `<a class="k link" href="#completed" data-go="done" role="button" title="Open all completed trips"><div class="kh">${x[0]}<span class="go" aria-hidden="true"><svg class="ic"><use href="#i-right"/></svg></span></div><b>${x[1]}</b><span style="display:block;color:var(--mute);font-size:14px;margin-bottom:6px">${x[2]}</span><span class="more">View all completed trips <svg class="ic" style="width:15px;height:15px"><use href="#i-right"/></svg></span></a>`
                 : `<div class="k"><div class="kh">${x[0]}<span class="chip ${x[3]}"><svg class="ic"><use href="#i-truck"/></svg></span></div><b>${x[1]}</b><span>${x[2]}</span></div>`).join('');
             $('cap').textContent = `Showing ${fmt(f)}${to > f ? ' to ' + fmt(to) : ''} · ${$('view').value} · ${out.length} trip card(s)`;
-            $('cards').innerHTML = out.length ? out.map(({ t, tr, i }) => card(t, tr, i)).join('') : '<div class="empty">No trips match this date and filter.</div>'
+            $('cards').innerHTML = out.length ? out.map(({ t, tr, i }) => card(t, tr, i, to)).join('') : '<div class="empty">No trips match this date and filter.</div>'
         }
 
         /* Completed trips view */
         const PER = 100; let page = 1;
-        const doneTrips = () => D.trips.filter(t => t.d && t.r).sort((a, b) => b.r.localeCompare(a.r) || String(b.id).localeCompare(String(a.id)));
+        const doneTrips = () => D.trips.filter(t => start(t) && t.r).sort((a, b) => b.r.localeCompare(a.r) || String(b.id).localeCompare(String(a.id)));
         function renderDone() {
             const m = $('dMonth').value, q = $('dq').value.toLowerCase(), all = doneTrips();
-            const L = all.map(t => ({ t, tr: D.trucks.find(x => x.id === t.truck) || {} })).filter(({ t, tr }) => (!m || t.r.slice(0, 7) === m) && (!q || [t.truck, t.route, tr.driver, tr.reg, t.id].join(' ').toLowerCase().includes(q)));
+            const L = all.map(t => ({ t, tr: D.trucks.find(x => x.id === t.truck) || {} })).filter(({ t, tr }) => (!m || t.r.slice(0, 7) === m) && (!q || [t.truck, t.route, tr.driver, tr.reg, tr.trailer, t.lp, t.lp2, t.id].join(' ').toLowerCase().includes(q)));
             const pages = Math.max(1, Math.ceil(L.length / PER)); if (page > pages) page = pages; if (page < 1) page = 1;
             const st = (page - 1) * PER, sl = L.slice(st, st + PER);
             $('dCnt').textContent = all.length;
             $('dCap').textContent = L.length ? `Showing ${st + 1}–${st + sl.length} of ${L.length} completed trip(s)${m || q ? ' (filtered)' : ''} · Page ${page} of ${pages}` : '';
-            $('dCards').innerHTML = sl.length ? sl.map(({ t, tr }) => card(t, tr, info(t, t.r))).join('') : `<div class="empty">${all.length ? 'No completed trips match this filter.' : 'No completed trips yet. A trip appears here once it has a returned date.'}</div>`;
+            $('dCards').innerHTML = sl.length ? sl.map(({ t, tr }) => card(t, tr, info(t, t.r), t.r)).join('') : `<div class="empty">${all.length ? 'No completed trips match this filter.' : 'No completed trips yet. A trip appears here once it has an Offloading 2 date.'}</div>`;
             pager(pages)
         }
         function pager(pages) {
@@ -872,7 +1063,7 @@
         $('pager').onclick = e => { const b = e.target.closest('[data-p]'); if (b && !b.disabled) { page = +b.dataset.p; renderDone(); $('vDone').scrollIntoView({ behavior: 'smooth', block: 'start' }) } };
         ['dMonth', 'dq'].forEach(i => $(i).addEventListener('input', () => { page = 1; renderDone() }));
         $('dReset').onclick = () => { $('dMonth').value = ''; $('dq').value = ''; page = 1; renderDone() };
-        $('dCards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openForm(b.dataset.e) };
+        $('dCards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openDet(b.dataset.e) };
         $('bBack').onclick = () => go('main');
 
         /* Switching between Current Trips and Completed Trips (no page reload) */
@@ -884,7 +1075,7 @@
         function route() {
             const d = isDone(); $('vMain').hidden = d; $('vDone').hidden = !d; $('bAdd').hidden = d;
             $('h1').textContent = d ? 'Completed Trips' : 'Current Trips';
-            $('hp').textContent = d ? 'Every trip that has a returned / completed date, stored here so you can check it any time. 100 cards per page.' : 'Pick a date to see every trip started or in progress. Trips with a returned date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.';
+            $('hp').textContent = d ? 'Every trip that has an Offloading 2 (completed) date, stored here so you can check it any time. 100 cards per page.' : 'Pick a date to see every trip started or in progress. Trips with an Offloading 2 date move to Completed Trips. Each trip is a card with the truck, driver, route and all stage dates.';
             if (window.PHMenu) PHMenu.refresh();
             refresh(); try { window.scrollTo(0, 0) } catch (e) { }
         }
@@ -898,19 +1089,19 @@
             editing = !!t;
             $('dT').textContent = t ? 'Edit trip' : 'Add trip'; $('dDel').style.visibility = t ? 'visible' : 'hidden';
             frm.elements.truck.innerHTML = D.trucks.map(x => `<option>${esc(x.id)}</option>`).join('');
-            ['id', 'truck', 'route', 'plan', 'n', ...K].forEach(k => frm.elements[k].value = o[k] || '');
+            ['id', 'truck', 'route', 'plan', 'n', 'lp', 'lp2', ...K].forEach(k => frm.elements[k].value = o[k] || '');
             frm.elements.id.placeholder = 'Given when you save'; showDet(); dlg.showModal()
         }
-        const KF = [['kreg', 'reg'], ['kdriver', 'driver'], ['kcontact', 'contact'], ['ktype', 'type'], ['kstatus', 'status']];
+        const KF = [['kreg', 'reg'], ['ktrailer', 'trailer'], ['kdriver', 'driver'], ['kcontact', 'contact'], ['kpassport', 'passport'], ['klicence', 'licence'], ['kcategory', 'category'], ['kissue', 'issue'], ['ktype', 'type'], ['kstatus', 'status']];
         function showDet() { const tr = D.trucks.find(x => x.id === frm.elements.truck.value) || {}; KF.forEach(([f, k]) => frm.elements[f].value = tr[k] || (k === 'status' ? 'Active' : '')) }
         frm.elements.truck.onchange = showDet;
         function nextId() { let m = 0; D.trips.forEach(t => { m = Math.max(m, parseInt(String(t.id).replace(/\D/g, '')) || 0) }); return 'TRIP-' + String(m + 1).padStart(4, '0') }
         $('bAdd').onclick = () => openForm(); $('dX').onclick = () => dlg.close();
         $('dS').onclick = async () => {
             if (blocked()) return;
-            const o = {};['id', 'truck', 'route', 'n', ...K].forEach(k => o[k] = frm.elements[k].value.trim()); o.plan = +frm.elements.plan.value || 15;
-            if (o.r && !o.d) { alert('A returned date needs a dispatched date.'); return }
-            if (o.r && o.r < o.d) { alert('The returned date is before the dispatched date.'); return }
+            const o = {};['id', 'truck', 'route', 'n', 'lp', 'lp2', ...K].forEach(k => o[k] = frm.elements[k].value.trim()); o.plan = +frm.elements.plan.value || 15;
+            if (o.r && !(o.d || o.l)) { alert('An Offloading 2 (completed) date needs a dispatched or loading date.'); return }
+            if (o.r && o.r < (o.d || o.l)) { alert('The Offloading 2 date is before the start of the trip.'); return }
             const tinfo = {}; KF.forEach(([f, k]) => tinfo[k] = frm.elements[f].value.trim());
             if (MODE === 'server') {
                 const b = $('dS'); b.disabled = true; b.textContent = 'Saving...';
@@ -933,11 +1124,30 @@
             if (MODE === 'server') { try { await api('DELETE', '/api/master/trips/' + encodeURIComponent(frm.elements.id.value)) } catch (e) { alert('Not deleted: ' + e.message); return } }
             D.trips = D.trips.filter(x => x.id !== frm.elements.id.value); save(); dlg.close(); refresh()
         };
-        $('cards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openForm(b.dataset.e) };
+        $('cards').onclick = e => { const b = e.target.closest('[data-e]'); if (b) openDet(b.dataset.e) };
+
+        /* Trip details (opens when a card is clicked) */
+        let detId = null;
+        function openDet(id) {
+            const t = D.trips.find(x => x.id === id); if (!t) return; detId = id;
+            const tr = D.trucks.find(x => x.id === t.truck) || {}, to = t.r && t.r <= today() ? t.r : today(), i = info(t, to), L = legs(t, to);
+            const f = (lbl, v, isDate) => `<div><dt>${lbl}</dt><dd>${v ? (isDate ? fmt(v) : esc(v)) : '<span class="dash">&mdash;</span>'}</dd></div>`;
+            const head = (x, extra) => `<h3><span>${x.n}${extra || ''}</span><span class="b ${x.run ? (x.cls === 'o' ? 'o' : 'y') : x.d != null ? 'g' : ''}">${x.d == null ? (x.txt || 'Not started') : (x.run ? (x.txt + ' · ') : '') + dd(x.d)}</span></h3>`;
+            const info2 = (lbl, v) => `<div><small>${lbl}</small>${v ? esc(v) : '<span class="dash">&mdash;</span>'}</div>`;
+            $('detBody').innerHTML = `<div class="dh"><div><h2>Trip ${esc(t.id)}</h2><div class="sub">${esc(t.route || '')}${t.route ? ' · ' : ''}Planned ${t.plan} days · ${i.done ? 'Took' : 'Running'} ${i.run == null ? '&mdash;' : dd(i.run)}</div></div><span class="b ${STY[i.s]}"><i></i>${i.s === 'Offloading 2' ? 'Completed' : i.s}</span></div>
+                  <div class="dinfo">${info2('Truck', t.truck)}${info2('Trailer', tr.trailer)}${info2('Driver', tr.driver)}${info2('Contact', tr.contact)}${info2('Passport', tr.passport)}${info2('Licence (cat. / issue)', [tr.licence, tr.category, tr.issue].filter(Boolean).join(' · '))}${info2('Dispatched', t.d ? fmt(t.d) : '')}${info2('Truck type', tr.type)}${info2('Truck status', tr.status)}</div>
+                  <section class="dleg ${L[0].cls}">${head(L[0], ' <span class="sub">Northbound</span>')}<dl>${f('Loaded', t.l, 1)}${f('Loading location', t.lp)}${f('In transit', t.t, 1)}${f('Offloaded', t.u, 1)}</dl></section>
+                  <section class="dleg emp ${L[1].cls}">${head(L[1], ' <span class="sub">Waiting to load</span>')}<dl>${f('Empty since (offloaded)', t.u, 1)}${f('Loaded again', t.l2, 1)}</dl></section>
+                  <section class="dleg ${L[2].cls}">${head(L[2], ' <span class="sub">Southbound</span>')}<dl>${f('Loaded', t.l2, 1)}${f('Loading location', t.lp2)}${f('In transit', t.t2, 1)}${f('Offloaded', t.r, 1)}</dl>${t.v ? `<div class="sub" style="margin-top:8px">Delivered: ${fmt(t.v)}</div>` : ''}</section>
+                  ${t.n ? `<div class="sub">Notes: ${esc(t.n)}</div>` : ''}`;
+            $('det').showModal()
+        }
+        $('detX').onclick = () => $('det').close();
+        $('detE').onclick = () => { $('det').close(); openForm(detId) };
 
         /* Excel: template (all current data), export, bulk upload. Sheets: "Trip Log" and "Truck Master" */
-        const TH = ['Trip ID', 'Truck ID', 'Route (Origin - Destination)', 'Planned Trip Days', 'Dispatched Date', 'Loading Date', 'In Transit Date', 'Unloading Date', 'Delivered Date', 'Returned/Available Date', 'Notes'],
-            KH = ['Truck ID', 'Registration No.', 'Driver Name', 'Driver Contact', 'Truck Type', 'Truck Status'];
+        const TC = [['Trip ID', 'id'], ['Truck ID', 'truck'], ['Route (Origin - Destination)', 'route'], ['Planned Trip Days', 'plan'], ['Dispatched Date', 'd'], ['Loading Date', 'l'], ['Loading Location', 'lp'], ['In Transit Date', 't'], ['Offloading Date', 'u'], ['Loading Date 2', 'l2'], ['Loading Location 2', 'lp2'], ['In Transit Date 2', 't2'], ['Delivered Date', 'v'], ['Offloading Date 2', 'r'], ['Notes', 'n']], TH = TC.map(x => x[0]),
+            KH = ['Truck ID', 'Registration No.', 'Trailer No.', 'Driver Name', 'Driver Contact', 'Passport No.', 'Licence No.', 'Licence Category', 'Licence Issue No.', 'Truck Type', 'Truck Status'];
         function book(trips, trucks, name, help) {
             const wb = XLSX.utils.book_new(), a = XLSX.utils.aoa_to_sheet([TH].concat(trips)), b = XLSX.utils.aoa_to_sheet([KH].concat(trucks));
             a['!cols'] = TH.map(() => ({ wch: 22 })); b['!cols'] = KH.map(() => ({ wch: 20 }));
@@ -945,18 +1155,19 @@
             XLSX.utils.book_append_sheet(wb, a, 'Trip Log'); XLSX.utils.book_append_sheet(wb, b, 'Truck Master');
             XLSX.writeFile(wb, name)
         }
-        const trow = t => [t.id, t.truck, t.route, t.plan, ...K.map(k => t[k]), t.n], krow = x => [x.id, x.reg, x.driver, x.contact, x.type, x.status];
+        const trow = t => TC.map(([, k]) => t[k] == null ? '' : t[k]), krow = x => [x.id, x.reg, x.trailer, x.driver, x.contact, x.passport, x.licence, x.category, x.issue, x.type, x.status];
         const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
         const HELP = ['How this template works',
             'This file contains ALL your current trips (Trip Log) and trucks (Truck Master). Edit it and upload it back with "Bulk upload Excel".',
             'Trip Log: one row per trip. Truck ID is required and must exist in Truck Master.',
             'Trip ID filled in = that trip is UPDATED. Trip ID empty = a NEW trip with a new ID.',
-            'Fill each stage date as the trip reaches it: Dispatched, Loading, In Transit, Unloading, Delivered, Returned/Available. Dates: yyyy-mm-dd or normal Excel dates.',
-            'A trip shows as a card once it has a Dispatched date. It moves to Completed Trips once it has a Returned/Available date.',
+            'Fill each stage date as the trip reaches it. Trip 1 (NB): Dispatched, Loading (+ location), In Transit, Offloading. Trip 2 (SB): Loading 2 (+ location), In Transit 2, Delivered, Offloading 2. Dates: yyyy-mm-dd or normal Excel dates.',
+            'The card counts the days: Trip 1 NB = Loading to Offloading, Empty = Offloading to Loading 2, Trip 2 SB = Loading 2 to Offloading 2.',
+            'A trip shows as a card once it has a Dispatched or Loading date. It moves to Completed Trips once it has an Offloading Date 2.',
             'Planned Trip Days: leave empty for 15.',
-            'Truck Master: registration, driver, contact, type and status per truck. Blank cells do not wipe details already saved.',
+            'Truck Master: registration, trailer, driver, contact, passport, licence no., licence category, issue no., type and status per truck. Blank cells do not wipe details already saved.',
             'Upload ADDS and UPDATES only. Nothing is deleted.'];
-        const EXAMPLE = [['', 'TRK-003', 'Lusaka - Lubumbashi', 15, '2026-10-05', '2026-10-05', '2026-10-06', '', '', '', 'Example: still in transit'], ['', 'TRK-004', 'Kolwezi - Lusaka', 15, '2026-09-20', '2026-09-20', '2026-09-21', '2026-10-02', '2026-10-03', '2026-10-06', 'Example: completed']];
+        const EXAMPLE = [['', 'TRK-003', 'Ndola - TFM', 35, '2026-10-05', '2026-10-06', 'Ndola', '2026-10-08', '', '', '', '', '', '', 'Example: trip 1 in transit'], ['', 'TRK-004', 'Ndola - BMS', 35, '2026-09-01', '2026-09-02', 'Ndola', '2026-09-04', '2026-09-12', '2026-09-15', 'Kolwezi', '2026-09-17', '2026-09-28', '2026-09-30', 'Example: completed']];
         const ready = () => { if (!D) { alert('Still loading, please wait a moment.'); return false } return true };
         $('bTpl').onclick = () => { if (ready()) book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP) };
         $('bExp').onclick = () => { if (ready()) book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx') };
@@ -973,7 +1184,9 @@
             if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
             return null
         }
-        function key(o, names) { for (const k of Object.keys(o)) if (names.includes(k.toLowerCase().replace(/[^a-z]/g, ''))) return o[k]; return '' }
+        /* Phone numbers: Excel drops the leading 0 (962752306 -> 0962752306) and some have a space ("0 971050455") */
+        function phone(v) { let s = String(v == null ? '' : v).trim(); if (/^[\d\s+]+$/.test(s)) { s = s.replace(/\s+/g, ''); if (/^[79]\d{8}$/.test(s)) s = '0' + s } return s }
+        function key(o, names) { for (const k of Object.keys(o)) if (names.includes(k.toLowerCase().replace(/[^a-z0-9]/g, ''))) return o[k]; return '' }
         const SHEETS = { Trips: ['Trip Log', 'Trips'], Trucks: ['Truck Master', 'Trucks'] };
         const rows = (wb, n) => { const nm = SHEETS[n].find(x => wb.Sheets[x]); return nm ? XLSX.utils.sheet_to_json(wb.Sheets[nm], { defval: '', raw: true }) : [] };
 
@@ -986,7 +1199,8 @@
                     rows(wb, 'Trucks').forEach(r => {
                         const id = idc(key(r, ['truckid', 'id'])); if (!id) return;
                         const st = String(key(r, ['truckstatus', 'status'])).trim();
-                        const o = { id, reg: String(key(r, ['registrationno', 'registration', 'reg', 'horse'])).trim(), driver: String(key(r, ['drivername', 'driver'])).trim(), contact: String(key(r, ['drivercontact', 'contact'])).trim(), type: String(key(r, ['trucktype', 'type'])).trim(), status: st || 'Active' };
+                        const g = n => String(key(r, n)).trim();
+                        const o = { id, reg: g(['registrationno', 'registration', 'reg', 'horse']), trailer: g(['trailerno', 'trailer', 'trailerreg']), driver: g(['drivername', 'driver']), contact: phone(key(r, ['drivercontact', 'contact'])), passport: g(['passportno', 'passportnumber', 'passport']), licence: g(['licenceno', 'licencenumber', 'licence', 'licenseno', 'licensenumber', 'license']), category: g(['licencecategory', 'licensecategory', 'category']), issue: g(['licenceissueno', 'licenseissueno', 'issueno', 'issue']), type: g(['trucktype', 'type']), status: st || 'Active' };
                         const i = D.trucks.findIndex(x => x.id === id);
                         tks.push({ ...o, status: st });
                         if (i < 0) { D.trucks.push(o); nt++ } else D.trucks[i] = Object.assign(D.trucks[i], Object.fromEntries(Object.entries(o).filter(([k, v]) => v)))
@@ -997,11 +1211,11 @@
                         if (!tk && !key(r, ['tripid', 'id'])) return;
                         if (!tk) return bad.push('row ' + ln + ': Truck ID missing');
                         if (!D.trucks.some(x => x.id === tk)) return bad.push('row ' + ln + ': ' + esc(tk) + ' not found');
-                        const o = { id: idc(key(r, ['tripid', 'id'])), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), row: ln };
-                        const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading']], ['t', ['intransitdate', 'intransit']], ['u', ['unloadingdate', 'unloading']], ['v', ['delivereddate', 'delivered']], ['r', ['returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
-                        for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + k); o[k] = x }
-                        if (o.r && !o.d) return bad.push('row ' + ln + ': returned date needs a dispatched date');
-                        if (o.r && o.r < o.d) return bad.push('row ' + ln + ': returned date before dispatched date');
+                        const o = { id: idc(key(r, ['tripid', 'id'])), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), lp: String(key(r, ['loadinglocation', 'loadinglocation1', 'loadingplace', 'loadingpoint'])).trim(), lp2: String(key(r, ['loadinglocation2', 'loadingplace2', 'loadingpoint2'])).trim(), row: ln };
+                        const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading', 'loadingdate1']], ['t', ['intransitdate', 'intransit', 'intransitdate1']], ['u', ['offloadingdate', 'offloading', 'offloadingdate1', 'unloadingdate', 'unloading']], ['l2', ['loadingdate2', 'loading2']], ['t2', ['intransitdate2', 'intransit2']], ['v', ['delivereddate', 'delivered']], ['r', ['offloadingdate2', 'offloading2', 'returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
+                        for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + ST[K.indexOf(k)]); o[k] = x }
+                        if (o.r && !(o.d || o.l)) return bad.push('row ' + ln + ': Offloading 2 date needs a dispatched or loading date');
+                        if (o.r && o.r < (o.d || o.l)) return bad.push('row ' + ln + ': Offloading 2 date before the start of the trip');
                         inc.push(o)
                     });
                     const upd = inc.filter(o => o.id && D.trips.some(t => t.id === o.id)).length;
@@ -1031,8 +1245,8 @@
             const b = Date.parse(($('qFrom').value || today()) + 'T00:00'), I = n => new Date(b + n * 864e5).toISOString().slice(0, 10), R = ['Lusaka - Lubumbashi', 'Kolwezi - Lusaka', 'Ndola - Kitwe', 'Kapiri - Solwezi', 'Chingola - Kasumbalesa', 'Lusaka - Kolwezi'];
             const T = i => D.trucks[i % D.trucks.length].id;
             D.trips = [];
-            for (let i = 0; i < 100; i++) { const stg = Math.floor(Math.random() * 6), s = -Math.floor(Math.random() * 18), t = { id: 'TRIP-' + String(i + 1).padStart(4, '0'), truck: T(i), route: R[i % 6], plan: 15, n: '' }; let c = s; K.forEach((k, j) => { if (j <= stg) { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) } else t[k] = '' }); if (t.r && t.r > I(0)) t.r = ''; D.trips.push(t) }
-            for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: T(i + 100), route: R[i % 6], plan: 15, n: '' }; let c = -(25 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
+            for (let i = 0; i < 100; i++) { const stg = Math.floor(Math.random() * 8), s = -Math.floor(Math.random() * 30), t = { id: 'TRIP-' + String(i + 1).padStart(4, '0'), truck: T(i), route: R[i % 6], plan: 35, n: '' }; let c = s; K.forEach((k, j) => { if (j <= stg) { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) } else t[k] = '' }); if (t.r && t.r > I(0)) t.r = ''; D.trips.push(t) }
+            for (let i = 0; i < 250; i++) { const t = { id: 'TRIP-' + String(101 + i).padStart(4, '0'), truck: T(i + 100), route: R[i % 6], plan: 35, n: '' }; let c = -(40 + Math.floor(i * 0.7)); K.forEach(k => { t[k] = I(c); c += 1 + Math.floor(Math.random() * 4) }); D.trips.push(t) }
             refresh(); say('Showing 100 sample trips on the board plus 250 older completed trips (see Completed Trips, 3 pages). They are not saved. Refresh the page to go back to your data.')
         };
 

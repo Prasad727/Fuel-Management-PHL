@@ -17,7 +17,8 @@
 //   POST   /api/master/bulk           -> { trucks:[...], trips:[...] } add/update many (Excel bulk upload). Nothing is deleted.
 const fs = require('fs'), path = require('path');
 
-const DATE = /^\d{4}-\d{2}-\d{2}$/, STAGES = ['d', 'l', 't', 'u', 'v', 'r'];
+// Trip stages, in order: Dispatched, Loading, In Transit, Offloading, Loading 2, In Transit 2, Delivered, Offloading 2 (= trip completed)
+const DATE = /^\d{4}-\d{2}-\d{2}$/, STAGES = ['d', 'l', 't', 'u', 'l2', 't2', 'v', 'r'];
 const str = (v, n = 100) => String(v == null ? '' : v).trim().slice(0, n);
 // IDs may contain letters, numbers, spaces, dots, dashes and underscores (e.g. truck "BCH 6062 ZM"). Extra spaces are squeezed to one.
 const ID = /^[\w][\w .-]{0,39}$/, idc = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, 40);
@@ -25,7 +26,7 @@ const tripNo = id => { const m = /^TRIP-(\d+)$/.exec(id || ''); return m ? +m[1]
 const tripId = n => 'TRIP-' + String(n).padStart(4, '0');
 
 function cleanTrip(b) {
-    const t = { truck: idc(b.truck), route: str(b.route, 150), plan: Math.round(Number(b.plan)) || 15, n: str(b.n, 500) };
+    const t = { truck: idc(b.truck), route: str(b.route, 150), plan: Math.round(Number(b.plan)) || 15, n: str(b.n, 500), lp: str(b.lp, 100), lp2: str(b.lp2, 100) };
     if (!t.truck) throw new Error('Truck ID is required');
     if (t.plan < 1 || t.plan > 365) throw new Error('Planned trip days must be between 1 and 365');
     for (const k of STAGES) {
@@ -33,12 +34,16 @@ function cleanTrip(b) {
         if (v && !DATE.test(v)) throw new Error('Invalid date "' + v + '" (use YYYY-MM-DD)');
         t[k] = v;
     }
-    if (t.r && !t.d) throw new Error('A returned date needs a dispatched date');
-    if (t.r && t.r < t.d) throw new Error('Returned date is before the dispatched date');
+    if (t.r && !(t.d || t.l)) throw new Error('An Offloading 2 (completed) date needs a dispatched or loading date');
+    if (t.r && t.r < (t.d || t.l)) throw new Error('Offloading 2 (completed) date is before the start of the trip');
     return t;
 }
 function cleanTruck(b) {
-    return { reg: str(b.reg), driver: str(b.driver), contact: str(b.contact, 40), type: str(b.type), status: str(b.status) || 'Active' };
+    return {
+        reg: str(b.reg), trailer: str(b.trailer, 40), driver: str(b.driver), contact: str(b.contact, 40),
+        passport: str(b.passport, 40), licence: str(b.licence, 40), category: str(b.category, 20), issue: str(b.issue, 20),
+        type: str(b.type), status: str(b.status) || 'Active'
+    };
 }
 
 // ---------- storage: separate Firebase project ----------
