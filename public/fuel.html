@@ -8,374 +8,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/theme.css">
     <style>
-        :root {
-            --bg: #f8f7f3;
-            --card: #fff;
-            --ink: #14130f;
-            --mute: #6b6a63;
-            --mute2: #a3a29a;
-            --line: #e8e6df;
-            --soft: #f3f2ed;
-            --yel: #fbbf24;
-            --yink: #1c1400;
-            --ybg: #fef3c7;
-            --yfg: #92400e;
-            --ydot: #f59e0b;
-            --gbg: #dcfce7;
-            --gfg: #15803d;
-            --obg: #ffedd5;
-            --ofg: #c2410c;
-            --rbg: #fee2e2;
-            --rfg: #b91c1c;
-            --red: #e5483d;
-            --org: #f97316;
-            --grn: #22a55b;
-            --side: #111110;
-            --sideline: #262623;
-            --sideink: #a8a79f;
-            --card2: #1c1c1a
-        }
-
-            :root[data-theme="dark"] {
-                --bg: #0c0c0b;
-                --card: #171715;
-                --ink: #f4f3ee;
-                --mute: #9a998f;
-                --mute2: #6d6c64;
-                --line: #2a2a27;
-                --soft: #1f1f1c;
-                --side: #070706;
-                --sideline: #22221f;
-                --ybg: #3a2d08;
-                --yfg: #fcd34d;
-                --gbg: #123524;
-                --gfg: #86efac;
-                --obg: #47290c;
-                --ofg: #fdba74;
-                --rbg: #4a1a1a;
-                --rfg: #fca5a5
-            }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--ink);
-            font: 15px/1.45 "Inter","Segoe UI",system-ui,sans-serif
-        }
-
-        .ic {
-            width: 18px;
-            height: 18px;
-            flex: none
-        }
-
-        .app {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            min-height: 100vh
-        }
-
-        .side {
-            background: var(--side);
-            color: var(--sideink);
-            padding: 22px 16px;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            background: none;
-            border: 0;
-            color: inherit;
-            text-align: left;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 12px;
-            font-family: inherit
-        }
-
-            .brand:hover {
-                background: #1a1a18
-            }
-
-        .logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: var(--yel);
-            color: var(--yink);
-            display: grid;
-            place-items: center;
-            flex: none
-        }
-
-            .logo .ic {
-                width: 22px;
-                height: 22px
-            }
-
-        .bt {
-            flex: 1;
-            min-width: 0
-        }
-
-            .bt b {
-                display: block;
-                color: #fff;
-                font-size: 13.5px;
-                line-height: 1.15;
-                letter-spacing: .04em;
-                font-weight: 800
-            }
-
-            .bt small {
-                font-size: 12px;
-                color: #8d8c84
-            }
-
-        .brand > .ic {
-            color: #8d8c84;
-            transition: transform .2s
-        }
-
-        .brand[aria-expanded="true"] > .ic {
-            transform: rotate(180deg)
-        }
-
-        .menu {
-            position: absolute;
-            left: 14px;
-            right: 14px;
-            top: 84px;
-            background: var(--card2);
-            border: 1px solid #2e2e2a;
-            border-radius: 14px;
-            padding: 8px;
-            z-index: 40;
-            box-shadow: 0 18px 40px rgba(0,0,0,.45)
-        }
-
-            .menu[hidden] {
-                display: none
-            }
-
-        .mh, .sec {
-            font-size: 11.5px;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-            color: #77766e;
-            padding: 8px 10px 6px;
-            font-weight: 600
-        }
-
-        .mi, .nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--sideink);
-            text-decoration: none;
-            padding: 11px 12px;
-            border-radius: 11px;
-            font-weight: 500
-        }
-
-            .mi:hover, .nav a:hover {
-                background: #1c1c1a;
-                color: #fff
-            }
-
-            .mi small {
-                display: block;
-                font-size: 12px;
-                color: #77766e;
-                font-weight: 400
-            }
-
-            .mi.on, .nav a.on {
-                background: var(--yel);
-                color: var(--yink)
-            }
-
-                .mi.on small {
-                    color: #5c4400
-                }
-
-            .mi.soon, .nav a.soon {
-                opacity: .6;
-                pointer-events: none
-            }
-
-        .tag {
-            margin-left: auto;
-            font-size: 11px;
-            letter-spacing: .08em;
-            border: 1px solid #33332f;
-            border-radius: 99px;
-            padding: 3px 10px;
-            color: #8d8c84
-        }
-
-        .nav {
-            margin-top: 22px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px
-        }
-
-        .sf {
-            margin-top: auto;
-            border-top: 1px solid var(--sideline);
-            padding-top: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px
-        }
-
-        .dark {
-            background: none;
-            border: 0;
-            color: var(--sideink);
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 10px 12px;
-            border-radius: 11px;
-            cursor: pointer;
-            font: 500 15px inherit;
-            font-family: inherit;
-            text-align: left
-        }
-
-            .dark:hover {
-                background: #1c1c1a;
-                color: #fff
-            }
-
-        .user {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 8px 12px
-        }
-
-            .user i {
-                width: 38px;
-                height: 38px;
-                border-radius: 50%;
-                background: #262623;
-                color: #fff;
-                display: grid;
-                place-items: center;
-                font: 600 13px inherit;
-                font-style: normal
-            }
-
-            .user b {
-                display: block;
-                color: #fff;
-                font-size: 14.5px;
-                line-height: 1.2
-            }
-
-            .user small {
-                font-size: 12.5px;
-                color: #77766e
-            }
-
+        /* Styles used ONLY on this page. Colours and text sizes come from /theme.css */
         .main {
             min-width: 0
         }
 
-        .head {
-            padding: 30px 40px 24px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            align-items: flex-start;
-            flex-wrap: wrap
-        }
-
-        .eye {
-            font-size: 13px;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--mute);
-            font-weight: 500
-        }
-
-        h1 {
-            margin: 0 0 4px;
-            font-size: 38px;
-            line-height: 1.1;
-            letter-spacing: -.025em;
-            font-weight: 800
-        }
-
-        .today {
-            font-size: 15px;
-            color: var(--mute);
-            font-weight: 500;
-            margin: 0 0 10px
-        }
-
-        .head p {
-            margin: 0;
-            color: var(--mute);
-            max-width: 640px
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font: 600 14px inherit;
-            font-family: inherit;
-            padding: 10px 15px;
-            border-radius: 11px;
-            border: 1px solid var(--line);
-            background: var(--card);
-            color: var(--ink);
-            cursor: pointer;
-            white-space: nowrap
-        }
-
-            .btn:hover {
-                background: var(--soft)
-            }
-
-            .btn.pri {
-                background: var(--yel);
-                border-color: var(--yel);
-                color: var(--yink);
-                padding: 12px 20px;
-                font-weight: 700
-            }
-
-                .btn.pri:hover {
-                    filter: brightness(.96)
-                }
-
         button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
             outline: 3px solid var(--yel);
             outline-offset: 2px
-        }
-
-        .body {
-            padding: 28px 40px 44px;
-            max-width: 1500px
         }
 
         .kpis {
@@ -385,74 +27,15 @@
             margin-bottom: 18px
         }
 
-        .k {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            padding: 20px 22px
+        .chip.y {
+            background: var(--ybg);
+            color: var(--yfg)
         }
 
-        .kh {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--mute)
+        .chip.g {
+            background: var(--gbg);
+            color: var(--gfg)
         }
-
-        .chip {
-            width: 36px;
-            height: 36px;
-            border-radius: 11px;
-            display: grid;
-            place-items: center;
-            background: var(--soft);
-            color: var(--mute)
-        }
-
-            .chip.y {
-                background: var(--ybg);
-                color: var(--yfg)
-            }
-
-            .chip.g {
-                background: var(--gbg);
-                color: var(--gfg)
-            }
-
-        .k b {
-            display: block;
-            font-size: 40px;
-            line-height: 1;
-            margin: 18px 0 12px;
-            letter-spacing: -.03em;
-            font-weight: 800
-        }
-
-        .k span {
-            color: var(--mute);
-            font-size: 14px
-        }
-
-        .util {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            padding: 20px 24px;
-            margin-bottom: 22px
-        }
-
-            .util b {
-                display: block;
-                line-height: 1.2
-            }
-
-            .util small {
-                color: var(--mute);
-                font-size: 14px
-            }
 
         .track {
             flex: 1;
@@ -470,19 +53,6 @@
                 transition: width .5s
             }
 
-        .util strong {
-            font-size: 17px;
-            min-width: 48px;
-            text-align: right
-        }
-
-        .panel {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            overflow: hidden
-        }
-
         .ph {
             display: flex;
             flex-wrap: wrap;
@@ -493,36 +63,6 @@
             border-bottom: 1px solid var(--line)
         }
 
-        .tabs {
-            display: flex
-        }
-
-            .tabs button {
-                border: 0;
-                background: none;
-                color: var(--mute);
-                font: 600 15px inherit;
-                font-family: inherit;
-                padding: 20px 22px;
-                border-bottom: 3px solid transparent;
-                cursor: pointer;
-                margin-bottom: -1px
-            }
-
-                .tabs button span {
-                    margin-left: 8px;
-                    font-size: 13px;
-                    background: var(--soft);
-                    padding: 2px 9px;
-                    border-radius: 99px;
-                    color: var(--mute)
-                }
-
-                .tabs button[aria-selected="true"] {
-                    color: var(--ink);
-                    border-color: var(--yel)
-                }
-
         .bar {
             display: flex;
             flex-wrap: wrap;
@@ -530,63 +70,28 @@
             padding: 14px 0
         }
 
-        .msg {
-            margin: 14px 24px 0;
-            background: var(--gbg);
-            color: var(--gfg);
-            border-radius: 12px;
-            padding: 11px 15px;
-            font-size: 14px
+        .tools .seg, .tools .rst {
+            flex: none
         }
 
-            .msg.err {
-                background: var(--rbg);
-                color: var(--rfg)
-            }
-
-        .tools {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            align-items: flex-end;
-            padding: 20px 24px
+        .inp .ic {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--mute);
+            width: 17px;
+            height: 17px
         }
 
-            .tools > label {
-                display: flex;
-                flex-direction: column;
-                gap: 7px;
-                font-size: 13.5px;
-                font-weight: 500;
-                flex: 1 1 170px
-            }
-
-            .tools .seg, .tools .rst {
-                flex: none
-            }
-
-        .inp {
-            position: relative
+        .inp input {
+            padding-left: 40px !important
         }
-
-            .inp .ic {
-                position: absolute;
-                left: 13px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--mute);
-                width: 17px;
-                height: 17px
-            }
-
-            .inp input {
-                padding-left: 40px !important
-            }
 
         .tools input, .tools select, dialog input, dialog select {
             font: inherit;
-            font-size: 14.5px;
-            padding: 11px 14px;
+            font-size: var(--fs-base);
+            padding: var(--in-pad);
             border: 1px solid var(--line);
             border-radius: 12px;
             background: var(--card);
@@ -594,48 +99,10 @@
             width: 100%
         }
 
-        .seg {
-            display: inline-flex;
-            background: var(--soft);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 3px
-        }
-
-            .seg button {
-                border: 0;
-                background: none;
-                font: 600 14.5px inherit;
-                font-family: inherit;
-                color: var(--mute);
-                padding: 8px 16px;
-                border-radius: 9px;
-                cursor: pointer
-            }
-
-                .seg button.on {
-                    background: var(--card);
-                    color: var(--ink);
-                    box-shadow: 0 1px 3px rgba(0,0,0,.12)
-                }
-
-        .rst {
-            background: none;
-            border: 0;
-            color: var(--mute);
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-            font: 500 14.5px inherit;
-            font-family: inherit;
-            cursor: pointer;
-            padding: 11px 12px
-        }
-
-        .scroll {
-            overflow: auto;
-            max-height: 66vh;
-            border-top: 1px solid var(--line)
+        .seg button.on {
+            background: var(--card);
+            color: var(--ink);
+            box-shadow: 0 1px 3px rgba(0,0,0,.12)
         }
 
         table {
@@ -643,35 +110,6 @@
             border-spacing: 0;
             width: 100%;
             min-width: 1180px
-        }
-
-        th {
-            position: sticky;
-            top: 0;
-            z-index: 1;
-            background: var(--soft);
-            text-align: left;
-            font-size: 12px;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--mute);
-            font-weight: 600;
-            padding: 16px 14px;
-            border-bottom: 1px solid var(--line)
-        }
-
-        td {
-            padding: 16px 14px;
-            border-bottom: 1px solid var(--line);
-            vertical-align: middle
-        }
-
-            td:first-child, th:first-child {
-                padding-left: 20px
-            }
-
-        tr:hover td {
-            background: var(--soft)
         }
 
         tr.r td:first-child {
@@ -687,27 +125,13 @@
         }
 
         .horse {
-            font: 700 15px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            font: 700 var(--fs-base) var(--mono);
             letter-spacing: .02em
         }
 
         .sub {
-            font-size: 12px;
+            font-size: var(--fs-xs);
             color: var(--mute)
-        }
-
-        .mono {
-            font-family: ui-monospace,Menlo,Consolas,monospace
-        }
-
-        .dash {
-            color: var(--mute2)
-        }
-
-        td.rem {
-            color: var(--mute);
-            min-width: 150px;
-            max-width: 200px
         }
 
         .st {
@@ -717,7 +141,7 @@
             padding: 4px 12px;
             border-radius: 99px;
             font-weight: 600;
-            font-size: 13.5px
+            font-size: var(--fs-sm)
         }
 
             .st i {
@@ -746,7 +170,7 @@
             padding: 3px 11px;
             border-radius: 99px;
             font-weight: 600;
-            font-size: 13.5px;
+            font-size: var(--fs-sm);
             background: var(--soft);
             color: var(--mute);
             border: 1px solid transparent;
@@ -782,7 +206,7 @@
         }
 
             td.act button {
-                font: 600 13px inherit;
+                font: 600 var(--fs-sm) var(--font);
                 font-family: inherit;
                 margin-right: 6px;
                 padding: 6px 12px;
@@ -811,7 +235,7 @@
             gap: 10px;
             padding: 16px 24px;
             border-top: 1px solid var(--line);
-            font-size: 14px;
+            font-size: var(--fs-base);
             color: var(--mute)
         }
 
@@ -826,7 +250,7 @@
                 padding: 3px 12px;
                 border-radius: 99px;
                 font-weight: 600;
-                font-size: 13px;
+                font-size: var(--fs-sm);
                 border: 1px solid var(--line);
                 color: var(--ink)
             }
@@ -851,7 +275,7 @@
 
         dialog {
             border: 0;
-            border-radius: 20px;
+            border-radius: var(--radius);
             background: var(--card);
             color: var(--ink);
             width: min(660px,94vw);
@@ -859,32 +283,15 @@
             box-shadow: 0 24px 60px rgba(0,0,0,.35)
         }
 
-            dialog::backdrop {
-                background: #0009
-            }
-
             dialog h2 {
                 margin: 0 0 16px;
-                font-size: 20px
-            }
-
-            dialog label {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                font-size: 13px;
-                font-weight: 500;
-                color: var(--mute)
+                font-size: var(--fs-lg)
             }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px
-        }
-
-        .wide {
-            grid-column: 1/-1
         }
 
         .acts {
@@ -901,55 +308,12 @@
         }
 
         @media(max-width:860px) {
-            .app {
-                grid-template-columns: 1fr
-            }
-
-            .side {
-                position: relative;
-                height: auto;
-                flex-direction: row;
-                align-items: center;
-                padding: 10px 14px;
-                gap: 8px
-            }
-
-            .brand {
-                width: auto;
-                flex: 1
-            }
-
-            .nav, .user, .sf {
-                display: none
-            }
-
-            .menu {
-                top: 72px
-            }
-
-            .head, .body {
-                padding-left: 16px;
-                padding-right: 16px
-            }
-
-            h1 {
-                font-size: 28px
-            }
-
-            .kpis {
-                grid-template-columns: repeat(2,1fr)
-            }
-
             .ph {
                 padding: 0 12px
             }
 
-            .tabs button {
-                padding: 16px 12px
-            }
-
             .tools {
-                padding: 16px 14px
+                padding: 10px 12px
             }
         }
 
@@ -966,7 +330,7 @@
         .stp {
             display: inline-block;
             margin-left: 6px;
-            font-size: 13px;
+            font-size: var(--fs-sm);
             padding: 2px 11px;
             border-radius: 99px;
             background: var(--soft);
@@ -983,7 +347,7 @@
 
             .sec2 h2 {
                 margin: 0;
-                font-size: 17px
+                font-size: var(--fs-md)
             }
 
         .fgrid {
@@ -998,15 +362,15 @@
                 display: flex;
                 flex-direction: column;
                 gap: 7px;
-                font-size: 13.5px;
+                font-size: var(--fs-sm);
                 font-weight: 500;
                 color: var(--mute)
             }
 
             .fgrid input:not([type=checkbox]), .tools2 input, .tools2 select {
                 font: inherit;
-                font-size: 14.5px;
-                padding: 11px 14px;
+                font-size: var(--fs-base);
+                padding: var(--in-pad);
                 border: 1px solid var(--line);
                 border-radius: 12px;
                 background: var(--card);
@@ -1035,7 +399,7 @@
 
         .note {
             padding: 6px 24px 20px;
-            font-size: 13px;
+            font-size: var(--fs-sm);
             color: var(--mute)
         }
 
@@ -1058,7 +422,7 @@
 
         .sumtitle {
             padding: 16px 24px 10px;
-            font-size: 13px;
+            font-size: var(--fs-sm);
             font-weight: 600;
             color: var(--mute);
             text-transform: uppercase;
@@ -1066,7 +430,7 @@
         }
 
         td.id {
-            font: 600 12.5px ui-monospace,Menlo,Consolas,monospace;
+            font: 600 var(--fs-xs) var(--mono);
             color: var(--ink)
         }
 
@@ -1082,7 +446,7 @@
             background: var(--card);
             color: var(--mute);
             margin-right: 6px;
-            font-size: 14px;
+            font-size: var(--fs-base);
             cursor: pointer
         }
 
@@ -1101,22 +465,13 @@
                 padding-right: 14px
             }
         }
-        /* Reduce font size in the table */
+
         table {
-            font-size: 12px;
+            font-size: var(--fs-xs)
         }
 
-            table th,
-            table td {
-                font-size: 12px;
-                padding: 5px 8px;
-            }
-
-        /* Reduce font size in the input form */
-        .grid label,
-        .grid input,
-        .grid select {
-            font-size: 12px;
+        .grid label, .grid input, .grid select {
+            font-size: var(--fs-xs)
         }
     </style>
 </head>
@@ -1187,7 +542,7 @@
                         <button class="btn" id="bk" title="Download a full backup of all records"><svg class="ic"><use href="#i-file" /></svg>Backup</button>
 
                         <!--<button class="btn" id="rs" title="Restore from a backup file">Restore</button>
-                    <button class="btn" id="clr">Clear all</button> -->
+                        <button class="btn" id="clr">Clear all</button> -->
 
                         <input type="file" id="bfile" accept=".json,application/json" hidden>
                         <input type="file" id="file" accept=".csv,text/csv" hidden>
@@ -1311,20 +666,20 @@
                 .slice()
                 .reverse()
                 .map(r => `
-                            <tr>
-                                <td class="id">${esc(r.id)}</td>
-                                <td>${esc(r.date)}</td>
-                                <td>${esc(r.trip)}</td>
-                                <td class="num">${r.odo === '' || r.odo == null ? '—' : Number(r.odo).toLocaleString()}</td>
-                                <td>${esc(r.truck)}</td>
-                                <td class="num">${Number(r.fuel).toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
-                                <td>${esc(r.loc)}</td>
-                                <td style="white-space:nowrap">
-                                    <button class="del" title="Edit" onclick="edit('${r.id}')">✎</button>
-                                    <button class="del" title="Delete" onclick="del('${r.id}')">✕</button>
-                                </td>
-                            </tr>
-                        `)
+                                <tr>
+                                    <td class="id">${esc(r.id)}</td>
+                                    <td>${esc(r.date)}</td>
+                                    <td>${esc(r.trip)}</td>
+                                    <td class="num">${r.odo === '' || r.odo == null ? '—' : Number(r.odo).toLocaleString()}</td>
+                                    <td>${esc(r.truck)}</td>
+                                    <td class="num">${Number(r.fuel).toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                                    <td>${esc(r.loc)}</td>
+                                    <td style="white-space:nowrap">
+                                        <button class="del" title="Edit" onclick="edit('${r.id}')">✎</button>
+                                        <button class="del" title="Delete" onclick="del('${r.id}')">✕</button>
+                                    </td>
+                                </tr>
+                            `)
                 .join('');
 
             const g = {};
@@ -1352,15 +707,15 @@
 
             $('sumrows').innerHTML = gs.length
                 ? gs.map(x => `
-                                <tr>
-                                    <td>${esc(x.trip)}</td>
-                                    <td>${esc(x.truck)}</td>
-                                    <td class="num">${x.n}</td>
-                                    <td class="num">${x.fuel.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
-                                    <td class="num">${x.odo === '' ? '—' : x.odo.toLocaleString()}</td>
-                                    <td>${x.d1 === x.d2 ? x.d1 : x.d1 + ' → ' + x.d2}</td>
-                                </tr>
-                            `).join('')
+                                    <tr>
+                                        <td>${esc(x.trip)}</td>
+                                        <td>${esc(x.truck)}</td>
+                                        <td class="num">${x.n}</td>
+                                        <td class="num">${x.fuel.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                                        <td class="num">${x.odo === '' ? '—' : x.odo.toLocaleString()}</td>
+                                        <td>${x.d1 === x.d2 ? x.d1 : x.d1 + ' → ' + x.d2}</td>
+                                    </tr>
+                                `).join('')
                 : `<tr><td colspan="6" style="color:var(--mute);text-align:center">No data</td></tr>`;
 
             $('trips').textContent = gs.length;

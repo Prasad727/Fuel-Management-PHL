@@ -53,6 +53,7 @@ const clientIp = req => (req.headers['x-forwarded-for'] || req.socket.remoteAddr
 // Files visitors can open without logging in (everything else needs a login)
 const PUBLIC_FILES = {
     '/menu.js': ['menu.js', 'application/javascript; charset=utf-8'],
+    '/theme.css': ['theme.css', 'text/css; charset=utf-8'],
     '/login': ['login.html', 'text/html; charset=utf-8'],
     '/login.html': ['login.html', 'text/html; charset=utf-8'],
     '/phl-logo.png': ['phl-logo.png', 'image/png'],

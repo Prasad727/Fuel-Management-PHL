@@ -1,0 +1,198 @@
+/* =====================================================================
+   theme.css - ONE style file for every page of the PHL app
+   (Fleet Management, Fuel Management, Fleet Master View, Staff, side menu)
+
+   To change the look of the whole app, change the values in section 1 and 2.
+   Every page picks them up after a refresh (Ctrl + F5).
+   ===================================================================== */
+
+/* ---------- 1. TEXT SIZE --------------------------------------------
+   Make everything bigger or smaller by changing these numbers.
+   (--fs-base is the normal text. The others are for small labels and headings.) */
+:root {
+    --font: Inter, "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    --fs-2xs: 10.5px;   /* tiny tags, badges */
+    --fs-xs: 11.5px;    /* table text, small notes */
+    --fs-sm: 12.5px;    /* labels, buttons, menu */
+    --fs-base: 13.5px;  /* normal text */
+    --fs-md: 15px;      /* small headings */
+    --fs-lg: 17px;      /* panel titles */
+    --fs-xl: 22px;      /* team counts */
+    --fs-h1: 26px;      /* page title */
+    --fs-kpi: 28px;     /* big numbers on the summary cards */
+
+    /* spacing and corners */
+    --pad-x: 30px;          /* left/right space of the page */
+    --pad-y: 22px;          /* top space of the page */
+    --in-pad: 8px 12px;     /* inside text boxes and drop-downs */
+    --radius: 16px;         /* cards and panels */
+    --radius-sm: 10px;      /* buttons */
+    --side-w: 252px;        /* width of the side menu */
+}
+
+/* ---------- 2. COLOURS (PHL logo: blue #024886, orange #F37022) ------ */
+:root {
+    --brand: #024886;        /* PHL blue: main buttons, truck numbers, active tabs */
+    --brand-ink: #ffffff;    /* text on PHL blue */
+    --brand-soft: #e5eef8;   /* light blue backgrounds ("In transit", selected team) */
+    --brand-fg: #024886;     /* blue text on light blue */
+    --accent: #f37022;       /* PHL orange: selected menu item, loaded dot */
+    --accent-ink: #ffffff;   /* text on PHL orange */
+
+    --bg: #f4f6f9;           /* page background */
+    --card: #ffffff;         /* cards, panels, pop-ups */
+    --ink: #0f1d2e;          /* main text */
+    --mute: #5a6b80;         /* grey text */
+    --mute2: #9aa8b9;        /* light grey text */
+    --line: #dfe5ed;         /* borders */
+    --soft: #eef2f7;         /* light grey fills (table header, hover) */
+
+    /* side menu */
+    --side: #02305c;         /* menu background (dark PHL blue) */
+    --side-hover: #0a3d70;
+    --side-line: #1a4d80;
+    --sideline: #1a4d80;
+    --sideink: #c2d1e4;      /* menu text */
+    --side-mute: #8ea6c3;
+    --side-strong: #ffffff;
+    --side-on: var(--accent);        /* selected menu item */
+    --side-on-text: var(--accent-ink);
+    --side-on-ink: #ffe3d1;
+
+    /* status colours (green = on time / completed, orange = warning, red = late) */
+    --gbg: #dcfce7; --gfg: #15803d; --grn: #22a55b;
+    --obg: #ffedd5; --ofg: #c2410c; --org: #f97316;
+    --rbg: #fee2e2; --rfg: #b91c1c; --red: #e5483d;
+    --pbg: #ede9fe; --pfg: #5b21b6; --blu: #7c3aed;   /* "Waiting for docs" */
+
+    /* names the pages use (they point at the colours above - no need to change) */
+    --yel: var(--brand);
+    --yink: var(--brand-ink);
+    --ybg: var(--brand-soft);
+    --yfg: var(--brand-fg);
+    --ydot: var(--accent);
+    --card2: var(--side-hover);
+}
+
+/* Dark mode (the "Dark mode" button in the menu) */
+:root[data-theme=dark] {
+    --brand: #2f73c0;
+    --brand-soft: #0f2a4a;
+    --brand-fg: #93c5fd;
+    --bg: #0a111c;
+    --card: #111a28;
+    --ink: #e8eef6;
+    --mute: #94a3b8;
+    --mute2: #64748b;
+    --line: #1f2b3c;
+    --soft: #172234;
+    --side: #050c17;
+    --side-hover: #0e1a2b;
+    --side-line: #1c2a3d;
+    --sideline: #1c2a3d;
+    --gbg: #123524; --gfg: #86efac;
+    --obg: #47290c; --ofg: #fdba74;
+    --rbg: #4a1a1a; --rfg: #fca5a5;
+    --pbg: #2a1d4f; --pfg: #c4b5fd;
+}
+
+/* ---------- 3. SHARED LAYOUT (used by several pages) ------------------ */
+[hidden] { display: none !important }   /* anything the page hides stays hidden (e.g. the Fuel 'Cancel' button) */
+* { box-sizing: border-box }
+.ic { width: 18px; height: 18px; flex: none }
+.app { display: grid; grid-template-columns: var(--side-w) 1fr; min-height: 100vh }
+.side { background: var(--side); color: var(--sideink); padding: 22px 16px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh }
+.head { padding: var(--pad-y) var(--pad-x) 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; flex-wrap: wrap }
+.eye { font-size: var(--fs-sm); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); font-weight: 500 }
+h1 { margin: 0 0 4px; font-size: var(--fs-h1); line-height: 1.1; letter-spacing: -.025em; font-weight: 800 }
+.btn:hover { background: var(--soft) }
+.btn.pri:hover { filter: brightness(.96) }
+.kh { display: flex; justify-content: space-between; align-items: center; color: var(--mute) }
+.chip { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--soft); color: var(--mute) }
+.util { display: flex; align-items: center; gap: 18px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px }
+.util b { display: block; line-height: 1.2 }
+.util small { color: var(--mute); font-size: var(--fs-base) }
+.util strong { font-size: var(--fs-md); min-width: 48px; text-align: right }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden }
+.tabs { display: flex }
+.tabs button { border: 0; background: none; color: var(--mute); font: 600 var(--fs-base) var(--font); font-family: inherit; padding: 14px 18px; border-bottom: 3px solid transparent; cursor: pointer; margin-bottom: -1px }
+.tabs button span { margin-left: 8px; font-size: var(--fs-sm); background: var(--soft); padding: 2px 9px; border-radius: 99px; color: var(--mute) }
+.tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--yel) }
+.msg { margin: 14px 24px 0; background: var(--gbg); color: var(--gfg); border-radius: 12px; padding: 11px 15px; font-size: var(--fs-base) }
+.msg.err { background: var(--rbg); color: var(--rfg) }
+.tools { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; padding: 20px 24px }
+.tools > label { display: flex; flex-direction: column; gap: 7px; font-size: var(--fs-sm); font-weight: 500; flex: 1 1 170px }
+.inp { position: relative }
+.seg { display: inline-flex; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 3px }
+.seg button { border: 0; background: none; font: 600 var(--fs-base) var(--font); font-family: inherit; color: var(--mute); padding: 8px 16px; border-radius: 9px; cursor: pointer }
+.scroll { overflow: auto; max-height: 66vh; border-top: 1px solid var(--line) }
+th { position: sticky; top: 0; z-index: 1; background: var(--soft); text-align: left; font-size: var(--fs-xs); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--line) }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle }
+td:first-child, th:first-child { padding-left: 20px }
+tr:hover td { background: var(--soft) }
+.mono { font-family: ui-monospace,Menlo,Consolas,monospace }
+.dash { color: var(--mute2) }
+td.rem { color: var(--mute); min-width: 150px; max-width: 200px }
+dialog::backdrop { background: #0009 }
+dialog label { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm); font-weight: 500; color: var(--mute) }
+.wide { grid-column: 1/-1 }
+table th, table td { font-size: var(--fs-xs); padding: 5px 8px }
+main { min-width: 0 }
+.cap { padding: 0 24px 8px; color: var(--mute); font-size: var(--fs-base) }
+body { margin: 0; background: var(--bg); color: var(--ink); font: var(--fs-base)/1.45 var(--font) }
+.btn { display: inline-flex; align-items: center; gap: 7px; font: 600 var(--fs-sm) var(--font); padding: 8px 13px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; white-space: nowrap }
+.btn.pri { background: var(--yel); border-color: var(--yel); color: var(--yink); font-weight: 700 }
+.rst { background: none; border: 0; color: var(--mute); display: inline-flex; gap: 8px; align-items: center; font: 500 var(--fs-sm) var(--font); cursor: pointer; padding: 9px 10px }
+.today { font-size: var(--fs-base); color: var(--mute); font-weight: 500; margin: 0 0 6px }
+.head p { margin: 0; color: var(--mute); max-width: 680px }
+.body { padding: var(--pad-y) var(--pad-x) 36px; max-width: 1700px }
+.k { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px }
+.k b { display: block; font-size: var(--fs-kpi); line-height: 1; margin: 12px 0 8px; letter-spacing: -.03em; font-weight: 800 }
+.k span { color: var(--mute); font-size: var(--fs-sm) }
+@media(max-width:860px) {
+    .app { grid-template-columns: 1fr }
+    .head, .body { padding-left: 16px; padding-right: 16px }
+    h1 { font-size: var(--fs-xl) }
+    .kpis { grid-template-columns: repeat(2,1fr) }
+    .tabs button { padding: 16px 12px }
+    .side { position: relative; height: auto; flex-direction: row; align-items: center; padding: 10px 14px; gap: 8px }
+}
+
+/* ---------- 4. SIDE MENU (menu.js) ------------------------------------ */
+.pm-ic{width:18px;height:18px;flex:none}
+.pm-brand{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;color:inherit;text-align:left;cursor:pointer;padding:6px;border-radius:12px;font-family:inherit}
+.pm-brand:hover{background:var(--side-hover)}
+.pm-logo{width:46px;height:40px;border-radius:10px;background:#fff;color:var(--brand);display:grid;place-items:center;flex:none;overflow:hidden;padding:3px}.pm-logo img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.pm-logo .pm-ic{width:22px;height:22px}
+.pm-bt{flex:1;min-width:0}
+.pm-bt b{display:block;color:var(--side-strong);font-size:var(--fs-sm);line-height:1.15;letter-spacing:.04em;font-weight:800}
+.pm-bt small{font-size:var(--fs-xs);color:var(--side-mute)}
+.pm-brand>.pm-ic{color:var(--side-mute);transition:transform .2s}
+.pm-brand[aria-expanded=true]>.pm-ic{transform:rotate(180deg)}
+.pm-drop{position:absolute;left:14px;right:14px;top:84px;background:var(--side-hover);border:1px solid var(--side-line);border-radius:14px;padding:8px;z-index:40;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.pm-drop[hidden]{display:none}
+.pm-sec{font-size:var(--fs-2xs);letter-spacing:.12em;text-transform:uppercase;color:var(--side-mute);padding:8px 10px 6px;font-weight:600}
+.pm-nav{margin-top:22px;display:flex;flex-direction:column;gap:4px}
+.pm-list{display:flex;flex-direction:column;gap:4px}
+.pm-link{display:flex;align-items:center;gap:11px;color:var(--sideink);text-decoration:none;padding:9px 11px;border-radius:11px;font-weight:500;font-size:var(--fs-base)}
+.pm-link:hover{background:var(--side-hover);color:var(--side-strong)}
+.pm-link.on{background:var(--side-on);color:var(--side-on-text)}
+.pm-link.soon{opacity:.6;pointer-events:none}
+.pm-link.pm-sub{margin-left:18px;padding:9px 12px;font-size:var(--fs-sm)}
+.pm-head{width:100%;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left}
+.pm-head.has{color:var(--side-strong)}
+.pm-head .pm-car{margin-left:auto;width:16px;height:16px;transition:transform .2s;opacity:.7}
+.pm-head.open .pm-car{transform:rotate(180deg)}
+.pm-t small{display:block;font-size:var(--fs-xs);color:var(--side-mute);font-weight:400}
+.pm-link.on small{color:var(--side-on-ink)}
+.pm-tag{margin-left:auto;font-size:var(--fs-2xs);letter-spacing:.08em;border:1px solid var(--side-line);border-radius:99px;padding:3px 10px;color:var(--side-mute)}
+.pm-foot{margin-top:auto;border-top:1px solid var(--sideline);padding-top:14px;display:flex;flex-direction:column;gap:6px}
+.pm-btn{background:none;border:0;color:var(--sideink);display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:11px;cursor:pointer;font:500 var(--fs-base) var(--font);text-align:left;width:100%}
+.pm-btn:hover{background:var(--side-hover);color:var(--side-strong)}
+.pm-user{display:flex;gap:12px;align-items:center;padding:8px 12px}
+.pm-user i{width:38px;height:38px;border-radius:50%;background:var(--side-line);color:var(--side-strong);display:grid;place-items:center;font:600 var(--fs-sm) var(--font);font-style:normal}
+.pm-user b{display:block;color:var(--side-strong);font-size:var(--fs-base);line-height:1.2}
+.pm-user small{font-size:var(--fs-xs);color:var(--side-mute)}
+@media(max-width:860px){.pm-nav,.pm-foot{display:none}.pm-brand{width:auto;flex:1}.pm-drop{top:72px}}

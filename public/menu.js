@@ -32,37 +32,7 @@
         chev: '<polyline points="6 9 12 15 18 9"/>'
     };
 
-    var CSS =
-        '.pm-ic{width:18px;height:18px;flex:none}' +
-        '.pm-brand{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;color:inherit;text-align:left;cursor:pointer;padding:6px;border-radius:12px;font-family:inherit}' +
-        '.pm-brand:hover{background:#1a1a18}' +
-        '.pm-logo{width:42px;height:42px;border-radius:12px;background:var(--yel);color:var(--yink);display:grid;place-items:center;flex:none}' +
-        '.pm-logo .pm-ic{width:22px;height:22px}' +
-        '.pm-bt{flex:1;min-width:0}.pm-bt b{display:block;color:#fff;font-size:13.5px;line-height:1.15;letter-spacing:.04em;font-weight:800}.pm-bt small{font-size:12px;color:#8d8c84}' +
-        '.pm-brand>.pm-ic{color:#8d8c84;transition:transform .2s}.pm-brand[aria-expanded=true]>.pm-ic{transform:rotate(180deg)}' +
-        '.pm-drop{position:absolute;left:14px;right:14px;top:84px;background:#1c1c1a;border:1px solid #2e2e2a;border-radius:14px;padding:8px;z-index:40;box-shadow:0 18px 40px rgba(0,0,0,.45)}' +
-        '.pm-drop[hidden]{display:none}' +
-        '.pm-sec{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#77766e;padding:8px 10px 6px;font-weight:600}' +
-        '.pm-nav{margin-top:22px;display:flex;flex-direction:column;gap:4px}' +
-        '.pm-list{display:flex;flex-direction:column;gap:4px}' +
-        '.pm-link{display:flex;align-items:center;gap:12px;color:var(--sideink);text-decoration:none;padding:11px 12px;border-radius:11px;font-weight:500;font-size:15px}' +
-        '.pm-link:hover{background:#1c1c1a;color:#fff}' +
-        '.pm-link.on{background:var(--yel);color:var(--yink)}' +
-        '.pm-link.soon{opacity:.6;pointer-events:none}' +
-        '.pm-link.pm-sub{margin-left:18px;padding:9px 12px;font-size:14px}' +
-        '.pm-head{width:100%;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left}' +
-        '.pm-head.has{color:#fff}' +
-        '.pm-head .pm-car{margin-left:auto;width:16px;height:16px;transition:transform .2s;opacity:.7}' +
-        '.pm-head.open .pm-car{transform:rotate(180deg)}' +
-        '.pm-t small{display:block;font-size:12px;color:#77766e;font-weight:400}.pm-link.on small{color:#5c4400}' +
-        '.pm-tag{margin-left:auto;font-size:11px;letter-spacing:.08em;border:1px solid #33332f;border-radius:99px;padding:3px 10px;color:#8d8c84}' +
-        '.pm-foot{margin-top:auto;border-top:1px solid var(--sideline);padding-top:14px;display:flex;flex-direction:column;gap:6px}' +
-        '.pm-btn{background:none;border:0;color:var(--sideink);display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:11px;cursor:pointer;font:500 15px Inter,"Segoe UI",sans-serif;text-align:left;width:100%}' +
-        '.pm-btn:hover{background:#1c1c1a;color:#fff}' +
-        '.pm-user{display:flex;gap:12px;align-items:center;padding:8px 12px}' +
-        '.pm-user i{width:38px;height:38px;border-radius:50%;background:#262623;color:#fff;display:grid;place-items:center;font:600 13px Inter,sans-serif;font-style:normal}' +
-        '.pm-user b{display:block;color:#fff;font-size:14.5px;line-height:1.2}.pm-user small{font-size:12.5px;color:#77766e}' +
-        '@media(max-width:860px){.pm-nav,.pm-foot{display:none}.pm-brand{width:auto;flex:1}.pm-drop{top:72px}}';
+    // All menu styles are in /theme.css (section 4: SIDE MENU)
 
     function svg(name, cls) {
         return '<svg class="pm-ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.truck) + '</svg>';
@@ -112,14 +82,15 @@
     var theme = 'light'; try { theme = localStorage.getItem('ph_theme') || 'light'; } catch (e) { }
     document.documentElement.setAttribute('data-theme', theme);
 
-    var style = document.createElement('style'); style.textContent = CSS; document.head.appendChild(style);
+    // Load the shared style file if this page forgot to
+    if (!document.querySelector('link[href="/theme.css"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/theme.css'; document.head.appendChild(l); }
 
     var side = document.getElementById('side');
     if (!side) { console.error('menu.js: add <aside class="side" id="side"></aside> to this page'); return; }
 
     side.innerHTML =
         '<button class="pm-brand" id="pmBrand" type="button" aria-haspopup="menu" aria-expanded="false">' +
-        '<span class="pm-logo">' + svg('truck') + '</span>' +
+        '<span class="pm-logo"><img src="/phl-logo.png" alt="PHL" onerror="this.nextElementSibling.style.display=\'block\';this.remove()">' + svg('truck').replace('<svg ', '<svg style="display:none" ') + '</span>' +
         '<span class="pm-bt"><b>PROFESSIONAL HAULIERS</b><small>Zambia &ndash; DRC corridor</small></span>' + svg('chev') + '</button>' +
         '<div class="pm-drop" id="pmDrop" role="menu" hidden><div class="pm-sec">Modules</div><div class="pm-list" id="pmDropList"></div></div>' +
         '<nav class="pm-nav" aria-label="Modules"><div class="pm-sec">Operations</div><div class="pm-list" id="pmNavList"></div></nav>' +

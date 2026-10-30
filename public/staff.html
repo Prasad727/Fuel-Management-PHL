@@ -8,162 +8,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/theme.css">
     <style>
-        :root {
-            --bg: #f8f7f3;
-            --card: #fff;
-            --ink: #14130f;
-            --mute: #6b6a63;
-            --mute2: #a3a29a;
-            --line: #e8e6df;
-            --soft: #f3f2ed;
-            --yel: #fbbf24;
-            --yink: #1c1400;
-            --ybg: #fef3c7;
-            --yfg: #92400e;
-            --gbg: #dcfce7;
-            --gfg: #15803d;
-            --obg: #ffedd5;
-            --ofg: #c2410c;
-            --rbg: #fee2e2;
-            --rfg: #b91c1c;
-            --pbg: #e0e7ff;
-            --pfg: #3730a3;
-            --red: #e5483d;
-            --side: #111110;
-            --sideline: #262623;
-            --sideink: #a8a79f
+        /* Styles used ONLY on this page. Colours and text sizes come from /theme.css */
+        .btn:disabled {
+            opacity: .5;
+            cursor: default
         }
-
-            :root[data-theme=dark] {
-                --bg: #0c0c0b;
-                --card: #171715;
-                --ink: #f4f3ee;
-                --mute: #9a998f;
-                --mute2: #6d6c64;
-                --line: #2a2a27;
-                --soft: #1f1f1c;
-                --side: #070706;
-                --sideline: #22221f;
-                --ybg: #3a2d08;
-                --yfg: #fcd34d;
-                --gbg: #123524;
-                --gfg: #86efac;
-                --obg: #47290c;
-                --ofg: #fdba74;
-                --rbg: #4a1a1a;
-                --rfg: #fca5a5;
-                --pbg: #1e1b4b;
-                --pfg: #a5b4fc
-            }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--ink);
-            font: 15px/1.45 Inter,"Segoe UI",system-ui,sans-serif
-        }
-
-        .ic {
-            width: 18px;
-            height: 18px;
-            flex: none
-        }
-
-        .app {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            min-height: 100vh
-        }
-
-        .side {
-            background: var(--side);
-            color: var(--sideink);
-            padding: 22px 16px;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh
-        }
-
-        main {
-            min-width: 0
-        }
-
-        .head {
-            padding: 30px 40px 24px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            align-items: flex-start;
-            flex-wrap: wrap
-        }
-
-        h1 {
-            margin: 0 0 4px;
-            font-size: 38px;
-            line-height: 1.1;
-            letter-spacing: -.025em;
-            font-weight: 800
-        }
-
-        .head p {
-            margin: 0;
-            color: var(--mute);
-            max-width: 680px
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font: 600 14px Inter,sans-serif;
-            padding: 10px 15px;
-            border-radius: 11px;
-            border: 1px solid var(--line);
-            background: var(--card);
-            color: var(--ink);
-            cursor: pointer;
-            white-space: nowrap
-        }
-
-            .btn:hover {
-                background: var(--soft)
-            }
-
-            .btn.pri {
-                background: var(--yel);
-                border-color: var(--yel);
-                color: var(--yink);
-                font-weight: 700
-            }
-
-                .btn.pri:hover {
-                    filter: brightness(.96)
-                }
-
-            .btn:disabled {
-                opacity: .5;
-                cursor: default
-            }
 
         button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
             outline: 3px solid var(--yel);
             outline-offset: 2px
         }
 
-        .body {
-            padding: 28px 40px 44px;
-            max-width: 1700px
-        }
-
-        /* team tabs */
         .teams {
             display: grid;
             grid-template-columns: repeat(8,1fr);
@@ -195,14 +52,14 @@
 
             .tm span {
                 display: block;
-                font-size: 13px;
+                font-size: var(--fs-sm);
                 color: var(--mute);
                 font-weight: 500
             }
 
             .tm b {
                 display: block;
-                font-size: 28px;
+                font-size: var(--fs-xl);
                 font-weight: 800;
                 letter-spacing: -.02em;
                 margin-top: 4px
@@ -211,13 +68,6 @@
             .tm.on span {
                 color: var(--yfg)
             }
-
-        .panel {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            overflow: hidden
-        }
 
         .ph {
             display: flex;
@@ -231,7 +81,7 @@
 
             .ph h2 {
                 margin: 0;
-                font-size: 18px
+                font-size: var(--fs-lg)
             }
 
         .bar {
@@ -240,41 +90,10 @@
             gap: 8px
         }
 
-        .msg {
-            margin: 14px 24px 0;
-            background: var(--gbg);
-            color: var(--gfg);
-            border-radius: 12px;
-            padding: 11px 15px;
-            font-size: 14px
-        }
-
-            .msg.err {
-                background: var(--rbg);
-                color: var(--rfg)
-            }
-
-        .tools {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            align-items: flex-end;
-            padding: 20px 24px
-        }
-
-            .tools > label {
-                display: flex;
-                flex-direction: column;
-                gap: 7px;
-                font-size: 13.5px;
-                font-weight: 500;
-                flex: 1 1 170px
-            }
-
         input, select, textarea {
             font: inherit;
-            font-size: 14.5px;
-            padding: 11px 14px;
+            font-size: var(--fs-base);
+            padding: var(--in-pad);
             border: 1px solid var(--line);
             border-radius: 12px;
             background: var(--card);
@@ -292,24 +111,6 @@
             min-height: 70px
         }
 
-        .rst {
-            background: none;
-            border: 0;
-            color: var(--mute);
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-            font: 500 14.5px Inter,sans-serif;
-            cursor: pointer;
-            padding: 11px 12px
-        }
-
-        .cap {
-            padding: 0 24px 8px;
-            color: var(--mute);
-            font-size: 14px
-        }
-
         .empty {
             padding: 48px;
             text-align: center;
@@ -317,7 +118,6 @@
             grid-column: 1/-1
         }
 
-        /* staff cards */
         #cards {
             display: grid;
             grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
@@ -361,7 +161,7 @@
             display: grid;
             place-items: center;
             font-weight: 800;
-            font-size: 19px;
+            font-size: var(--fs-lg);
             color: #fff;
             background: #a8a29e;
             overflow: hidden
@@ -379,12 +179,12 @@
         }
 
         .ds {
-            font-size: 13px;
+            font-size: var(--fs-sm);
             color: var(--mute)
         }
 
         .meta {
-            font-size: 13px;
+            font-size: var(--fs-sm);
             color: var(--mute);
             display: grid;
             gap: 3px
@@ -409,7 +209,7 @@
             padding: 2px 9px;
             border-radius: 99px;
             font-weight: 600;
-            font-size: 11.5px;
+            font-size: var(--fs-2xs);
             white-space: nowrap;
             background: var(--soft);
             color: var(--mute);
@@ -447,7 +247,7 @@
             }
 
         .trk {
-            font: 700 13px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            font: 700 var(--fs-sm) var(--mono);
             background: var(--yel);
             color: var(--yink);
             padding: 2px 8px;
@@ -459,13 +259,12 @@
             padding: 14px 24px;
             border-top: 1px solid var(--line);
             color: var(--mute);
-            font-size: 14px
+            font-size: var(--fs-base)
         }
 
-        /* profile dialog */
         dialog {
             border: 0;
-            border-radius: 20px;
+            border-radius: var(--radius);
             background: var(--card);
             color: var(--ink);
             width: min(860px,96vw);
@@ -473,22 +272,9 @@
             box-shadow: 0 24px 60px rgba(0,0,0,.35)
         }
 
-            dialog::backdrop {
-                background: #0009
-            }
-
             dialog h2 {
                 margin: 0;
-                font-size: 21px
-            }
-
-            dialog label {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                font-size: 13px;
-                font-weight: 500;
-                color: var(--mute)
+                font-size: var(--fs-lg)
             }
 
         .pf {
@@ -513,7 +299,7 @@
 
             .pic small {
                 color: var(--mute);
-                font-size: 12px
+                font-size: var(--fs-xs)
             }
 
         .sec {
@@ -525,7 +311,7 @@
 
             .sec h3 {
                 margin: 0 0 12px;
-                font-size: 12.5px;
+                font-size: var(--fs-xs);
                 letter-spacing: .06em;
                 text-transform: uppercase;
                 color: var(--mute)
@@ -547,12 +333,8 @@
             gap: 12px
         }
 
-        .wide {
-            grid-column: 1/-1
-        }
-
         .hint {
-            font-size: 12px;
+            font-size: var(--fs-xs);
             color: var(--mute)
         }
 
@@ -573,7 +355,7 @@
         }
 
         .api {
-            font: 12.5px ui-monospace,Menlo,Consolas,monospace;
+            font: var(--fs-xs) var(--mono);
             background: var(--soft);
             border: 1px solid var(--line);
             border-radius: 10px;
@@ -589,27 +371,6 @@
         }
 
         @media(max-width:860px) {
-            .app {
-                grid-template-columns: 1fr
-            }
-
-            .side {
-                position: relative;
-                height: auto;
-                flex-direction: row;
-                align-items: center;
-                padding: 10px 14px
-            }
-
-            .head, .body {
-                padding-left: 16px;
-                padding-right: 16px
-            }
-
-            h1 {
-                font-size: 28px
-            }
-
             .pf {
                 grid-template-columns: 1fr
             }

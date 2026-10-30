@@ -8,163 +8,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/theme.css">
     <style>
-        :root {
-            --bg: #f8f7f3;
-            --card: #fff;
-            --ink: #14130f;
-            --mute: #6b6a63;
-            --mute2: #a3a29a;
-            --line: #e8e6df;
-            --soft: #f3f2ed;
-            --yel: #fbbf24;
-            --yink: #1c1400;
-            --ybg: #fef3c7;
-            --yfg: #92400e;
-            --gbg: #dcfce7;
-            --gfg: #15803d;
-            --obg: #ffedd5;
-            --ofg: #c2410c;
-            --rbg: #fee2e2;
-            --rfg: #b91c1c;
-            --pbg: #e0e7ff;
-            --pfg: #3730a3;
-            --blu: #6366f1;
-            --red: #e5483d;
-            --org: #f97316;
-            --grn: #22a55b;
-            --side: #111110;
-            --sideline: #262623;
-            --sideink: #a8a79f
-        }
-
-            :root[data-theme=dark] {
-                --bg: #0c0c0b;
-                --card: #171715;
-                --ink: #f4f3ee;
-                --mute: #9a998f;
-                --mute2: #6d6c64;
-                --line: #2a2a27;
-                --soft: #1f1f1c;
-                --side: #070706;
-                --sideline: #22221f;
-                --ybg: #3a2d08;
-                --yfg: #fcd34d;
-                --gbg: #123524;
-                --gfg: #86efac;
-                --obg: #47290c;
-                --ofg: #fdba74;
-                --rbg: #4a1a1a;
-                --rfg: #fca5a5;
-                --pbg: #1e1b4b;
-                --pfg: #a5b4fc
-            }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--ink);
-            font: 15px/1.45 Inter,"Segoe UI",system-ui,sans-serif
-        }
-
-        .ic {
-            width: 18px;
-            height: 18px;
-            flex: none
-        }
-
-        .app {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            min-height: 100vh
-        }
-
-        .side {
-            background: var(--side);
-            color: var(--sideink);
-            padding: 22px 16px;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh
-        }
-
-        main {
-            min-width: 0
-        }
-
-        .head {
-            padding: 30px 40px 24px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            align-items: flex-start;
-            flex-wrap: wrap
-        }
-
-        h1 {
-            margin: 0 0 4px;
-            font-size: 38px;
-            line-height: 1.1;
-            letter-spacing: -.025em;
-            font-weight: 800
-        }
-
-        .today {
-            color: var(--mute);
-            font-weight: 500;
-            margin: 0 0 8px
-        }
-
-        .head p {
-            margin: 0;
-            color: var(--mute);
-            max-width: 640px
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font: 600 14px Inter,sans-serif;
-            padding: 10px 15px;
-            border-radius: 11px;
-            border: 1px solid var(--line);
-            background: var(--card);
-            color: var(--ink);
-            cursor: pointer;
-            white-space: nowrap
-        }
-
-            .btn:hover {
-                background: var(--soft)
-            }
-
-            .btn.pri {
-                background: var(--yel);
-                border-color: var(--yel);
-                color: var(--yink);
-                font-weight: 700
-            }
-
-                .btn.pri:hover {
-                    filter: brightness(.96)
-                }
-
+        /* Styles used ONLY on this page. Colours and text sizes come from /theme.css */
         button:focus-visible, input:focus-visible, select:focus-visible {
             outline: 3px solid var(--yel);
             outline-offset: 2px
-        }
-
-        .body {
-            padding: 28px 40px 44px;
-            max-width: 1700px
         }
 
         .kpis {
@@ -174,64 +23,19 @@
             margin-bottom: 22px
         }
 
-        .k {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            padding: 20px 22px
+        .chip.y {
+            background: var(--ybg);
+            color: var(--yfg)
         }
 
-        .kh {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--mute)
+        .chip.g {
+            background: var(--gbg);
+            color: var(--gfg)
         }
 
-        .chip {
-            width: 36px;
-            height: 36px;
-            border-radius: 11px;
-            display: grid;
-            place-items: center;
-            background: var(--soft);
-            color: var(--mute)
-        }
-
-            .chip.y {
-                background: var(--ybg);
-                color: var(--yfg)
-            }
-
-            .chip.g {
-                background: var(--gbg);
-                color: var(--gfg)
-            }
-
-            .chip.r {
-                background: var(--rbg);
-                color: var(--rfg)
-            }
-
-        .k b {
-            display: block;
-            font-size: 40px;
-            line-height: 1;
-            margin: 18px 0 12px;
-            letter-spacing: -.03em;
-            font-weight: 800
-        }
-
-        .k span {
-            color: var(--mute);
-            font-size: 14px
-        }
-
-        .panel {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            overflow: hidden
+        .chip.r {
+            background: var(--rbg);
+            color: var(--rfg)
         }
 
         .ph {
@@ -246,7 +50,7 @@
 
             .ph h2 {
                 margin: 0;
-                font-size: 18px
+                font-size: var(--fs-lg)
             }
 
         .bar {
@@ -255,64 +59,15 @@
             gap: 8px
         }
 
-        .msg {
-            margin: 14px 24px 0;
-            background: var(--gbg);
-            color: var(--gfg);
-            border-radius: 12px;
-            padding: 11px 15px;
-            font-size: 14px
-        }
-
-            .msg.err {
-                background: var(--rbg);
-                color: var(--rfg)
-            }
-
-        .tools {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            align-items: flex-end;
-            padding: 20px 24px
-        }
-
-            .tools > label {
-                display: flex;
-                flex-direction: column;
-                gap: 7px;
-                font-size: 13.5px;
-                font-weight: 500;
-                flex: 1 1 170px
-            }
-
         input, select {
             font: inherit;
-            font-size: 14.5px;
-            padding: 11px 14px;
+            font-size: var(--fs-base);
+            padding: var(--in-pad);
             border: 1px solid var(--line);
             border-radius: 12px;
             background: var(--card);
             color: var(--ink);
             width: 100%
-        }
-
-        .rst {
-            background: none;
-            border: 0;
-            color: var(--mute);
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-            font: 500 14.5px Inter,sans-serif;
-            cursor: pointer;
-            padding: 11px 12px
-        }
-
-        .cap {
-            padding: 0 24px 8px;
-            color: var(--mute);
-            font-size: 14px
         }
 
         #cards, #dCards {
@@ -330,7 +85,7 @@
             cursor: pointer;
             box-shadow: inset 4px 0 0 var(--ac,transparent);
             transition: .12s;
-            font-size: 13px
+            font-size: var(--fs-sm)
         }
 
             .tc:hover {
@@ -367,18 +122,18 @@
 
             .tch .b {
                 margin-left: auto;
-                font-size: 11px;
+                font-size: var(--fs-2xs);
                 padding: 2px 8px;
                 gap: 4px
             }
 
         .horse {
-            font: 700 13.5px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            font: 700 var(--fs-sm) var(--mono);
             letter-spacing: .02em
         }
 
             .horse.trk {
-                font-size: 15px;
+                font-size: var(--fs-base);
                 letter-spacing: .01em;
                 white-space: nowrap;
                 background: var(--yel);
@@ -390,7 +145,7 @@
             }
 
         .sub {
-            font-size: 11.5px;
+            font-size: var(--fs-2xs);
             color: var(--mute)
         }
 
@@ -401,7 +156,7 @@
             padding: 2px 9px;
             border-radius: 99px;
             font-weight: 600;
-            font-size: 11.5px;
+            font-size: var(--fs-2xs);
             white-space: nowrap;
             background: var(--soft);
             color: var(--mute);
@@ -485,10 +240,6 @@
                 background: var(--line)
             }
 
-        .dash {
-            color: var(--mute2)
-        }
-
         .tdet {
             background: var(--soft);
             border: 1px solid var(--line);
@@ -502,7 +253,7 @@
             .tdet h3 {
                 grid-column: 1/-1;
                 margin: 0;
-                font-size: 13px;
+                font-size: var(--fs-sm);
                 letter-spacing: .06em;
                 text-transform: uppercase;
                 color: var(--mute)
@@ -511,7 +262,7 @@
             .tdet small {
                 grid-column: 1/-1;
                 color: var(--mute);
-                font-size: 12px
+                font-size: var(--fs-xs)
             }
 
         .k.link {
@@ -557,7 +308,7 @@
             border-radius: 99px;
             background: var(--ybg);
             color: var(--yfg);
-            font-size: 13px;
+            font-size: var(--fs-sm);
             vertical-align: middle
         }
 
@@ -578,7 +329,7 @@
                 border: 1px solid var(--line);
                 background: var(--card);
                 color: var(--ink);
-                font: 600 14px Inter,sans-serif;
+                font: 600 var(--fs-base) var(--font);
                 cursor: pointer
             }
 
@@ -613,7 +364,7 @@
             padding: 14px 24px;
             border-top: 1px solid var(--line);
             color: var(--mute);
-            font-size: 14px;
+            font-size: var(--fs-base);
             display: flex;
             gap: 8px;
             flex-wrap: wrap
@@ -625,7 +376,7 @@
 
         dialog {
             border: 0;
-            border-radius: 20px;
+            border-radius: var(--radius);
             background: var(--card);
             color: var(--ink);
             width: min(660px,94vw);
@@ -633,26 +384,13 @@
             box-shadow: 0 24px 60px rgba(0,0,0,.35)
         }
 
-            dialog::backdrop {
-                background: #0009
-            }
-
             dialog h2 {
                 margin: 0 0 16px;
-                font-size: 20px
-            }
-
-            dialog label {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                font-size: 13px;
-                font-weight: 500;
-                color: var(--mute)
+                font-size: var(--fs-lg)
             }
 
         .leg {
-            font-size: 12px;
+            font-size: var(--fs-xs);
             font-weight: 700;
             letter-spacing: .06em;
             text-transform: uppercase;
@@ -688,7 +426,7 @@
             }
 
             .lg b {
-                font-size: 12.5px
+                font-size: var(--fs-xs)
             }
 
             .lg .lgd {
@@ -705,7 +443,7 @@
             }
 
             .lg .rt {
-                font-size: 12px
+                font-size: var(--fs-xs)
             }
 
         #det {
@@ -725,7 +463,7 @@
             }
 
             .dh .sub {
-                font-size: 13px;
+                font-size: var(--fs-sm);
                 margin-top: 3px
             }
 
@@ -741,13 +479,13 @@
         }
 
             .dinfo div, .dleg dl div {
-                font-size: 13.5px;
+                font-size: var(--fs-sm);
                 font-weight: 600
             }
 
             .dinfo small, .dleg dt {
                 display: block;
-                font-size: 11.5px;
+                font-size: var(--fs-2xs);
                 font-weight: 500;
                 color: var(--mute);
                 text-transform: uppercase;
@@ -776,7 +514,7 @@
 
             .dleg h3 {
                 margin: 0 0 10px;
-                font-size: 15px;
+                font-size: var(--fs-base);
                 display: flex;
                 justify-content: space-between;
                 gap: 8px;
@@ -792,7 +530,7 @@
 
             .dleg dd {
                 margin: 3px 0 0;
-                font-size: 14px;
+                font-size: var(--fs-base);
                 font-weight: 600
             }
 
@@ -824,7 +562,7 @@
                 align-items: center;
                 padding: 8px 12px;
                 border-bottom: 1px solid var(--line);
-                font-size: 13px;
+                font-size: var(--fs-sm);
                 color: var(--ink);
                 cursor: pointer;
                 font-weight: 500
@@ -875,10 +613,6 @@
             gap: 14px
         }
 
-        .wide {
-            grid-column: 1/-1
-        }
-
         .acts {
             display: flex;
             justify-content: space-between;
@@ -887,33 +621,6 @@
         }
 
         @media(max-width:1200px) {
-            .kpis {
-                grid-template-columns: repeat(2,1fr)
-            }
-        }
-
-        @media(max-width:860px) {
-            .app {
-                grid-template-columns: 1fr
-            }
-
-            .side {
-                position: relative;
-                height: auto;
-                flex-direction: row;
-                align-items: center;
-                padding: 10px 14px
-            }
-
-            .head, .body {
-                padding-left: 16px;
-                padding-right: 16px
-            }
-
-            h1 {
-                font-size: 28px
-            }
-
             .kpis {
                 grid-template-columns: repeat(2,1fr)
             }
