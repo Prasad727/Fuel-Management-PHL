@@ -360,6 +360,18 @@
             letter-spacing: .02em
         }
 
+            .horse.trk {
+                font-size: 15px;
+                letter-spacing: .01em;
+                white-space: nowrap;
+                background: var(--yel);
+                color: var(--yink);
+                padding: 2px 8px;
+                border-radius: 7px;
+                display: inline-block;
+                margin-bottom: 3px
+            }
+
         .sub {
             font-size: 11.5px;
             color: var(--mute)
@@ -988,7 +1000,7 @@
 
         /* Trip status on a given date */
         const start = t => t.d || t.l; /* a trip starts on its Dispatched date, or its Loading date if there is no dispatch date */
-        function info(t, to) { let s = 'Not Started'; K.forEach((k, i) => { if (t[k] && t[k] <= to) s = ST[i] }); const done = !!(t.r && t.r <= to), s0 = start(t); return { s, done, run: done ? days(s0, t.r) : (s0 ? days(s0, to) : null) } }
+        function info(t, to) { let s = 'Not Started'; K.forEach((k, i) => { if (t[k] && t[k] <= to) s = ST[i] }); const done = !!(t.r && t.r <= to), s0 = t.l || t.d; /* truck total days: from the Loading date (or Dispatched if not loaded yet) to Offloading 2, or to today if still running */ return { s, done, run: done ? days(s0, t.r) : (s0 ? days(s0, to) : null) } }
         /* The three parts of a round trip, counted from the dates:
            Trip 1 NB = Loading -> Offloading, Empty = Offloading -> Loading 2 (waiting to load), Trip 2 SB = Loading 2 -> Offloading 2.
            A part that has started but not finished keeps counting up to the view date. */
@@ -1012,9 +1024,9 @@
             const f = $('qFrom').value || today(), to = $('qTo').value >= f && $('qTo').value ? $('qTo').value : f, v = $('view').value, q = $('q').value.toLowerCase(), out = [], n = { st: 0, co: 0, ip: 0, dl: 0 };
             D.trips.forEach(t => {
                 const s0 = start(t); if (!s0) return;
-                const i = info(t, to), st = s0 >= f && s0 <= to, co = t.r && t.r >= f && t.r <= to, ip = s0 <= to && !t.r, late = ip && i.run > t.plan;
-                if (st) n.st++; if (co) n.co++; if (ip) n.ip++; if (late) n.dl++;
-                const m = !t.r && { 'All Activity': st || ip, Started: st, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = D.trucks.find(x => x.id === t.truck) || {};
+                const i = info(t, to), st = s0 >= f && s0 <= to, co = t.r && t.r >= f && t.r <= to, ip = s0 <= to && !t.r, late = ip && i.run > t.plan, sd = !!(t.d && t.d <= to && !(t.r && t.r <= to));
+                if (sd) n.st++; if (t.d && t.d >= f && t.d <= to) n.sp = (n.sp || 0) + 1; if (co) n.co++; if (ip) n.ip++; if (late) n.dl++;
+                const m = !t.r && { 'All Activity': st || ip, Started: sd, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = D.trucks.find(x => x.id === t.truck) || {};
                 if (m && (!q || [t.truck, t.route, tr.driver, tr.reg, tr.trailer, t.lp, t.lp2, t.id].join(' ').toLowerCase().includes(q))) out.push({ t, tr, i });
             });
             return { f, to, n, out }
@@ -1024,15 +1036,15 @@
             const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : '');
             const pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
             const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
-            return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse">${esc(t.id.replace('TRIP-', ''))}</b><div class="sub">${esc(tr.reg || t.truck)}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
+            return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse trk">${esc(tr.reg || t.truck)}</b><div class="sub">Trip ${esc(t.id.replace('TRIP-', ''))}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
                   <div class="mini"><div><div class="drv" title="${esc(tr.driver || '')}">${dash(tr.driver)}</div><div class="rt">${tr.contact ? esc(tr.contact) : '<span class="dash">No contact</span>'}</div><div class="rt">Trailer: ${tr.trailer ? esc(tr.trailer) : '&mdash;'}</div></div><div class="rt">${dash(t.route)}</div>
                   <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
                   ${legs(t, to).map(legRow).join('')}
-                  <div class="row"><span class="rt">${i.done ? 'Total days' : 'Total running'}: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
+                  <div class="row"><span class="rt">Truck total days: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
         }
         function render() {
             const { f, to, n, out } = calc();
-            const K4 = [['Trips started', n.st, 'Dispatched in this period', 'y'], ['Trips completed', doneTrips().length, n.co + ' completed in this period', 'link'], ['In progress', n.ip, 'Still on the road at end date', ''], ['Delayed / overdue', n.dl, 'Past planned trip days', 'r']];
+            const K4 = [['Trips started', n.st, 'Trucks with a dispatch date, not yet completed' + (n.sp ? ' · ' + n.sp + ' dispatched in this period' : ''), 'y'], ['Trips completed', doneTrips().length, n.co + ' completed in this period', 'link'], ['In progress', n.ip, 'Still on the road at end date', ''], ['Delayed / overdue', n.dl, 'Past planned trip days', 'r']];
             $('kpis').innerHTML = K4.map(x => x[3] === 'link'
                 ? `<a class="k link" href="#completed" data-go="done" role="button" title="Open all completed trips"><div class="kh">${x[0]}<span class="go" aria-hidden="true"><svg class="ic"><use href="#i-right"/></svg></span></div><b>${x[1]}</b><span style="display:block;color:var(--mute);font-size:14px;margin-bottom:6px">${x[2]}</span><span class="more">View all completed trips <svg class="ic" style="width:15px;height:15px"><use href="#i-right"/></svg></span></a>`
                 : `<div class="k"><div class="kh">${x[0]}<span class="chip ${x[3]}"><svg class="ic"><use href="#i-truck"/></svg></span></div><b>${x[1]}</b><span>${x[2]}</span></div>`).join('');
@@ -1134,7 +1146,7 @@
             const f = (lbl, v, isDate) => `<div><dt>${lbl}</dt><dd>${v ? (isDate ? fmt(v) : esc(v)) : '<span class="dash">&mdash;</span>'}</dd></div>`;
             const head = (x, extra) => `<h3><span>${x.n}${extra || ''}</span><span class="b ${x.run ? (x.cls === 'o' ? 'o' : 'y') : x.d != null ? 'g' : ''}">${x.d == null ? (x.txt || 'Not started') : (x.run ? (x.txt + ' · ') : '') + dd(x.d)}</span></h3>`;
             const info2 = (lbl, v) => `<div><small>${lbl}</small>${v ? esc(v) : '<span class="dash">&mdash;</span>'}</div>`;
-            $('detBody').innerHTML = `<div class="dh"><div><h2>Trip ${esc(t.id)}</h2><div class="sub">${esc(t.route || '')}${t.route ? ' · ' : ''}Planned ${t.plan} days · ${i.done ? 'Took' : 'Running'} ${i.run == null ? '&mdash;' : dd(i.run)}</div></div><span class="b ${STY[i.s]}"><i></i>${i.s === 'Offloading 2' ? 'Completed' : i.s}</span></div>
+            $('detBody').innerHTML = `<div class="dh"><div><h2>Trip ${esc(t.id)}</h2><div class="sub">${esc(t.route || '')}${t.route ? ' · ' : ''}Planned ${t.plan} days · Truck total days ${i.run == null ? '&mdash;' : i.run}</div></div><span class="b ${STY[i.s]}"><i></i>${i.s === 'Offloading 2' ? 'Completed' : i.s}</span></div>
                   <div class="dinfo">${info2('Truck', t.truck)}${info2('Trailer', tr.trailer)}${info2('Driver', tr.driver)}${info2('Contact', tr.contact)}${info2('Passport', tr.passport)}${info2('Licence (cat. / issue)', [tr.licence, tr.category, tr.issue].filter(Boolean).join(' · '))}${info2('Dispatched', t.d ? fmt(t.d) : '')}${info2('Truck type', tr.type)}${info2('Truck status', tr.status)}</div>
                   <section class="dleg ${L[0].cls}">${head(L[0], ' <span class="sub">Northbound</span>')}<dl>${f('Loaded', t.l, 1)}${f('Loading location', t.lp)}${f('In transit', t.t, 1)}${f('Offloaded', t.u, 1)}</dl></section>
                   <section class="dleg emp ${L[1].cls}">${head(L[1], ' <span class="sub">Waiting to load</span>')}<dl>${f('Empty since (offloaded)', t.u, 1)}${f('Loaded again', t.l2, 1)}</dl></section>
