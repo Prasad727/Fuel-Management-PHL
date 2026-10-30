@@ -27,6 +27,9 @@
             --ofg: #c2410c;
             --rbg: #fee2e2;
             --rfg: #b91c1c;
+            --pbg: #e0e7ff;
+            --pfg: #3730a3;
+            --blu: #6366f1;
             --red: #e5483d;
             --org: #f97316;
             --grn: #22a55b;
@@ -52,7 +55,9 @@
                 --obg: #47290c;
                 --ofg: #fdba74;
                 --rbg: #4a1a1a;
-                --rfg: #fca5a5
+                --rfg: #fca5a5;
+                --pbg: #1e1b4b;
+                --pfg: #a5b4fc
             }
 
         * {
@@ -355,6 +360,18 @@
             border-bottom: 1px solid var(--line)
         }
 
+        .tch {
+            flex-wrap: wrap;
+            row-gap: 6px
+        }
+
+            .tch .b {
+                margin-left: auto;
+                font-size: 11px;
+                padding: 2px 8px;
+                gap: 4px
+            }
+
         .horse {
             font: 700 13.5px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
             letter-spacing: .02em
@@ -413,6 +430,12 @@
             .b.y {
                 background: var(--ybg);
                 color: var(--yfg);
+                border-color: transparent
+            }
+
+            .b.p {
+                background: var(--pbg);
+                color: var(--pfg);
                 border-color: transparent
             }
 
@@ -783,6 +806,69 @@
             }
         }
 
+        #clean {
+            width: min(820px,96vw)
+        }
+
+        .clist {
+            max-height: 52vh;
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 12px
+        }
+
+            .clist label {
+                display: grid;
+                grid-template-columns: 22px 130px 120px 1fr 120px;
+                gap: 8px;
+                align-items: center;
+                padding: 8px 12px;
+                border-bottom: 1px solid var(--line);
+                font-size: 13px;
+                color: var(--ink);
+                cursor: pointer;
+                font-weight: 500
+            }
+
+                .clist label:hover {
+                    background: var(--soft)
+                }
+
+                .clist label.smp {
+                    background: var(--rbg)
+                }
+
+            .clist input {
+                width: 16px;
+                height: 16px;
+                padding: 0
+            }
+
+            .clist .hd {
+                position: sticky;
+                top: 0;
+                background: var(--card);
+                font-weight: 700;
+                color: var(--mute);
+                cursor: default
+            }
+
+        @media(max-width:620px) {
+            .clist label {
+                grid-template-columns: 22px 1fr 1fr
+            }
+
+                .clist label > :nth-child(n+4) {
+                    display: none
+                }
+        }
+
+        #cTabT.on, #cTabK.on {
+            background: var(--yel);
+            border-color: var(--yel);
+            color: var(--yink)
+        }
+
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -871,6 +957,7 @@
                                 <button class="btn" id="bTpl"><svg class="ic"><use href="#i-down" /></svg>Download template</button>
                                 <button class="btn" id="bExp"><svg class="ic"><use href="#i-down" /></svg>Export data</button>
                                 <button class="btn" id="bDemo" title="Fills the page with 100 sample trips. Not saved.">Preview 100 cards</button>
+                                <button class="btn" id="bClean" style="color:var(--rfg)">Delete trips / trucks</button>
                                 <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
                             </div>
                         </div>
@@ -907,6 +994,21 @@
             </div>
         </main>
     </div>
+    <dialog id="clean">
+        <h2>Delete trips / trucks</h2>
+        <p class="sub" style="margin:-8px 0 12px">Tick what you want to delete. Deleted data cannot be brought back, so download an <b>Export data</b> copy first if you are unsure.</p>
+        <div class="bar" style="margin-bottom:10px">
+            <button type="button" class="btn" id="cTabT">Trips</button><button type="button" class="btn" id="cTabK">Trucks</button>
+        </div>
+        <div class="bar" style="margin-bottom:10px">
+            <input id="cq" type="search" placeholder="Filter: truck, route, trip ID" style="flex:1 1 200px">
+            <button type="button" class="btn" id="cSample"></button>
+            <button type="button" class="btn" id="cAll">Tick all shown</button>
+            <button type="button" class="btn" id="cNone">Untick all</button>
+        </div>
+        <div id="cList" class="clist"></div>
+        <div class="acts"><span class="sub" id="cCnt" style="align-self:center"></span><span><button type="button" class="btn" id="cX">Cancel</button> <button type="button" class="btn" id="cGo" style="background:var(--red);border-color:var(--red);color:#fff">Delete ticked</button></span></div>
+    </dialog>
     <dialog id="det">
         <div id="detBody"></div>
         <div class="acts"><span></span><span><button type="button" class="btn" id="detX">Close</button> <button type="button" class="btn pri" id="detE">Edit trip</button></span></div>
@@ -962,7 +1064,9 @@
 
         /* Trip stages in order. The last one (Offloading 2) means the trip is completed. Keys u/v/r are kept from the old layout so saved trips still work. */
         const KEY = 'fleet_master_v2', ST = ['Dispatched', 'Loading', 'In Transit', 'Offloading', 'Loading 2', 'In Transit 2', 'Delivered', 'Offloading 2'], K = ['d', 'l', 't', 'u', 'l2', 't2', 'v', 'r'];
-        const STY = { 'Offloading 2': 'g', 'Delivered': 'g', 'In Transit 2': 'y', 'Loading 2': 'y', 'Offloading': 'o', 'In Transit': 'y', 'Loading': 'y', 'Dispatched': '', 'Not Started': '' };
+        const STY = { 'Offloading 2': 'g', 'Delivered': 'g', 'In Transit 2': 'y', 'Loading 2': 'p', 'Offloading': 'o', 'In Transit': 'y', 'Loading': 'p', 'Dispatched': '', 'Not Started': '' };
+        /* What the status badge says, from the last date filled in */
+        const LBL = { 'Not Started': 'Not started', 'Dispatched': 'Dispatched', 'Loading': 'Waiting for docs', 'In Transit': 'In transit', 'Offloading': 'Waiting to load', 'Loading 2': 'Waiting for docs', 'In Transit 2': 'In transit', 'Delivered': 'Delivered', 'Offloading 2': 'Completed' };
         const $ = i => document.getElementById(i); let D;
         const now = new Date(); now.setHours(0, 0, 0, 0);
         const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
@@ -970,10 +1074,11 @@
         const fmt = d => d ? new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
         const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
         const dash = v => v ? esc(v) : '<span class="dash">&mdash;</span>';
+        const cmp = v => String(v == null ? '' : v).replace(/\s+/g, '').toUpperCase(); /* truck IDs match ignoring spaces: BCJ6422ZM = BCJ 6422 ZM */
         const idc = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim(); /* tidy IDs like "BCH  6062 ZM" -> "BCH 6062 ZM" */
 
         /* Storage: on the server -> /api/master (separate Firebase project). Opened as a plain file -> this browser only. */
-        let MODE = 'local', DEMO = false;
+        let MODE = 'local', DEMO = false, SVER = 0;
         async function api(method, url, data) {
             const r = await fetch(url, { method, credentials: 'same-origin', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined });
             if (r.status === 401) { location.href = '/login'; throw new Error('Please log in again.') }
@@ -985,8 +1090,8 @@
         async function load() {
             if (location.protocol === 'http:' || location.protocol === 'https:') {
                 try {
-                    const j = await api('GET', '/api/master'); MODE = 'server';
-                    if (!j.trucks.length) { await api('POST', '/api/master/bulk', { trucks: SEED.trucks, trips: [] }); j.trucks = SEED.trucks.map(x => ({ ...x })) }
+                    const j = await api('GET', '/api/master'); MODE = 'server'; SVER = j.version || 0;
+                    /* (no longer fills an empty server with TRK-001...TRK-200 placeholder trucks) */
                     D = { trucks: j.trucks.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })), trips: j.trips };
                     return
                 }
@@ -1032,10 +1137,10 @@
             return { f, to, n, out }
         }
         function card(t, tr, i, to) {
-            const lbl = i.s === 'Offloading 2' ? 'Completed' : i.s, late = i.run > t.plan, warn = !late && i.run >= t.plan - 3 && !i.done;
+            const lbl = LBL[i.s] || i.s, late = i.run > t.plan, warn = !late && i.run >= t.plan - 3 && !i.done;
             const ac = i.done ? (late ? 'r' : 'g') : (late ? 'r' : warn ? 'o' : '');
             const pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
-            const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', '': 'var(--mute2)' }[STY[i.s]];
+            const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', p: 'var(--blu)', '': 'var(--mute2)' }[STY[i.s]];
             return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse trk">${esc(tr.reg || t.truck)}</b><div class="sub">Trip ${esc(t.id.replace('TRIP-', ''))}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
                   <div class="mini"><div><div class="drv" title="${esc(tr.driver || '')}">${dash(tr.driver)}</div><div class="rt">${tr.contact ? esc(tr.contact) : '<span class="dash">No contact</span>'}</div><div class="rt">Trailer: ${tr.trailer ? esc(tr.trailer) : '&mdash;'}</div></div><div class="rt">${dash(t.route)}</div>
                   <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
@@ -1146,7 +1251,7 @@
             const f = (lbl, v, isDate) => `<div><dt>${lbl}</dt><dd>${v ? (isDate ? fmt(v) : esc(v)) : '<span class="dash">&mdash;</span>'}</dd></div>`;
             const head = (x, extra) => `<h3><span>${x.n}${extra || ''}</span><span class="b ${x.run ? (x.cls === 'o' ? 'o' : 'y') : x.d != null ? 'g' : ''}">${x.d == null ? (x.txt || 'Not started') : (x.run ? (x.txt + ' · ') : '') + dd(x.d)}</span></h3>`;
             const info2 = (lbl, v) => `<div><small>${lbl}</small>${v ? esc(v) : '<span class="dash">&mdash;</span>'}</div>`;
-            $('detBody').innerHTML = `<div class="dh"><div><h2>Trip ${esc(t.id)}</h2><div class="sub">${esc(t.route || '')}${t.route ? ' · ' : ''}Planned ${t.plan} days · Truck total days ${i.run == null ? '&mdash;' : i.run}</div></div><span class="b ${STY[i.s]}"><i></i>${i.s === 'Offloading 2' ? 'Completed' : i.s}</span></div>
+            $('detBody').innerHTML = `<div class="dh"><div><h2>Trip ${esc(t.id)}</h2><div class="sub">${esc(t.route || '')}${t.route ? ' · ' : ''}Planned ${t.plan} days · Truck total days ${i.run == null ? '&mdash;' : i.run}</div></div><span class="b ${STY[i.s]}"><i></i>${LBL[i.s] || i.s}</span></div>
                   <div class="dinfo">${info2('Truck', t.truck)}${info2('Trailer', tr.trailer)}${info2('Driver', tr.driver)}${info2('Contact', tr.contact)}${info2('Passport', tr.passport)}${info2('Licence (cat. / issue)', [tr.licence, tr.category, tr.issue].filter(Boolean).join(' · '))}${info2('Dispatched', t.d ? fmt(t.d) : '')}${info2('Truck type', tr.type)}${info2('Truck status', tr.status)}</div>
                   <section class="dleg ${L[0].cls}">${head(L[0], ' <span class="sub">Northbound</span>')}<dl>${f('Loaded', t.l, 1)}${f('Loading location', t.lp)}${f('In transit', t.t, 1)}${f('Offloaded', t.u, 1)}</dl></section>
                   <section class="dleg emp ${L[1].cls}">${head(L[1], ' <span class="sub">Waiting to load</span>')}<dl>${f('Empty since (offloaded)', t.u, 1)}${f('Loaded again', t.l2, 1)}</dl></section>
@@ -1181,9 +1286,9 @@
             'Upload ADDS and UPDATES only. Nothing is deleted.'];
         const EXAMPLE = [['', 'TRK-003', 'Ndola - TFM', 35, '2026-10-05', '2026-10-06', 'Ndola', '2026-10-08', '', '', '', '', '', '', 'Example: trip 1 in transit'], ['', 'TRK-004', 'Ndola - BMS', 35, '2026-09-01', '2026-09-02', 'Ndola', '2026-09-04', '2026-09-12', '2026-09-15', 'Kolwezi', '2026-09-17', '2026-09-28', '2026-09-30', 'Example: completed']];
         const ready = () => { if (!D) { alert('Still loading, please wait a moment.'); return false } return true };
-        $('bTpl').onclick = () => { if (ready()) book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP) };
-        $('bExp').onclick = () => { if (ready()) book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx') };
-        $('bExpDone').onclick = () => { if (!ready()) return; const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
+        $('bTpl').onclick = () => { if (ready() && !demoNoDl()) book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP) };
+        $('bExp').onclick = () => { if (ready() && !demoNoDl()) book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx') };
+        $('bExpDone').onclick = () => { if (!ready() || demoNoDl()) return; const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
         $('bUp').onclick = () => { if (ready() && !blocked()) $('file').click() };
 
         function toIso(v) {
@@ -1213,16 +1318,18 @@
                         const st = String(key(r, ['truckstatus', 'status'])).trim();
                         const g = n => String(key(r, n)).trim();
                         const o = { id, reg: g(['registrationno', 'registration', 'reg', 'horse']), trailer: g(['trailerno', 'trailer', 'trailerreg']), driver: g(['drivername', 'driver']), contact: phone(key(r, ['drivercontact', 'contact'])), passport: g(['passportno', 'passportnumber', 'passport']), licence: g(['licenceno', 'licencenumber', 'licence', 'licenseno', 'licensenumber', 'license']), category: g(['licencecategory', 'licensecategory', 'category']), issue: g(['licenceissueno', 'licenseissueno', 'issueno', 'issue']), type: g(['trucktype', 'type']), status: st || 'Active' };
-                        const i = D.trucks.findIndex(x => x.id === id);
+                        const i = D.trucks.findIndex(x => cmp(x.id) === cmp(id)); if (i >= 0) o.id = D.trucks[i].id;
                         tks.push({ ...o, status: st });
                         if (i < 0) { D.trucks.push(o); nt++ } else D.trucks[i] = Object.assign(D.trucks[i], Object.fromEntries(Object.entries(o).filter(([k, v]) => v)))
                     });
+                    const kr = rows(wb, 'Trucks'), hasCol = n => kr.some(r => key(r, n) !== '');
+                    const noDocs = kr.length && !hasCol(['trailerno', 'trailer', 'trailerreg']) && !hasCol(['passportno', 'passportnumber', 'passport']);
                     const inc = [];
                     rows(wb, 'Trips').forEach((r, i) => {
-                        const ln = i + 2, tk = idc(key(r, ['truckid', 'truck']));
+                        const ln = i + 2, tk0 = idc(key(r, ['truckid', 'truck'])), tkm = D.trucks.find(x => cmp(x.id) === cmp(tk0)), tk = tkm ? tkm.id : tk0;
                         if (!tk && !key(r, ['tripid', 'id'])) return;
                         if (!tk) return bad.push('row ' + ln + ': Truck ID missing');
-                        if (!D.trucks.some(x => x.id === tk)) return bad.push('row ' + ln + ': ' + esc(tk) + ' not found');
+                        if (!tkm) return bad.push('row ' + ln + ': truck ' + esc(tk) + ' is not in Truck Master');
                         const o = { id: idc(key(r, ['tripid', 'id'])), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), lp: String(key(r, ['loadinglocation', 'loadinglocation1', 'loadingplace', 'loadingpoint'])).trim(), lp2: String(key(r, ['loadinglocation2', 'loadingplace2', 'loadingpoint2'])).trim(), row: ln };
                         const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading', 'loadingdate1']], ['t', ['intransitdate', 'intransit', 'intransitdate1']], ['u', ['offloadingdate', 'offloading', 'offloadingdate1', 'unloadingdate', 'unloading']], ['l2', ['loadingdate2', 'loading2']], ['t2', ['intransitdate2', 'intransit2']], ['v', ['delivereddate', 'delivered']], ['r', ['offloadingdate2', 'offloading2', 'returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
                         for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + ST[K.indexOf(k)]); o[k] = x }
@@ -1243,11 +1350,57 @@
                         inc.forEach(o => { delete o.row; if (!o.id) o.id = nextId(); const i = D.trips.findIndex(t => t.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o });
                         save(); refresh()
                     }
-                    say('Upload done: ' + (inc.length - upd) + ' trips added, ' + upd + ' updated, ' + nt + ' trucks added.' + why, bad.length > 0)
+                    say('Upload done: ' + (inc.length - upd) + ' trips added, ' + upd + ' updated, ' + tks.length + ' trucks updated (' + nt + ' new).' + why + (noDocs ? ' <b>Note: this file has no Trailer / Passport / Licence data in its Truck Master sheet, so those stay empty.</b> Use the file with those columns filled in.' : '') + (MODE === 'server' && SVER < 4 ? ' <b>Warning: the server is running an OLD master.js, so trailer, passport, licence and leg 2 data were NOT saved. Replace master.js and restart the server.</b>' : ''), bad.length > 0 || noDocs || (MODE === 'server' && SVER < 4))
                 } catch (x) { D = JSON.parse(before); say('Upload failed: ' + esc(x.message), true) }
                 e.target.value = ''
             };
             rd.readAsArrayBuffer(f)
+        };
+
+        /* While the 100-card preview is on screen, downloads would contain the SAMPLE trips - so they are blocked */
+        function demoNoDl() { if (!DEMO) return false; say('You are looking at the 100-card preview (sample trips). Refresh the page first, then download - otherwise the file would contain the sample trips.', true); return true }
+
+        /* Delete trips / trucks */
+        const DEMO_ROUTES = ['Lusaka - Lubumbashi', 'Kolwezi - Lusaka', 'Ndola - Kitwe', 'Kapiri - Solwezi', 'Chingola - Kasumbalesa', 'Lusaka - Kolwezi', 'Mumbai - Delhi'];
+        /* Sample trips = made by "Preview 100 cards": ID like TRIP-0015, one of the preview routes, no notes, no loading locations */
+        const isSample = t => /^TRIP-\d{4}$/.test(t.id) && DEMO_ROUTES.includes(t.route) && !t.n && !t.lp && !t.lp2;
+        /* Placeholder trucks = TRK-001 ... TRK-200 made on first start, with no driver and no trips */
+        const isPlaceholder = (k, used) => /^TRK-\d{3}$/.test(k.id) && !k.driver && !k.trailer && !used.has(k.id);
+        let cTab = 'T', cSel = new Set();
+        function cRows() {
+            const q = $('cq').value.toLowerCase(), used = new Set(D.trips.filter(t => !cSel.has('T' + t.id)).map(t => t.truck)); /* trips ticked for deletion don't count */
+            if (cTab === 'T') return D.trips.slice().sort(byId).map(t => ({ id: t.id, smp: isSample(t), cells: [t.truck, t.route || '', t.r ? 'Completed ' + fmt(t.r) : (start(t) ? 'Started ' + fmt(start(t)) : '')] })).filter(x => !q || [x.id, ...x.cells].join(' ').toLowerCase().includes(q));
+            return D.trucks.map(k => ({ id: k.id, smp: isPlaceholder(k, used), has: used.has(k.id), cells: [k.reg || '', k.driver || '', used.has(k.id) ? 'Has trips - kept' : 'No trips'] })).filter(x => !q || [x.id, ...x.cells].join(' ').toLowerCase().includes(q));
+        }
+        function cDraw() {
+            $('cTabT').className = 'btn' + (cTab === 'T' ? ' on' : ''); $('cTabK').className = 'btn' + (cTab === 'K' ? ' on' : '');
+            const L = cRows(), smp = L.filter(x => x.smp).length;
+            $('cSample').textContent = cTab === 'T' ? 'Tick sample trips (' + smp + ')' : 'Tick unused TRK- trucks (' + smp + ')';
+            $('cq').placeholder = cTab === 'T' ? 'Filter: truck, route, trip ID' : 'Filter: truck ID, driver';
+            const hd = cTab === 'T' ? ['Trip ID', 'Truck', 'Route', 'Status'] : ['Truck ID', 'Reg. no.', 'Driver', 'Trips'];
+            $('cList').innerHTML = `<label class="hd"><span></span>${hd.map(x => `<span>${x}</span>`).join('')}</label>` + (L.length ? L.map(x => `<label class="${x.smp ? 'smp' : ''}"><input type="checkbox" data-c="${esc(x.id)}" ${cSel.has(cTab + x.id) ? 'checked' : ''} ${x.has ? 'disabled title="This truck still has trips"' : ''}><b>${esc(x.id)}</b>${x.cells.map(c => `<span class="rt">${esc(c)}</span>`).join('')}</label>`).join('') : '<div class="empty">Nothing here.</div>');
+            const nT = [...cSel].filter(x => x[0] === 'T').length, nK = [...cSel].filter(x => x[0] === 'K').length;
+            $('cCnt').textContent = 'Ticked: ' + nT + ' trip(s), ' + nK + ' truck(s)'; $('cGo').disabled = !(nT + nK)
+        }
+        $('bClean').onclick = () => { if (!ready() || blocked()) return; if (MODE === 'server' && SVER < 5) { say('Deleting needs the new master.js on the server. Replace master.js and restart the server first.', true); return } cSel = new Set(); cTab = 'T'; $('cq').value = ''; cDraw(); $('clean').showModal() };
+        $('cTabT').onclick = () => { cTab = 'T'; $('cq').value = ''; cDraw() }; $('cTabK').onclick = () => { cTab = 'K'; $('cq').value = ''; cDraw() };
+        $('cq').oninput = cDraw;
+        $('cList').onchange = e => { const c = e.target.closest('[data-c]'); if (!c) return; const k = cTab + c.dataset.c; c.checked ? cSel.add(k) : cSel.delete(k); cDraw() };
+        $('cSample').onclick = () => { cRows().filter(x => x.smp).forEach(x => cSel.add(cTab + x.id)); cDraw() };
+        $('cAll').onclick = () => { cRows().filter(x => !x.has).forEach(x => cSel.add(cTab + x.id)); cDraw() };
+        $('cNone').onclick = () => { [...cSel].filter(x => x[0] === cTab).forEach(x => cSel.delete(x)); cDraw() };
+        $('cX').onclick = () => $('clean').close();
+        $('cGo').onclick = async () => {
+            const tp = [...cSel].filter(x => x[0] === 'T').map(x => x.slice(1)), tk = [...cSel].filter(x => x[0] === 'K').map(x => x.slice(1));
+            if (!confirm('Delete ' + tp.length + ' trip(s) and ' + tk.length + ' truck(s)? This cannot be undone.')) return;
+            const b = $('cGo'); b.disabled = true; b.textContent = 'Deleting...'; let kept = [];
+            try {
+                if (MODE === 'server') { const r = await api('POST', '/api/master/delete', { trips: tp, trucks: tk }); kept = r.keptTrucks || []; await load() }
+                else { const a = new Set(tp); D.trips = D.trips.filter(t => !a.has(t.id)); const used = new Set(D.trips.map(t => t.truck)), k = new Set(tk.filter(id => !used.has(id))); kept = tk.filter(id => used.has(id)); D.trucks = D.trucks.filter(x => !k.has(x.id)); save() }
+            } catch (e) { alert('Not deleted: ' + e.message); return }
+            finally { b.disabled = false; b.textContent = 'Delete ticked' }
+            $('clean').close(); refresh();
+            say('Deleted ' + tp.length + ' trip(s) and ' + (tk.length - kept.length) + ' truck(s).' + (kept.length ? ' Kept ' + kept.length + ' truck(s) that still have trips.' : ''))
         };
 
         /* 100-card preview (not saved) */
@@ -1273,6 +1426,7 @@
             $('qFrom').value = today();
             try { await load() } catch (e) { return }
             $('today').textContent = 'Today, ' + fmt(today()) + (MODE === 'server' ? ' · Saved on the server' : ' · Saved in this browser only');
+            if (MODE === 'server' && SVER < 4) say('<b>Your server is running an OLD master.js.</b> It throws away trailer, passport, licence, loading location and the leg 2 dates when you save or upload. Replace master.js on the server with the new one and RESTART the server (stop it, then start it again), then upload your Excel again.', true);
             route()
         })();
     </script>
