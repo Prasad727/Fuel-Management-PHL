@@ -1031,7 +1031,7 @@
                     <label>Licence issue no.<input name="kissue"></label>
                     <label>Truck type<input name="ktype" list="ktypes"></label>
                     <label>Truck status<select name="kstatus"><option>Active</option><option>Idle</option><option>Maintenance</option><option>Inactive</option></select></label>
-                    <small>These details belong to the truck, so a change here shows on every trip for this truck.</small>
+                    <small id="kNote">These details belong to the truck, so a change here shows on every trip for this truck.</small>
                 </div>
                 <datalist id="ktypes"><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Box Body</option><option>Lowbed</option><option>Container</option><option>Refrigerated</option><option>SINO</option></datalist>
                 <label class="wide">Route (Origin - Destination)<input name="route"></label>
@@ -1125,13 +1125,16 @@
             const when = x.from ? fmt(x.from).slice(0, 6) + ' &rarr; ' + (x.until ? fmt(x.until).slice(0, 6) : 'now') : '';
             return `<div class="lg ${x.cls}${x.run ? ' run' : ''}"><div class="row"><b>${x.n}</b><span class="lgd">${x.d == null ? '<span class="dash">&mdash;</span>' : dd(x.d)}</span></div><div class="rt">${[x.txt ? esc(x.txt) : '', when].filter(Boolean).join(' · ') || '&nbsp;'}</div></div>`
         }
+        /* The truck + driver for a trip. A COMPLETED trip keeps the driver saved on it when it was completed (t.drv),
+           so changing the truck's driver later does not change old trips. Trips still running show the truck's current driver. */
+        const tripTruck = t => { const k = D.trucks.find(x => x.id === t.truck) || {}; return t.drv ? { ...k, ...t.drv, saved: 1 } : k };
         function calc() {
             const f = $('qFrom').value || today(), to = $('qTo').value >= f && $('qTo').value ? $('qTo').value : f, v = $('view').value, q = $('q').value.toLowerCase(), out = [], n = { st: 0, co: 0, ip: 0, dl: 0 };
             D.trips.forEach(t => {
                 const s0 = start(t); if (!s0) return;
                 const i = info(t, to), st = s0 >= f && s0 <= to, co = t.r && t.r >= f && t.r <= to, ip = s0 <= to && !t.r, late = ip && i.run > t.plan, sd = !!(t.d && t.d <= to && !(t.r && t.r <= to));
                 if (sd) n.st++; if (t.d && t.d >= f && t.d <= to) n.sp = (n.sp || 0) + 1; if (co) n.co++; if (ip) n.ip++; if (late) n.dl++;
-                const m = !t.r && { 'All Activity': st || ip, Started: sd, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = D.trucks.find(x => x.id === t.truck) || {};
+                const m = !t.r && { 'All Activity': st || ip, Started: sd, 'In Progress': ip, 'Delayed / Overdue': late }[v], tr = tripTruck(t);
                 if (m && (!q || [t.truck, t.route, tr.driver, tr.reg, tr.trailer, t.lp, t.lp2, t.id].join(' ').toLowerCase().includes(q))) out.push({ t, tr, i });
             });
             return { f, to, n, out }
@@ -1142,7 +1145,7 @@
             const pill = late ? `<span class="b r">${i.done ? 'Late' : 'Overdue'} +${i.run - t.plan}d</span>` : `<span class="b ${i.done ? 'g' : warn ? 'o' : ''}">${i.done ? 'On time' : 'On track'}</span>`;
             const stg = ST.indexOf(i.s), col = { g: 'var(--grn)', o: 'var(--org)', y: 'var(--yel)', p: 'var(--blu)', '': 'var(--mute2)' }[STY[i.s]];
             return `<div class="tc ${ac}" data-e="${esc(t.id)}"><div class="tch"><div><b class="horse trk">${esc(tr.reg || t.truck)}</b><div class="sub">Trip ${esc(t.id.replace('TRIP-', ''))}</div></div><span class="b ${STY[i.s]}"><i></i>${lbl}</span></div>
-                  <div class="mini"><div><div class="drv" title="${esc(tr.driver || '')}">${dash(tr.driver)}</div><div class="rt">${tr.contact ? esc(tr.contact) : '<span class="dash">No contact</span>'}</div><div class="rt">Trailer: ${tr.trailer ? esc(tr.trailer) : '&mdash;'}</div></div><div class="rt">${dash(t.route)}</div>
+                  <div class="mini"><div><div class="drv" title="${tr.saved ? 'Driver who did this trip (saved when it was completed)' : esc(tr.driver || '')}">${dash(tr.driver)}</div><div class="rt">${tr.contact ? esc(tr.contact) : '<span class="dash">No contact</span>'}</div><div class="rt">Trailer: ${tr.trailer ? esc(tr.trailer) : '&mdash;'}</div></div><div class="rt">${dash(t.route)}</div>
                   <div class="pg">${ST.map((_, k) => `<i style="${k <= stg ? 'background:' + col : ''}"></i>`).join('')}</div>
                   ${legs(t, to).map(legRow).join('')}
                   <div class="row"><span class="rt">Truck total days: <b>${i.run == null ? '&mdash;' : i.run}</b></span>${pill}</div></div></div>`
@@ -1162,7 +1165,7 @@
         const doneTrips = () => D.trips.filter(t => start(t) && t.r).sort((a, b) => b.r.localeCompare(a.r) || String(b.id).localeCompare(String(a.id)));
         function renderDone() {
             const m = $('dMonth').value, q = $('dq').value.toLowerCase(), all = doneTrips();
-            const L = all.map(t => ({ t, tr: D.trucks.find(x => x.id === t.truck) || {} })).filter(({ t, tr }) => (!m || t.r.slice(0, 7) === m) && (!q || [t.truck, t.route, tr.driver, tr.reg, tr.trailer, t.lp, t.lp2, t.id].join(' ').toLowerCase().includes(q)));
+            const L = all.map(t => ({ t, tr: tripTruck(t) })).filter(({ t, tr }) => (!m || t.r.slice(0, 7) === m) && (!q || [t.truck, t.route, tr.driver, tr.reg, tr.trailer, t.lp, t.lp2, t.id].join(' ').toLowerCase().includes(q)));
             const pages = Math.max(1, Math.ceil(L.length / PER)); if (page > pages) page = pages; if (page < 1) page = 1;
             const st = (page - 1) * PER, sl = L.slice(st, st + PER);
             $('dCnt').textContent = all.length;
@@ -1210,7 +1213,12 @@
             frm.elements.id.placeholder = 'Given when you save'; showDet(); dlg.showModal()
         }
         const KF = [['kreg', 'reg'], ['ktrailer', 'trailer'], ['kdriver', 'driver'], ['kcontact', 'contact'], ['kpassport', 'passport'], ['klicence', 'licence'], ['kcategory', 'category'], ['kissue', 'issue'], ['ktype', 'type'], ['kstatus', 'status']];
-        function showDet() { const tr = D.trucks.find(x => x.id === frm.elements.truck.value) || {}; KF.forEach(([f, k]) => frm.elements[f].value = tr[k] || (k === 'status' ? 'Active' : '')) }
+        const STAFF_KEYS = ['kdriver', 'kcontact', 'kpassport', 'klicence', 'kcategory', 'kissue']; /* these come from the Staff page when the truck has a staff driver */
+        function showDet() {
+            const tr = D.trucks.find(x => x.id === frm.elements.truck.value) || {}; KF.forEach(([f, k]) => frm.elements[f].value = tr[k] || (k === 'status' ? 'Active' : ''));
+            KF.forEach(([f]) => { const el = frm.elements[f]; el.tagName === 'SELECT' ? el.disabled = true : el.readOnly = true });
+            $('kNote').innerHTML = 'Trucks and drivers are kept on the Staff page. ' + (tr.staffId ? '<a href="/staff#' + esc(tr.staffId) + '" style="color:var(--yfg);font-weight:700">Edit this driver &amp; truck in Staff &rarr;</a>' : '<a href="/staff#drivers" style="color:var(--yfg);font-weight:700">Give this truck a driver in Staff &rarr;</a>')
+        }
         frm.elements.truck.onchange = showDet;
         function nextId() { let m = 0; D.trips.forEach(t => { m = Math.max(m, parseInt(String(t.id).replace(/\D/g, '')) || 0) }); return 'TRIP-' + String(m + 1).padStart(4, '0') }
         $('bAdd').onclick = () => openForm(); $('dX').onclick = () => dlg.close();
@@ -1219,18 +1227,16 @@
             const o = {};['id', 'truck', 'route', 'n', 'lp', 'lp2', ...K].forEach(k => o[k] = frm.elements[k].value.trim()); o.plan = +frm.elements.plan.value || 15;
             if (o.r && !(o.d || o.l)) { alert('An Offloading 2 (completed) date needs a dispatched or loading date.'); return }
             if (o.r && o.r < (o.d || o.l)) { alert('The Offloading 2 date is before the start of the trip.'); return }
-            const tinfo = {}; KF.forEach(([f, k]) => tinfo[k] = frm.elements[f].value.trim());
             if (MODE === 'server') {
                 const b = $('dS'); b.disabled = true; b.textContent = 'Saving...';
                 try {
                     const { id, ...rest } = o, isNew = !editing;
-                    const r = await api(isNew ? 'POST' : 'PUT', isNew ? '/api/master/trips' : '/api/master/trips/' + encodeURIComponent(id), { ...rest, truckInfo: tinfo });
+                    const r = await api(isNew ? 'POST' : 'PUT', isNew ? '/api/master/trips' : '/api/master/trips/' + encodeURIComponent(id), rest);
                     Object.assign(o, r)
                 }
                 catch (e) { alert('Not saved: ' + e.message); return }
                 finally { b.disabled = false; b.textContent = 'Save' }
             }
-            const tk = D.trucks.find(x => x.id === o.truck); if (tk) Object.assign(tk, tinfo);
             const i = D.trips.findIndex(x => x.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o;
             save(); dlg.close(); refresh();
             say(o.r ? 'Trip ' + esc(o.id) + ' is completed and has moved to <a href="#completed" data-go="done" style="color:inherit;font-weight:700">Completed Trips &rarr;</a>' : 'Trip ' + esc(o.id) + ' saved.')
@@ -1247,12 +1253,12 @@
         let detId = null;
         function openDet(id) {
             const t = D.trips.find(x => x.id === id); if (!t) return; detId = id;
-            const tr = D.trucks.find(x => x.id === t.truck) || {}, to = t.r && t.r <= today() ? t.r : today(), i = info(t, to), L = legs(t, to);
+            const tr = tripTruck(t), to = t.r && t.r <= today() ? t.r : today(), i = info(t, to), L = legs(t, to);
             const f = (lbl, v, isDate) => `<div><dt>${lbl}</dt><dd>${v ? (isDate ? fmt(v) : esc(v)) : '<span class="dash">&mdash;</span>'}</dd></div>`;
             const head = (x, extra) => `<h3><span>${x.n}${extra || ''}</span><span class="b ${x.run ? (x.cls === 'o' ? 'o' : 'y') : x.d != null ? 'g' : ''}">${x.d == null ? (x.txt || 'Not started') : (x.run ? (x.txt + ' · ') : '') + dd(x.d)}</span></h3>`;
             const info2 = (lbl, v) => `<div><small>${lbl}</small>${v ? esc(v) : '<span class="dash">&mdash;</span>'}</div>`;
             $('detBody').innerHTML = `<div class="dh"><div><h2>Trip ${esc(t.id)}</h2><div class="sub">${esc(t.route || '')}${t.route ? ' · ' : ''}Planned ${t.plan} days · Truck total days ${i.run == null ? '&mdash;' : i.run}</div></div><span class="b ${STY[i.s]}"><i></i>${LBL[i.s] || i.s}</span></div>
-                  <div class="dinfo">${info2('Truck', t.truck)}${info2('Trailer', tr.trailer)}${info2('Driver', tr.driver)}${info2('Contact', tr.contact)}${info2('Passport', tr.passport)}${info2('Licence (cat. / issue)', [tr.licence, tr.category, tr.issue].filter(Boolean).join(' · '))}${info2('Dispatched', t.d ? fmt(t.d) : '')}${info2('Truck type', tr.type)}${info2('Truck status', tr.status)}</div>
+                  <div class="dinfo">${info2('Truck', t.truck)}${info2('Trailer', tr.trailer)}${tr.staffId ? `<div><small>Driver${tr.saved ? ' on this trip' : ''}</small><a href="/staff#${esc(tr.staffId)}" style="color:inherit">${esc(tr.driver || 'Open profile')}</a></div>` : info2(tr.saved ? 'Driver on this trip' : 'Driver', tr.driver)}${info2('Contact', tr.contact)}${info2('Passport', tr.passport)}${info2('Licence (cat. / issue)', [tr.licence, tr.category, tr.issue].filter(Boolean).join(' · '))}${info2('Dispatched', t.d ? fmt(t.d) : '')}${info2('Truck type', tr.type)}${info2('Truck status', tr.status)}</div>
                   <section class="dleg ${L[0].cls}">${head(L[0], ' <span class="sub">Northbound</span>')}<dl>${f('Loaded', t.l, 1)}${f('Loading location', t.lp)}${f('In transit', t.t, 1)}${f('Offloaded', t.u, 1)}</dl></section>
                   <section class="dleg emp ${L[1].cls}">${head(L[1], ' <span class="sub">Waiting to load</span>')}<dl>${f('Empty since (offloaded)', t.u, 1)}${f('Loaded again', t.l2, 1)}</dl></section>
                   <section class="dleg ${L[2].cls}">${head(L[2], ' <span class="sub">Southbound</span>')}<dl>${f('Loaded', t.l2, 1)}${f('Loading location', t.lp2)}${f('In transit', t.t2, 1)}${f('Offloaded', t.r, 1)}</dl>${t.v ? `<div class="sub" style="margin-top:8px">Delivered: ${fmt(t.v)}</div>` : ''}</section>
@@ -1263,32 +1269,34 @@
         $('detE').onclick = () => { $('det').close(); openForm(detId) };
 
         /* Excel: template (all current data), export, bulk upload. Sheets: "Trip Log" and "Truck Master" */
-        const TC = [['Trip ID', 'id'], ['Truck ID', 'truck'], ['Route (Origin - Destination)', 'route'], ['Planned Trip Days', 'plan'], ['Dispatched Date', 'd'], ['Loading Date', 'l'], ['Loading Location', 'lp'], ['In Transit Date', 't'], ['Offloading Date', 'u'], ['Loading Date 2', 'l2'], ['Loading Location 2', 'lp2'], ['In Transit Date 2', 't2'], ['Delivered Date', 'v'], ['Offloading Date 2', 'r'], ['Notes', 'n']], TH = TC.map(x => x[0]),
+        /* Excel holds TRIPS only. Trucks and drivers are kept on the Staff page (driver profile: Assigned truck, trailer, type). */
+        const TC = [['Trip ID', 'id'], ['Truck ID', 'truck'], ['Route (Origin - Destination)', 'route'], ['Planned Trip Days', 'plan'], ['Dispatched Date', 'd'], ['Loading Date', 'l'], ['Loading Location', 'lp'], ['In Transit Date', 't'], ['Offloading Date', 'u'], ['Loading Date 2', 'l2'], ['Loading Location 2', 'lp2'], ['In Transit Date 2', 't2'], ['Delivered Date', 'v'], ['Offloading Date 2', 'r'], ['Notes', 'n'], ['Driver on Trip', 'drvName']], TH = TC.map(x => x[0]),
             KH = ['Truck ID', 'Registration No.', 'Trailer No.', 'Driver Name', 'Driver Contact', 'Passport No.', 'Licence No.', 'Licence Category', 'Licence Issue No.', 'Truck Type', 'Truck Status'];
-        function book(trips, trucks, name, help) {
-            const wb = XLSX.utils.book_new(), a = XLSX.utils.aoa_to_sheet([TH].concat(trips)), b = XLSX.utils.aoa_to_sheet([KH].concat(trucks));
-            a['!cols'] = TH.map(() => ({ wch: 22 })); b['!cols'] = KH.map(() => ({ wch: 20 }));
+        function book(trips, name, help) {
+            const wb = XLSX.utils.book_new(), a = XLSX.utils.aoa_to_sheet([TH].concat(trips));
+            a['!cols'] = TH.map(() => ({ wch: 22 }));
             if (help) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(help.map(x => [x])), 'Instructions');
-            XLSX.utils.book_append_sheet(wb, a, 'Trip Log'); XLSX.utils.book_append_sheet(wb, b, 'Truck Master');
+            XLSX.utils.book_append_sheet(wb, a, 'Trip Log');
             XLSX.writeFile(wb, name)
         }
-        const trow = t => TC.map(([, k]) => t[k] == null ? '' : t[k]), krow = x => [x.id, x.reg, x.trailer, x.driver, x.contact, x.passport, x.licence, x.category, x.issue, x.type, x.status];
+        const trow = t => TC.map(([, k]) => k === 'drvName' ? (tripTruck(t).driver || '') : t[k] == null ? '' : t[k]), krow = x => [x.id, x.reg, x.trailer, x.driver, x.contact, x.passport, x.licence, x.category, x.issue, x.type, x.status];
         const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
         const HELP = ['How this template works',
-            'This file contains ALL your current trips (Trip Log) and trucks (Truck Master). Edit it and upload it back with "Bulk upload Excel".',
-            'Trip Log: one row per trip. Truck ID is required and must exist in Truck Master.',
+            'This file contains ALL your current trips (Trip Log). Edit it and upload it back with "Bulk upload Excel".',
+            'Trip Log: one row per trip. Truck ID is required. The truck must already be on the Staff page (a driver\'s Assigned truck). Spaces do not matter: BCJ6422ZM = BCJ 6422 ZM.',
+            'Trucks, trailers and drivers are NOT in this file - they are kept on the Staff page.',
             'Trip ID filled in = that trip is UPDATED. Trip ID empty = a NEW trip with a new ID.',
             'Fill each stage date as the trip reaches it. Trip 1 (NB): Dispatched, Loading (+ location), In Transit, Offloading. Trip 2 (SB): Loading 2 (+ location), In Transit 2, Delivered, Offloading 2. Dates: yyyy-mm-dd or normal Excel dates.',
             'The card counts the days: Trip 1 NB = Loading to Offloading, Empty = Offloading to Loading 2, Trip 2 SB = Loading 2 to Offloading 2.',
             'A trip shows as a card once it has a Dispatched or Loading date. It moves to Completed Trips once it has an Offloading Date 2.',
             'Planned Trip Days: leave empty for 15.',
-            'Truck Master: registration, trailer, driver, contact, passport, licence no., licence category, issue no., type and status per truck. Blank cells do not wipe details already saved.',
+            'Driver on Trip is filled in for you (the driver saved on each completed trip). It is not read back when you upload.',
             'Upload ADDS and UPDATES only. Nothing is deleted.'];
-        const EXAMPLE = [['', 'TRK-003', 'Ndola - TFM', 35, '2026-10-05', '2026-10-06', 'Ndola', '2026-10-08', '', '', '', '', '', '', 'Example: trip 1 in transit'], ['', 'TRK-004', 'Ndola - BMS', 35, '2026-09-01', '2026-09-02', 'Ndola', '2026-09-04', '2026-09-12', '2026-09-15', 'Kolwezi', '2026-09-17', '2026-09-28', '2026-09-30', 'Example: completed']];
+        const EXAMPLE = [['', 'BCH 6062 ZM', 'Ndola - TFM', 35, '2026-10-05', '2026-10-06', 'Ndola', '2026-10-08', '', '', '', '', '', '', 'Example: trip 1 in transit'], ['', 'BCH 6063 ZM', 'Ndola - BMS', 35, '2026-09-01', '2026-09-02', 'Ndola', '2026-09-04', '2026-09-12', '2026-09-15', 'Kolwezi', '2026-09-17', '2026-09-28', '2026-09-30', 'Example: completed']];
         const ready = () => { if (!D) { alert('Still loading, please wait a moment.'); return false } return true };
-        $('bTpl').onclick = () => { if (ready() && !demoNoDl()) book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, D.trucks.map(krow), 'fleet_master_template_' + today() + '.xlsx', HELP) };
-        $('bExp').onclick = () => { if (ready() && !demoNoDl()) book(D.trips.slice().sort(byId).map(trow), D.trucks.map(krow), 'fleet_master_data_' + today() + '.xlsx') };
-        $('bExpDone').onclick = () => { if (!ready() || demoNoDl()) return; const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), D.trucks.map(krow), 'completed_trips_' + today() + '.xlsx') };
+        $('bTpl').onclick = () => { if (ready() && !demoNoDl()) book(D.trips.length ? D.trips.slice().sort(byId).map(trow) : EXAMPLE, 'fleet_master_template_' + today() + '.xlsx', HELP) };
+        $('bExp').onclick = () => { if (ready() && !demoNoDl()) book(D.trips.slice().sort(byId).map(trow), 'fleet_master_data_' + today() + '.xlsx') };
+        $('bExpDone').onclick = () => { if (!ready() || demoNoDl()) return; const L = doneTrips(); if (!L.length) { alert('There are no completed trips to export yet.'); return } book(L.map(trow), 'completed_trips_' + today() + '.xlsx') };
         $('bUp').onclick = () => { if (ready() && !blocked()) $('file').click() };
 
         function toIso(v) {
@@ -1312,24 +1320,14 @@
             rd.onload = async () => {
                 const before = JSON.stringify(D);
                 try {
-                    const wb = XLSX.read(rd.result, { type: 'array', cellDates: true }), bad = [], tks = []; let nt = 0;
-                    rows(wb, 'Trucks').forEach(r => {
-                        const id = idc(key(r, ['truckid', 'id'])); if (!id) return;
-                        const st = String(key(r, ['truckstatus', 'status'])).trim();
-                        const g = n => String(key(r, n)).trim();
-                        const o = { id, reg: g(['registrationno', 'registration', 'reg', 'horse']), trailer: g(['trailerno', 'trailer', 'trailerreg']), driver: g(['drivername', 'driver']), contact: phone(key(r, ['drivercontact', 'contact'])), passport: g(['passportno', 'passportnumber', 'passport']), licence: g(['licenceno', 'licencenumber', 'licence', 'licenseno', 'licensenumber', 'license']), category: g(['licencecategory', 'licensecategory', 'category']), issue: g(['licenceissueno', 'licenseissueno', 'issueno', 'issue']), type: g(['trucktype', 'type']), status: st || 'Active' };
-                        const i = D.trucks.findIndex(x => cmp(x.id) === cmp(id)); if (i >= 0) o.id = D.trucks[i].id;
-                        tks.push({ ...o, status: st });
-                        if (i < 0) { D.trucks.push(o); nt++ } else D.trucks[i] = Object.assign(D.trucks[i], Object.fromEntries(Object.entries(o).filter(([k, v]) => v)))
-                    });
-                    const kr = rows(wb, 'Trucks'), hasCol = n => kr.some(r => key(r, n) !== '');
-                    const noDocs = kr.length && !hasCol(['trailerno', 'trailer', 'trailerreg']) && !hasCol(['passportno', 'passportnumber', 'passport']);
+                    const wb = XLSX.read(rd.result, { type: 'array', cellDates: true }), bad = [];
+                    const hadTruckSheet = rows(wb, 'Trucks').length > 0; /* old files: the Truck Master sheet is ignored now */
                     const inc = [];
                     rows(wb, 'Trips').forEach((r, i) => {
                         const ln = i + 2, tk0 = idc(key(r, ['truckid', 'truck'])), tkm = D.trucks.find(x => cmp(x.id) === cmp(tk0)), tk = tkm ? tkm.id : tk0;
                         if (!tk && !key(r, ['tripid', 'id'])) return;
                         if (!tk) return bad.push('row ' + ln + ': Truck ID missing');
-                        if (!tkm) return bad.push('row ' + ln + ': truck ' + esc(tk) + ' is not in Truck Master');
+                        if (!tkm) return bad.push('row ' + ln + ': truck ' + esc(tk) + ' is not on the Staff page yet (add it as a driver\'s Assigned truck)');
                         const o = { id: idc(key(r, ['tripid', 'id'])), truck: tk, route: String(key(r, ['routeorigindestination', 'route'])).trim(), plan: +key(r, ['plannedtripdays', 'planneddays']) || 15, n: String(key(r, ['notes', 'remarks'])).trim(), lp: String(key(r, ['loadinglocation', 'loadinglocation1', 'loadingplace', 'loadingpoint'])).trim(), lp2: String(key(r, ['loadinglocation2', 'loadingplace2', 'loadingpoint2'])).trim(), row: ln };
                         const M = [['d', ['dispatcheddate', 'dispatched']], ['l', ['loadingdate', 'loading', 'loadingdate1']], ['t', ['intransitdate', 'intransit', 'intransitdate1']], ['u', ['offloadingdate', 'offloading', 'offloadingdate1', 'unloadingdate', 'unloading']], ['l2', ['loadingdate2', 'loading2']], ['t2', ['intransitdate2', 'intransit2']], ['v', ['delivereddate', 'delivered']], ['r', ['offloadingdate2', 'offloading2', 'returnedavailabledate', 'returneddate', 'completeddate', 'returned']]];
                         for (const [k, nm] of M) { const x = toIso(key(r, nm)); if (x === null) return bad.push('row ' + ln + ': invalid date in ' + ST[K.indexOf(k)]); o[k] = x }
@@ -1339,18 +1337,18 @@
                     });
                     const upd = inc.filter(o => o.id && D.trips.some(t => t.id === o.id)).length;
                     const why = bad.length ? ' Skipped ' + bad.length + ': ' + esc(bad.slice(0, 5).join('; ')) + (bad.length > 5 ? '; ...' : '') : '';
-                    if (!inc.length && !tks.length) { D = JSON.parse(before); say('Nothing was uploaded.' + (why || ' No "Trip Log" or "Truck Master" rows found. Download the template and fill it in.'), true); e.target.value = ''; return }
-                    if (!confirm('Import ' + inc.length + ' trips (' + (inc.length - upd) + ' new, ' + upd + ' updated) and ' + tks.length + ' trucks (' + nt + ' new)? Nothing is deleted.')) { D = JSON.parse(before); e.target.value = ''; return }
+                    if (!inc.length) { D = JSON.parse(before); say('Nothing was uploaded.' + (why || ' No "Trip Log" rows found. Download the template and fill it in.'), true); e.target.value = ''; return }
+                    if (!confirm('Import ' + inc.length + ' trips (' + (inc.length - upd) + ' new, ' + upd + ' updated)? Nothing is deleted.')) { D = JSON.parse(before); e.target.value = ''; return }
                     if (MODE === 'server') {
                         say('Uploading...');
-                        try { await api('POST', '/api/master/bulk', { trucks: tks, trips: inc }); await load() }
+                        try { await api('POST', '/api/master/bulk', { trucks: [], trips: inc }); await load() }
                         catch (x) { D = JSON.parse(before); say('Upload failed, nothing was saved: ' + esc(x.message), true); e.target.value = ''; return }
                         refresh()
                     } else {
                         inc.forEach(o => { delete o.row; if (!o.id) o.id = nextId(); const i = D.trips.findIndex(t => t.id === o.id); i < 0 ? D.trips.push(o) : D.trips[i] = o });
                         save(); refresh()
                     }
-                    say('Upload done: ' + (inc.length - upd) + ' trips added, ' + upd + ' updated, ' + tks.length + ' trucks updated (' + nt + ' new).' + why + (noDocs ? ' <b>Note: this file has no Trailer / Passport / Licence data in its Truck Master sheet, so those stay empty.</b> Use the file with those columns filled in.' : '') + (MODE === 'server' && SVER < 4 ? ' <b>Warning: the server is running an OLD master.js, so trailer, passport, licence and leg 2 data were NOT saved. Replace master.js and restart the server.</b>' : ''), bad.length > 0 || noDocs || (MODE === 'server' && SVER < 4))
+                    say('Upload done: ' + (inc.length - upd) + ' trips added, ' + upd + ' updated.' + why + (hadTruckSheet ? ' (The "Truck Master" sheet in this file was ignored - trucks and drivers are now kept on the <a href="/staff#drivers" style="color:inherit;font-weight:700">Staff page</a>.)' : '') + (MODE === 'server' && SVER < 4 ? ' <b>Warning: the server is running an OLD master.js, so trailer, passport, licence and leg 2 data were NOT saved. Replace master.js and restart the server.</b>' : ''), bad.length > 0 || (MODE === 'server' && SVER < 4))
                 } catch (x) { D = JSON.parse(before); say('Upload failed: ' + esc(x.message), true) }
                 e.target.value = ''
             };

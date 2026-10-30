@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professional Hauliers - Staff</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8f7f3;
+            --card: #fff;
+            --ink: #14130f;
+            --mute: #6b6a63;
+            --mute2: #a3a29a;
+            --line: #e8e6df;
+            --soft: #f3f2ed;
+            --yel: #fbbf24;
+            --yink: #1c1400;
+            --ybg: #fef3c7;
+            --yfg: #92400e;
+            --gbg: #dcfce7;
+            --gfg: #15803d;
+            --obg: #ffedd5;
+            --ofg: #c2410c;
+            --rbg: #fee2e2;
+            --rfg: #b91c1c;
+            --pbg: #e0e7ff;
+            --pfg: #3730a3;
+            --red: #e5483d;
+            --side: #111110;
+            --sideline: #262623;
+            --sideink: #a8a79f
+        }
+
+            :root[data-theme=dark] {
+                --bg: #0c0c0b;
+                --card: #171715;
+                --ink: #f4f3ee;
+                --mute: #9a998f;
+                --mute2: #6d6c64;
+                --line: #2a2a27;
+                --soft: #1f1f1c;
+                --side: #070706;
+                --sideline: #22221f;
+                --ybg: #3a2d08;
+                --yfg: #fcd34d;
+                --gbg: #123524;
+                --gfg: #86efac;
+                --obg: #47290c;
+                --ofg: #fdba74;
+                --rbg: #4a1a1a;
+                --rfg: #fca5a5;
+                --pbg: #1e1b4b;
+                --pfg: #a5b4fc
+            }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.45 Inter,"Segoe UI",system-ui,sans-serif
+        }
+
+        .ic {
+            width: 18px;
+            height: 18px;
+            flex: none
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh
+        }
+
+        .side {
+            background: var(--side);
+            color: var(--sideink);
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh
+        }
+
+        main {
+            min-width: 0
+        }
+
+        .head {
+            padding: 30px 40px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 38px;
+            line-height: 1.1;
+            letter-spacing: -.025em;
+            font-weight: 800
+        }
+
+        .head p {
+            margin: 0;
+            color: var(--mute);
+            max-width: 680px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font: 600 14px Inter,sans-serif;
+            padding: 10px 15px;
+            border-radius: 11px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            color: var(--ink);
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+            .btn:hover {
+                background: var(--soft)
+            }
+
+            .btn.pri {
+                background: var(--yel);
+                border-color: var(--yel);
+                color: var(--yink);
+                font-weight: 700
+            }
+
+                .btn.pri:hover {
+                    filter: brightness(.96)
+                }
+
+            .btn:disabled {
+                opacity: .5;
+                cursor: default
+            }
+
+        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 3px solid var(--yel);
+            outline-offset: 2px
+        }
+
+        .body {
+            padding: 28px 40px 44px;
+            max-width: 1700px
+        }
+
+        /* team tabs */
+        .teams {
+            display: grid;
+            grid-template-columns: repeat(8,1fr);
+            gap: 10px;
+            margin-bottom: 22px
+        }
+
+        .tm {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            cursor: pointer;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            transition: .12s
+        }
+
+            .tm:hover {
+                border-color: var(--mute2)
+            }
+
+            .tm.on {
+                border-color: var(--yel);
+                box-shadow: inset 0 0 0 1px var(--yel);
+                background: var(--ybg)
+            }
+
+            .tm span {
+                display: block;
+                font-size: 13px;
+                color: var(--mute);
+                font-weight: 500
+            }
+
+            .tm b {
+                display: block;
+                font-size: 28px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                margin-top: 4px
+            }
+
+            .tm.on span {
+                color: var(--yfg)
+            }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            overflow: hidden
+        }
+
+        .ph {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--line)
+        }
+
+            .ph h2 {
+                margin: 0;
+                font-size: 18px
+            }
+
+        .bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .msg {
+            margin: 14px 24px 0;
+            background: var(--gbg);
+            color: var(--gfg);
+            border-radius: 12px;
+            padding: 11px 15px;
+            font-size: 14px
+        }
+
+            .msg.err {
+                background: var(--rbg);
+                color: var(--rfg)
+            }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: flex-end;
+            padding: 20px 24px
+        }
+
+            .tools > label {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                font-size: 13.5px;
+                font-weight: 500;
+                flex: 1 1 170px
+            }
+
+        input, select, textarea {
+            font: inherit;
+            font-size: 14.5px;
+            padding: 11px 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--ink);
+            width: 100%
+        }
+
+            input[readonly] {
+                background: var(--soft);
+                color: var(--mute)
+            }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px
+        }
+
+        .rst {
+            background: none;
+            border: 0;
+            color: var(--mute);
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            font: 500 14.5px Inter,sans-serif;
+            cursor: pointer;
+            padding: 11px 12px
+        }
+
+        .cap {
+            padding: 0 24px 8px;
+            color: var(--mute);
+            font-size: 14px
+        }
+
+        .empty {
+            padding: 48px;
+            text-align: center;
+            color: var(--mute);
+            grid-column: 1/-1
+        }
+
+        /* staff cards */
+        #cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+            gap: 12px;
+            padding: 8px 24px 28px
+        }
+
+        .sc {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: .12s;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+            .sc:hover {
+                box-shadow: 0 4px 14px rgba(0,0,0,.1);
+                transform: translateY(-1px)
+            }
+
+            .sc.left {
+                opacity: .6
+            }
+
+        .sh {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        .av {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            flex: none;
+            object-fit: cover;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 19px;
+            color: #fff;
+            background: #a8a29e;
+            overflow: hidden
+        }
+
+            .av img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover
+            }
+
+        .nm {
+            font-weight: 700;
+            line-height: 1.2
+        }
+
+        .ds {
+            font-size: 13px;
+            color: var(--mute)
+        }
+
+        .meta {
+            font-size: 13px;
+            color: var(--mute);
+            display: grid;
+            gap: 3px
+        }
+
+            .meta div {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis
+            }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        .b {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 9px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 11.5px;
+            white-space: nowrap;
+            background: var(--soft);
+            color: var(--mute);
+            border: 1px solid var(--line)
+        }
+
+            .b.g {
+                background: var(--gbg);
+                color: var(--gfg);
+                border-color: transparent
+            }
+
+            .b.o {
+                background: var(--obg);
+                color: var(--ofg);
+                border-color: transparent
+            }
+
+            .b.y {
+                background: var(--ybg);
+                color: var(--yfg);
+                border-color: transparent
+            }
+
+            .b.r {
+                background: var(--rbg);
+                color: var(--rfg);
+                border-color: transparent
+            }
+
+            .b.p {
+                background: var(--pbg);
+                color: var(--pfg);
+                border-color: transparent
+            }
+
+        .trk {
+            font: 700 13px ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+            background: var(--yel);
+            color: var(--yink);
+            padding: 2px 8px;
+            border-radius: 7px;
+            white-space: nowrap
+        }
+
+        .foot {
+            padding: 14px 24px;
+            border-top: 1px solid var(--line);
+            color: var(--mute);
+            font-size: 14px
+        }
+
+        /* profile dialog */
+        dialog {
+            border: 0;
+            border-radius: 20px;
+            background: var(--card);
+            color: var(--ink);
+            width: min(860px,96vw);
+            padding: 26px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.35)
+        }
+
+            dialog::backdrop {
+                background: #0009
+            }
+
+            dialog h2 {
+                margin: 0;
+                font-size: 21px
+            }
+
+            dialog label {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--mute)
+            }
+
+        .pf {
+            display: grid;
+            grid-template-columns: 190px 1fr;
+            gap: 24px
+        }
+
+        .pic {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            text-align: center
+        }
+
+            .pic .av {
+                width: 150px;
+                height: 150px;
+                font-size: 46px
+            }
+
+            .pic small {
+                color: var(--mute);
+                font-size: 12px
+            }
+
+        .sec {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px
+        }
+
+            .sec h3 {
+                margin: 0 0 12px;
+                font-size: 12.5px;
+                letter-spacing: .06em;
+                text-transform: uppercase;
+                color: var(--mute)
+            }
+
+            .sec.drv {
+                border-left: 4px solid var(--yel)
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px
+        }
+
+        .wide {
+            grid-column: 1/-1
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--mute)
+        }
+
+        .acts {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap
+        }
+
+        .dt {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 18px
+        }
+
+        .api {
+            font: 12.5px ui-monospace,Menlo,Consolas,monospace;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 10px 12px;
+            line-height: 1.8;
+            overflow-x: auto
+        }
+
+        @media(max-width:1300px) {
+            .teams {
+                grid-template-columns: repeat(4,1fr)
+            }
+        }
+
+        @media(max-width:860px) {
+            .app {
+                grid-template-columns: 1fr
+            }
+
+            .side {
+                position: relative;
+                height: auto;
+                flex-direction: row;
+                align-items: center;
+                padding: 10px 14px
+            }
+
+            .head, .body {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            h1 {
+                font-size: 28px
+            }
+
+            .pf {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:560px) {
+            .teams {
+                grid-template-columns: repeat(2,1fr)
+            }
+
+            .grid, .grid3 {
+                grid-template-columns: 1fr
+            }
+
+            #cards {
+                padding: 8px 16px 24px
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></symbol>
+            <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
+            <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></symbol>
+        </defs>
+    </svg>
+    <div class="app">
+        <aside class="side" id="side"></aside>
+        <script src="/menu.js"></script>
+        <main>
+            <header class="head">
+                <div><h1>Staff</h1><p>Everyone at Professional Hauliers, by team. Click a person to see and edit their profile, passport and documents. Trucks are kept here too: give a driver a truck (with its trailer and type) and their details show on that truck's trip cards.</p></div>
+                <button class="btn pri" id="bAdd"><svg class="ic"><use href="#i-plus" /></svg>Add staff</button>
+            </header>
+            <div class="body">
+                <section class="teams" id="teams"></section>
+                <section class="panel">
+                    <div class="ph">
+                        <h2 id="pt">All staff</h2>
+                        <div class="bar">
+                            <button class="btn" id="bImp" title="Makes a driver profile for every driver already saved on a truck in Fleet Master View">Import drivers from trucks</button>
+                            <button class="btn" id="bUp"><svg class="ic"><use href="#i-up" /></svg>Bulk upload Excel</button>
+                            <button class="btn" id="bTpl"><svg class="ic"><use href="#i-down" /></svg>Download template</button>
+                            <button class="btn" id="bExp"><svg class="ic"><use href="#i-down" /></svg>Export</button>
+                            <button class="btn" id="bApi">Team APIs</button>
+                            <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+                        </div>
+                    </div>
+                    <div id="msg" class="msg" role="status" hidden></div>
+                    <div class="tools">
+                        <label>Search<input id="q" type="search" placeholder="Name, designation, phone, passport, truck"></label>
+                        <label>Location<select id="fLoc"><option value="">All locations</option></select></label>
+                        <label>Status<select id="fSt"><option value="">All except Left</option><option>Active</option><option>On leave</option><option>Suspended</option><option>Left</option></select></label>
+                        <label>Documents<select id="fDoc"><option value="">All</option><option value="exp">Expired or expiring (60 days)</option><option value="nopass">No passport number</option><option value="notruck">Drivers without a truck</option></select></label>
+                        <button class="rst" id="reset"><svg class="ic"><use href="#i-reset" /></svg>Clear filters</button>
+                    </div>
+                    <div class="cap" id="cap"></div>
+                    <div id="cards"><div class="empty">Loading staff...</div></div>
+                    <div class="foot">Passport and licence expiry: <span class="b o">expires within 60 days</span> <span class="b r">expired</span></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="dlg">
+        <form id="frm" onsubmit="return false">
+            <div class="dt"><div><h2 id="dT">Add staff</h2><div class="hint" id="dSub"></div></div><span id="dBadge"></span></div>
+            <div class="pf">
+                <div class="pic">
+                    <div class="av" id="pv"></div>
+                    <div class="bar" style="justify-content:center"><button type="button" class="btn" id="pUp">Upload photo</button><button type="button" class="btn" id="pDel" style="color:var(--rfg)">Remove</button></div>
+                    <small>JPG or PNG. It is made smaller automatically.</small>
+                    <input type="file" id="pFile" accept="image/*" hidden>
+                </div>
+                <div>
+                    <div class="sec">
+                        <h3>Profile</h3>
+                        <div class="grid">
+                            <label class="wide">Full name<input name="name" required></label>
+                            <label>Team<select name="team"></select></label>
+                            <label>Designation<input name="designation" list="desigs" placeholder="e.g. Accountant"></label>
+                            <label>Location<input name="location" list="locs" placeholder="e.g. Ndola"></label>
+                            <label>Status<select name="status"><option>Active</option><option>On leave</option><option>Suspended</option><option>Left</option></select></label>
+                            <label>Phone<input name="phone" type="tel"></label>
+                            <label>Email<input name="email" type="email"></label>
+                            <label>Date joined<input name="joined" type="date"></label>
+                            <label>Staff ID<input name="id" readonly placeholder="Given when you save"></label>
+                        </div>
+                    </div>
+                    <div class="sec">
+                        <h3>Passport</h3>
+                        <div class="grid">
+                            <label>Passport no.<input name="passport"></label>
+                            <label>Passport expiry<input name="passportExp" type="date"></label>
+                        </div>
+                    </div>
+                    <div class="sec drv" id="secDrv">
+                        <h3>Driver licence &amp; truck</h3>
+                        <div class="grid">
+                            <label>Licence no.<input name="licence"></label>
+                            <label>Licence expiry<input name="licenceExp" type="date"></label>
+                            <label>Licence category<input name="category" placeholder="e.g. D,G"></label>
+                            <label>Licence issue no.<input name="issue"></label>
+                            <label class="wide">Assigned truck<input name="truck" list="trkList" placeholder="Pick a truck, or type a new truck number e.g. BCH 6062 ZM" autocomplete="off"></label>
+                            <label>Trailer no.<input name="trailer" placeholder="e.g. BCH 6192 ZM"></label>
+                            <label>Truck type<input name="ttype" list="ttypes" placeholder="e.g. SINO"></label>
+                            <div class="wide hint" id="trkHint"></div>
+                        </div>
+                    </div>
+                    <div class="sec">
+                        <h3>Next of kin &amp; notes</h3>
+                        <div class="grid">
+                            <label>Next of kin<input name="nok"></label>
+                            <label>Next of kin phone<input name="nokPhone" type="tel"></label>
+                            <label class="wide">Notes<textarea name="notes"></textarea></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acts"><button type="button" class="btn" id="dDel" style="color:var(--rfg)">Delete</button><span class="bar"><button type="button" class="btn" id="dX">Cancel</button><button type="button" class="btn pri" id="dS">Save</button></span></div>
+        </form>
+    </dialog>
+    <datalist id="desigs"><option>Truck Driver</option><option>Mechanic</option><option>Operations Manager</option><option>Dispatcher</option><option>Accountant</option><option>Finance Manager</option><option>HR Officer</option><option>Director</option><option>Managing Director</option><option>Yard Supervisor</option><option>Security Guard</option><option>Fuel Attendant</option></datalist>
+    <datalist id="locs"></datalist>
+    <datalist id="trkList"></datalist>
+    <datalist id="ttypes"><option>SINO</option><option>Flatbed</option><option>Tanker</option><option>Tipper</option><option>Side Tipper</option><option>Lowbed</option><option>Container</option></datalist>
+
+    <dialog id="apiDlg">
+        <h2 style="margin-bottom:6px">Team APIs</h2>
+        <p class="hint" style="margin:0 0 12px">Other pages (fuel, procurement, accounts...) can read staff from these addresses. They need the same login as this page and return JSON.</p>
+        <div class="api" id="apiList"></div>
+        <div class="acts"><span></span><button type="button" class="btn" onclick="this.closest('dialog').close()">Close</button></div>
+    </dialog>
+
+    <script>
+        const $ = i => document.getElementById(i);
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const now = new Date(); now.setHours(0, 0, 0, 0);
+        const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+        const today = () => iso(now), days = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+        const fmt = d => d ? new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+        const cmp = v => String(v == null ? '' : v).replace(/\s+/g, '').toUpperCase();
+        const TEAMS = [['operations', 'Operations'], ['finance', 'Finance'], ['hr', 'HR'], ['directors', 'Directors'], ['ground', 'Ground Team'], ['mechanics', 'Mechanics'], ['drivers', 'Drivers']];
+        const TL = Object.fromEntries(TEAMS), TCOL = { operations: 'p', finance: 'g', hr: 'o', directors: 'r', ground: '', mechanics: 'o', drivers: 'y' };
+        const AVC = ['#0f766e', '#7c3aed', '#b45309', '#be123c', '#1d4ed8', '#15803d', '#a21caf', '#0369a1'];
+        let S = [], TR = [], team = 'all', editing = null, photo = '';
+
+        async function api(method, url, data) {
+            const r = await fetch(url, { method, credentials: 'same-origin', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined });
+            if (r.status === 401) { location.href = '/login'; throw new Error('Please log in again.') }
+            let j = null; try { j = await r.json() } catch (e) { }
+            if (!r.ok) throw new Error((j && j.error) || ('Server error ' + r.status));
+            return j
+        }
+        function say(t, err) { const m = $('msg'); m.hidden = false; m.className = 'msg' + (err ? ' err' : ''); m.innerHTML = t }
+        async function load() { const j = await api('GET', '/api/staff'); S = j.staff; TR = j.trucks.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })) }
+
+        /* Avatar: photo, or initials on a colour picked from the name */
+        function av(s, cls) {
+            if (s.photo) return `<div class="av ${cls || ''}"><img src="${esc(s.photo)}" alt=""></div>`;
+            const ini = String(s.name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+            let h = 0; for (const c of String(s.name || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+            return `<div class="av ${cls || ''}" style="background:${AVC[h % AVC.length]}">${esc(ini)}</div>`
+        }
+        /* Document expiry: '' fine, 'o' within 60 days, 'r' expired */
+        const expCls = d => !d ? '' : d < today() ? 'r' : days(today(), d) <= 60 ? 'o' : '';
+        function docBadges(s) {
+            const out = [];
+            const one = (lbl, d) => { const c = expCls(d); if (c) out.push(`<span class="b ${c}">${lbl} ${c === 'r' ? 'expired' : 'expires'} ${fmt(d)}</span>`) };
+            one('Passport', s.passportExp); if (s.team === 'drivers') one('Licence', s.licenceExp);
+            return out.join('')
+        }
+        const truckLabel = id => { const t = TR.find(x => x.id === id); return t ? (t.reg || t.id) : id };
+
+        function list() {
+            const q = $('q').value.toLowerCase(), loc = $('fLoc').value, st = $('fSt').value, doc = $('fDoc').value;
+            return S.filter(s => team === 'all' || s.team === team)
+                .filter(s => st ? s.status === st : s.status !== 'Left')
+                .filter(s => !loc || s.location === loc)
+                .filter(s => !doc || (doc === 'exp' ? (expCls(s.passportExp) || (s.team === 'drivers' && expCls(s.licenceExp))) : doc === 'nopass' ? !s.passport : (s.team === 'drivers' && !s.truck)))
+                .filter(s => !q || [s.id, s.name, s.designation, s.location, s.phone, s.email, s.passport, s.licence, s.truck, truckLabel(s.truck), TL[s.team]].join(' ').toLowerCase().includes(q))
+                .sort((a, b) => String(a.name).localeCompare(String(b.name)))
+        }
+        function render() {
+            const act = S.filter(s => s.status !== 'Left');
+            $('teams').innerHTML = [['all', 'All staff']].concat(TEAMS).map(([k, l]) => `<button class="tm ${team === k ? 'on' : ''}" data-t="${k}"><span>${l}</span><b>${k === 'all' ? act.length : act.filter(s => s.team === k).length}</b></button>`).join('');
+            $('pt').textContent = team === 'all' ? 'All staff' : TL[team];
+            const locs = [...new Set(S.map(s => s.location).filter(Boolean))].sort(), cur = $('fLoc').value;
+            $('fLoc').innerHTML = '<option value="">All locations</option>' + locs.map(l => `<option ${l === cur ? 'selected' : ''}>${esc(l)}</option>`).join('');
+            $('locs').innerHTML = locs.map(l => `<option>${esc(l)}</option>`).join('');
+            const L = list();
+            $('cap').textContent = L.length + ' of ' + S.length + ' staff';
+            $('cards').innerHTML = L.length ? L.map(s => `<div class="sc ${s.status === 'Left' ? 'left' : ''}" data-id="${esc(s.id)}">
+                    <div class="sh">${av(s)}<div style="min-width:0"><div class="nm">${esc(s.name)}</div><div class="ds">${esc(s.designation || TL[s.team] || '')}</div></div></div>
+                    <div class="chips"><span class="b ${TCOL[s.team]}">${esc(TL[s.team] || s.team)}</span>${s.status !== 'Active' ? `<span class="b ${s.status === 'Left' ? 'r' : 'o'}">${esc(s.status)}</span>` : ''}${s.team === 'drivers' ? (s.truck ? `<span class="trk">${esc(truckLabel(s.truck))}</span>` : '<span class="b o">No truck</span>') : ''}</div>
+                    <div class="meta"><div>${s.location ? 'Location: ' + esc(s.location) : '<span style="color:var(--mute2)">No location</span>'}</div><div>${s.phone ? esc(s.phone) : '<span style="color:var(--mute2)">No phone</span>'}</div><div>Passport: ${s.passport ? esc(s.passport) : '<span style="color:var(--mute2)">&mdash;</span>'}</div></div>
+                    ${docBadges(s) ? `<div class="chips">${docBadges(s)}</div>` : ''}</div>`).join('')
+                : `<div class="empty">${S.length ? 'Nobody matches these filters.' : 'No staff yet. Click <b>Add staff</b>, or <b>Import drivers from trucks</b> to start with the drivers already in Fleet Master View.'}</div>`
+        }
+        $('teams').onclick = e => { const b = e.target.closest('[data-t]'); if (b) { team = b.dataset.t; try { history.replaceState(null, '', team === 'all' ? location.pathname : '#' + team) } catch (x) { } render() } };
+        ['q', 'fLoc', 'fSt', 'fDoc'].forEach(i => $(i).addEventListener('input', render));
+        $('reset').onclick = () => { ['q', 'fLoc', 'fSt', 'fDoc'].forEach(i => $(i).value = ''); render() };
+        $('cards').onclick = e => { const c = e.target.closest('[data-id]'); if (c) openForm(c.dataset.id) };
+
+        /* Profile form */
+        const dlg = $('dlg'), frm = $('frm'), F = ['id', 'name', 'team', 'designation', 'location', 'status', 'phone', 'email', 'joined', 'passport', 'passportExp', 'licence', 'licenceExp', 'category', 'issue', 'truck', 'trailer', 'ttype', 'nok', 'nokPhone', 'notes'];
+        frm.elements.team.innerHTML = TEAMS.map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+        const findTruck = v => v ? TR.find(t => cmp(t.id) === cmp(v)) : null;
+        const holder = (t, me) => t && t.staffId && t.staffId !== me ? ((S.find(s => s.id === t.staffId) || {}).name || t.driver) : '';
+        function truckOptions(me) {
+            $('trkList').innerHTML = TR.map(t => { const w = holder(t, me); return `<option value="${esc(t.id)}">${t.trailer ? 'trailer ' + esc(t.trailer) + ' · ' : ''}${w ? 'now with ' + esc(w) : t.staffId === me ? 'this driver' : 'free'}</option>` }).join('')
+        }
+        /* Truck box: show who has it now, and fill trailer / type from the saved truck */
+        function trkInfo(fill) {
+            const v = frm.elements.truck.value.trim(), t = findTruck(v), me = editing && editing.id, w = holder(t, me);
+            if (fill) { frm.elements.trailer.value = t ? t.trailer || '' : ''; frm.elements.ttype.value = t ? t.type || '' : '' }
+            $('trkHint').innerHTML = !v ? 'No truck. Pick one from the list, or type a new truck number to add it.'
+                : !t ? '<b>New truck</b> - ' + esc(v) + ' will be added when you save. Fill in its trailer and type.'
+                    : w ? '<b style="color:var(--ofg)">This truck is now with ' + esc(w) + '.</b> Saving moves it to this driver.'
+                        : 'The driver\'s name, phone, passport and licence show on this truck\'s trip cards. Trailer and type belong to the truck.'
+        }
+        frm.elements.truck.addEventListener('input', () => trkInfo(true));
+        function showDrv() { const d = frm.elements.team.value === 'drivers'; $('secDrv').hidden = !d }
+        frm.elements.team.onchange = showDrv;
+        function showPic() { $('pv').outerHTML = av({ name: frm.elements.name.value || '?', photo }).replace('class="av ', 'id="pv" class="av '); $('pDel').hidden = !photo }
+        frm.elements.name.oninput = () => { if (!photo) showPic() };
+        function openForm(id) {
+            const s = S.find(x => x.id === id); editing = s || null;
+            const o = s || { team: team === 'all' ? 'drivers' : team, status: 'Active' };
+            $('dT').textContent = s ? s.name : 'Add staff';
+            $('dSub').textContent = s ? s.id + ' · ' + (TL[s.team] || '') + (s.updated ? ' · last changed ' + fmt(s.updated.slice(0, 10)) : '') : '';
+            $('dBadge').innerHTML = s ? docBadges(s) : '';
+            frm.elements.truck.innerHTML = truckOptions(s ? s.id : '');
+            F.forEach(k => frm.elements[k].value = o[k] || (k === 'status' ? 'Active' : ''));
+            photo = o.photo || ''; showPic(); showDrv(); trkInfo(true);
+            $('dDel').style.visibility = s ? 'visible' : 'hidden';
+            dlg.showModal()
+        }
+        $('bAdd').onclick = () => openForm(null);
+        $('dX').onclick = () => dlg.close();
+        $('dS').onclick = async () => {
+            const o = {}; F.forEach(k => o[k] = frm.elements[k].value.trim()); o.photo = photo;
+            if (!o.name) { alert('Please type the name.'); frm.elements.name.focus(); return }
+            if (o.team !== 'drivers') { o.truck = ''; o.trailer = ''; o.ttype = '' }
+            const t = findTruck(o.truck), w = holder(t, editing && editing.id); if (t) o.truck = t.id;
+            if (w && !confirm(t.id + ' is now with ' + w + '. Move it to ' + o.name + '?')) return;
+            if (o.truck && !t && !confirm(o.truck + ' is a new truck number. Add it as a new truck?')) return;
+            const b = $('dS'); b.disabled = true; b.textContent = 'Saving...';
+            try {
+                const { id, ...rest } = o;
+                const r = editing ? await api('PUT', '/api/staff/' + encodeURIComponent(editing.id), rest) : await api('POST', '/api/staff', rest);
+                await load(); dlg.close(); render();
+                say(esc(r.name) + ' saved' + (r.truck ? ' and shown on truck ' + esc(truckLabel(r.truck)) : '') + '.')
+            } catch (e) { alert('Not saved: ' + e.message) }
+            finally { b.disabled = false; b.textContent = 'Save' }
+        };
+        $('dDel').onclick = async () => {
+            if (!editing || !confirm('Delete ' + editing.name + '? ' + (editing.truck ? 'They will also be taken off truck ' + truckLabel(editing.truck) + '. ' : '') + 'This cannot be undone. (To keep their record, set Status to "Left" instead.)')) return;
+            try { await api('DELETE', '/api/staff/' + encodeURIComponent(editing.id)); await load(); dlg.close(); render(); say(esc(editing.name) + ' deleted.') }
+            catch (e) { alert('Not deleted: ' + e.message) }
+        };
+
+        /* Photo: made small (max 320px, JPEG) before saving, so pages stay fast */
+        $('pUp').onclick = () => $('pFile').click();
+        $('pDel').onclick = () => { photo = ''; showPic() };
+        $('pFile').onchange = e => {
+            const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+            const img = new Image(), url = URL.createObjectURL(f);
+            img.onload = () => {
+                const max = 320, k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+                c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+                const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+                photo = c.toDataURL('image/jpeg', .8); URL.revokeObjectURL(url); showPic()
+            };
+            img.onerror = () => alert('That file is not a picture this browser can open. Use a JPG or PNG.');
+            img.src = url
+        };
+
+        /* Import drivers already on the trucks */
+        $('bImp').onclick = async () => {
+            if (!confirm('Make a driver profile for every driver saved on a truck in Fleet Master View (name, phone, passport, licence and the truck)? Drivers that already have a profile are skipped.')) return;
+            try { const r = await api('POST', '/api/staff/import-drivers'); await load(); team = 'drivers'; render(); say(r.made + ' driver profile(s) made' + (r.skipped ? ', ' + r.skipped + ' skipped (a profile with that name already exists)' : '') + '.') }
+            catch (e) { say('Import failed: ' + esc(e.message), true) }
+        };
+
+        /* Excel */
+        const COLS = [['Staff ID', 'id'], ['Full Name', 'name'], ['Team', 'team'], ['Designation', 'designation'], ['Location', 'location'], ['Phone', 'phone'], ['Email', 'email'], ['Status', 'status'], ['Date Joined', 'joined'], ['Passport No.', 'passport'], ['Passport Expiry', 'passportExp'], ['Licence No.', 'licence'], ['Licence Category', 'category'], ['Licence Issue No.', 'issue'], ['Licence Expiry', 'licenceExp'], ['Assigned Truck', 'truck'], ['Trailer No.', 'trailer'], ['Truck Type', 'ttype'], ['Next of Kin', 'nok'], ['Next of Kin Phone', 'nokPhone'], ['Notes', 'notes']];
+        const HELP = ['How this file works',
+            'One row per person. Upload it with "Bulk upload Excel" on the Staff page.',
+            'Staff ID filled in = that person is UPDATED (blank cells keep what is saved). Staff ID empty = a NEW person.',
+            'Team must be one of: ' + TEAMS.map(t => t[1]).join(', ') + '.',
+            'Status: Active, On leave, Suspended or Left.',
+            'Drivers: Assigned Truck, Trailer No. and Truck Type. A truck number that does not exist yet is ADDED as a new truck. Spaces do not matter (BCJ6422ZM = BCJ 6422 ZM).',
+            'Trucks are kept here on the Staff page. Fleet Master View only holds the trips.',
+            'Dates: yyyy-mm-dd or normal Excel dates. Photos are added on the page, not in Excel.'];
+        function book(rows, name, help) {
+            const wb = XLSX.utils.book_new(), sh = XLSX.utils.aoa_to_sheet([COLS.map(c => c[0])].concat(rows));
+            sh['!cols'] = COLS.map(c => ({ wch: c[1] === 'notes' ? 40 : 18 }));
+            if (help) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(help.map(x => [x])), 'Instructions');
+            XLSX.utils.book_append_sheet(wb, sh, 'Staff'); XLSX.writeFile(wb, name)
+        }
+        const row = s => { const t = findTruck(s.truck) || {}; return COLS.map(([, k]) => k === 'team' ? TL[s.team] || s.team : k === 'trailer' ? t.trailer || '' : k === 'ttype' ? t.type || '' : s[k] || '') };
+        const byName = (a, b) => String(a.name).localeCompare(String(b.name));
+        $('bExp').onclick = () => { const L = list(); if (!L.length) { alert('Nobody to export with these filters.'); return } book(L.map(row), 'staff_' + (team === 'all' ? 'all' : team) + '_' + today() + '.xlsx') };
+        $('bTpl').onclick = () => book(S.length ? S.slice().sort(byName).map(row) : [['', 'Example Person', 'Finance', 'Accountant', 'Ndola', '0970000000', '', 'Active', '2026-01-15', '', '', '', '', '', '', '', '', '', 'Example row - replace it']], 'staff_template_' + today() + '.xlsx', HELP);
+        $('bUp').onclick = () => $('file').click();
+        function toIso(v) {
+            if (v === '' || v == null) return '';
+            if (v instanceof Date) return iso(new Date(v.getTime() + 432e5));
+            if (typeof v == 'number') { const u = new Date(Math.round((v - 25569) * 864e5)); return u.getUTCFullYear() + '-' + String(u.getUTCMonth() + 1).padStart(2, '0') + '-' + String(u.getUTCDate()).padStart(2, '0') }
+            const s = String(v).trim(); let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+            m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+            if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+            return null
+        }
+        /* Phone numbers: Excel drops the leading 0 (962752306 -> 0962752306) */
+        function phone(v) { let s = String(v == null ? '' : v).trim(); if (/^[\d\s+]+$/.test(s)) { s = s.replace(/\s+/g, ''); if (/^[79]\d{8}$/.test(s)) s = '0' + s } return s }
+        const norm = k => k.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const ALIAS = { id: ['staffid', 'id', 'empid', 'employeeid'], name: ['fullname', 'name', 'staffname', 'drivername'], team: ['team', 'department', 'dept'], designation: ['designation', 'position', 'jobtitle', 'title'], location: ['location', 'branch', 'station'], phone: ['phone', 'contact', 'phoneno', 'mobile', 'drivercontact'], email: ['email', 'emailaddress'], status: ['status'], joined: ['datejoined', 'joined', 'joiningdate', 'startdate'], passport: ['passportno', 'passport', 'passportnumber'], passportExp: ['passportexpiry', 'passportexpirydate', 'passportexp'], licence: ['licenceno', 'licence', 'licencenumber', 'licenseno', 'license', 'licensenumber'], category: ['licencecategory', 'licensecategory', 'category'], issue: ['licenceissueno', 'licenseissueno', 'issueno', 'issue'], licenceExp: ['licenceexpiry', 'licenseexpiry', 'licenceexp', 'licenceexpirydate'], truck: ['assignedtruck', 'truck', 'truckid', 'reg', 'truckno', 'trucknumber'], trailer: ['trailerno', 'trailer', 'trailernumber'], ttype: ['trucktype', 'type'], nok: ['nextofkin', 'nok'], nokPhone: ['nextofkinphone', 'nokphone'], notes: ['notes', 'remarks'] };
+        $('file').onchange = e => {
+            const f = e.target.files[0]; e.target.value = ''; if (!f) return; const rd = new FileReader();
+            rd.onload = async () => {
+                try {
+                    const wb = XLSX.read(rd.result, { type: 'array', cellDates: true }), nm = wb.SheetNames.find(n => /staff/i.test(n)) || wb.SheetNames.find(n => !/instruction/i.test(n));
+                    const R = XLSX.utils.sheet_to_json(wb.Sheets[nm], { defval: '', raw: true }), out = [], bad = [], nw = new Set();
+                    R.forEach((r, i) => {
+                        const o = { row: i + 2 }, keys = Object.keys(r);
+                        for (const [f, al] of Object.entries(ALIAS)) { const k = keys.find(k => al.includes(norm(k))); o[f] = k == null ? '' : r[k] }
+                        if (!String(o.name).trim() && !String(o.id).trim()) return;
+                        for (const d of ['joined', 'passportExp', 'licenceExp']) { const x = toIso(o[d]); if (x === null) { bad.push('row ' + o.row + ': bad date in ' + d); return } o[d] = x }
+                        o.phone = phone(o.phone); o.nokPhone = phone(o.nokPhone);
+                        for (const k of Object.keys(o)) if (k !== 'row') o[k] = String(o[k]).replace(/\s+/g, ' ').trim();
+                        if (o.truck) { const t = TR.find(x => cmp(x.id) === cmp(o.truck) || (x.reg && cmp(x.reg) === cmp(o.truck))); if (t) o.truck = t.id; else nw.add(o.truck) }
+                        out.push(o)
+                    });
+                    if (bad.length) { say('Nothing was uploaded. Fix these rows: ' + esc(bad.slice(0, 5).join('; ')), true); return }
+                    if (!out.length) { say('No staff rows found. Download the template and fill it in.', true); return }
+                    const upd = out.filter(o => o.id && S.some(s => s.id === o.id.toUpperCase())).length;
+                    if (!confirm('Upload ' + out.length + ' staff (' + (out.length - upd) + ' new, ' + upd + ' updated)' + (nw.size ? ' and add ' + nw.size + ' new truck(s): ' + [...nw].slice(0, 6).join(', ') + (nw.size > 6 ? ' ...' : '') : '') + '? Nothing is deleted.')) return;
+                    say('Uploading...');
+                    const r = await api('POST', '/api/staff/bulk', { staff: out }); await load(); render();
+                    say('Upload done: ' + r.added + ' added, ' + r.updated + ' updated.')
+                } catch (x) { say('Upload failed, nothing was saved: ' + esc(x.message), true) }
+            };
+            rd.readAsArrayBuffer(f)
+        };
+
+        /* Team API list */
+        $('bApi').onclick = () => {
+            $('apiList').innerHTML = ['GET /api/staff  (everyone + trucks)', 'GET /api/staff/teams  (team names and counts)'].concat(TEAMS.map(([k, l]) => `GET /api/staff/team/${k}  (${l})`)).concat(['GET /api/staff/STF-0001  (one person)']).map(esc).join('<br>');
+            $('apiDlg').showModal()
+        };
+
+        (async () => {
+            const h = location.hash.slice(1); if (TL[h]) team = h;
+            try { await load() } catch (e) { $('cards').innerHTML = `<div class="empty">Could not load staff: ${esc(e.message)}<br>Is staff.js added to server.js and the server restarted?</div>`; return }
+            if (window.PHMenu) try { PHMenu.refresh() } catch (e) { }
+            render();
+            if (/^STF-\d+$/.test(h)) openForm(h)
+        })();
+    </script>
+</body>
+</html>

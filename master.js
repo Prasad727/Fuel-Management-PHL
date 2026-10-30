@@ -15,9 +15,10 @@
 //   DELETE /api/master/trips/:id
 //   PUT    /api/master/trucks/:id     -> add or update one truck
 //   POST   /api/master/delete         -> { trips:[ids], trucks:[ids] } delete many (trucks that still have trips are kept)
+//   (staff.js uses store.coll('staff') + syncDriver() from here, so staff live in the same Firebase project)
 //   POST   /api/master/bulk           -> { trucks:[...], trips:[...] } add/update many (Excel bulk upload). Nothing is deleted.
 const fs = require('fs'), path = require('path');
-const VERSION = 5; // the page checks this number: 3 = trailer, passport, licence, 2-leg trips and loading locations
+const VERSION = 8; // the page checks this number: 3 = trailer, passport, licence, 2-leg trips and loading locations
 
 // Trip stages, in order: Dispatched, Loading, In Transit, Offloading, Loading 2, In Transit 2, Delivered, Offloading 2 (= trip completed)
 const DATE = /^\d{4}-\d{2}-\d{2}$/, STAGES = ['d', 'l', 't', 'u', 'l2', 't2', 'v', 'r'];
@@ -42,6 +43,13 @@ function cleanTrip(b) {
     if (t.r && t.r < (t.d || t.l)) throw new Error('Offloading 2 (completed) date is before the start of the trip');
     return t;
 }
+// Driver details on a truck. When a truck has a staffId, these come from the Staff module and are not overwritten by trips / Excel.
+const DRIVER_KEYS = ['driver', 'contact', 'passport', 'licence', 'category', 'issue'];
+// The driver of a truck right now, as saved onto a COMPLETED trip (trip.drv). Old trips keep it even when the truck gets a new driver.
+const driverOf = k => k && (k.driver || k.staffId) ? { staffId: k.staffId || '', ...Object.fromEntries(DRIVER_KEYS.map(x => [x, k[x] || ''])) } : null;
+// prev = the trip as saved before, truck = its truck now. Completed: keep the saved driver (same truck) or take the truck's driver now. Not completed: no saved driver.
+const tripDriver = (t, prev, truck) => !t.r ? null : (prev && prev.drv && prev.truck === t.truck ? prev.drv : driverOf(truck));
+const keepStaffDriver = (existing, o) => { if (existing && existing.staffId) DRIVER_KEYS.forEach(k => delete o[k]); return o; };
 function cleanTruck(b) {
     return {
         reg: str(b.reg), trailer: str(b.trailer, 40), driver: str(b.driver), contact: str(b.contact, 40),
@@ -90,7 +98,23 @@ async function firestoreStore(raw) {
         async delTrip(id) { const r = trips.doc(id); if (!(await r.get()).exists) return false; await r.delete(); return true; },
         async putTruck(id, k) { await trucks.doc(id).set(k, { merge: true }); return { id, ...(await trucks.doc(id).get()).data() }; },
         async putMany(tk, tp) { await writeMany(trucks, tk); await writeMany(trips, tp); },
-        async delMany(tp, tk) { const bw = db.bulkWriter(); tp.forEach(id => bw.delete(trips.doc(id))); tk.forEach(id => bw.delete(trucks.doc(id))); await bw.close(); }
+        async delMany(tp, tk) { const bw = db.bulkWriter(); tp.forEach(id => bw.delete(trips.doc(id))); tk.forEach(id => bw.delete(trucks.doc(id))); await bw.close(); },
+        async getTruck(id) { const s = await trucks.doc(id).get(); return s.exists ? toObj(s) : null; },
+        // Any other collection in the same project (used by staff.js)
+        coll(name) {
+            const c = db.collection(name);
+            return {
+                async all() { return (await c.get()).docs.map(toObj); },
+                async get(id) { const s = await c.doc(id).get(); return s.exists ? toObj(s) : null; },
+                async put(id, o) { const { id: _, ...rest } = o; await c.doc(id).set(rest); return { id, ...rest }; },
+                async del(id) { const r = c.doc(id); if (!(await r.get()).exists) return false; await r.delete(); return true; }
+            };
+        },
+        // Next number for a counter (e.g. 'staff' -> 1, 2, 3 ...). Numbers are never reused.
+        async nextNo(key, atLeast = 0) {
+            const ref = db.collection('master_counters').doc(key);
+            return db.runTransaction(async t => { const s = await t.get(ref), n = Math.max(s.exists ? s.data().n : 0, atLeast) + 1; t.set(ref, { n }); return n; });
+        }
     };
 }
 
@@ -118,7 +142,18 @@ function fileStore() {
         async delTrip(id) { const i = S.trips.findIndex(t => t.id === id); if (i < 0) return false; S.trips.splice(i, 1); persist(); return true; },
         async putTruck(id, k) { const v = up(S.trucks, id, k, true); persist(); return v; },
         async putMany(tk, tp) { tk.forEach(([id, o]) => up(S.trucks, id, o, true)); tp.forEach(([id, o]) => up(S.trips, id, o, true)); persist(); },
-        async delMany(tp, tk) { const a = new Set(tp), b = new Set(tk); S.trips = S.trips.filter(t => !a.has(t.id)); S.trucks = S.trucks.filter(t => !b.has(t.id)); persist(); }
+        async delMany(tp, tk) { const a = new Set(tp), b = new Set(tk); S.trips = S.trips.filter(t => !a.has(t.id)); S.trucks = S.trucks.filter(t => !b.has(t.id)); persist(); },
+        async getTruck(id) { return S.trucks.find(t => t.id === id) || null; },
+        coll(name) {
+            const L = () => (S[name] = S[name] || []);
+            return {
+                async all() { return L().slice(); },
+                async get(id) { return L().find(x => x.id === id) || null; },
+                async put(id, o) { const v = up(L(), id, o, false); persist(); return v; },
+                async del(id) { const i = L().findIndex(x => x.id === id); if (i < 0) return false; L().splice(i, 1); persist(); return true; }
+            };
+        },
+        async nextNo(key, atLeast = 0) { S.counters = S.counters || {}; const n = Math.max(S.counters[key] || 0, atLeast) + 1; S.counters[key] = n; persist(); return n; }
     };
 }
 
@@ -139,7 +174,8 @@ module.exports = async function makeMaster({ body, send }) {
         if (p === '/api/master/trips' && m === 'POST') {
             const b = await body(req), t = cleanTrip(b); t.truck = await resolveTruck(t.truck);
             const [id] = await store.newIds(1);
-            if (b.truckInfo) await store.putTruck(t.truck, cleanTruck(b.truckInfo));
+            if (b.truckInfo) await store.putTruck(t.truck, keepStaffDriver(await store.getTruck(t.truck), cleanTruck(b.truckInfo)));
+            t.drv = tripDriver(t, null, await store.getTruck(t.truck));
             return send(res, 201, await store.putTrip(id, t));
         }
         let mt = p.match(/^\/api\/master\/trips\/([^/]+)$/);
@@ -148,8 +184,9 @@ module.exports = async function makeMaster({ body, send }) {
             if (!ID.test(id)) throw new Error('Invalid trip ID');
             if (m === 'PUT') {
                 const b = await body(req), t = cleanTrip(b); t.truck = await resolveTruck(t.truck);
-                if (b.truckInfo) await store.putTruck(t.truck, cleanTruck(b.truckInfo));
+                if (b.truckInfo) await store.putTruck(t.truck, keepStaffDriver(await store.getTruck(t.truck), cleanTruck(b.truckInfo)));
                 await store.bump(tripNo(id));
+                t.drv = tripDriver(t, await store.getTrip(id), await store.getTruck(t.truck));
                 return send(res, 200, await store.putTrip(id, t));
             }
             if (m === 'DELETE') return (await store.delTrip(id)) ? send(res, 200, { deleted: id }) : send(res, 404, { error: 'Trip not found' });
@@ -158,17 +195,19 @@ module.exports = async function makeMaster({ body, send }) {
         if (mt && m === 'PUT') {
             const id = idc(decodeURIComponent(mt[1]));
             if (!ID.test(id)) throw new Error('Invalid truck ID');
-            return send(res, 200, await store.putTruck(id, cleanTruck(await body(req))));
+            return send(res, 200, await store.putTruck(id, keepStaffDriver(await store.getTruck(id), cleanTruck(await body(req)))));
         }
         if (p === '/api/master/bulk' && m === 'POST') {
             const b = await body(req), tk = Array.isArray(b.trucks) ? b.trucks : [], tp = Array.isArray(b.trips) ? b.trips : [];
             if (tk.length + tp.length > 20000) throw new Error('Too many rows in one upload (max 20,000)');
             // Check everything first, so a bad row never leaves a half-done upload
-            const haveMap = new Map((await store.all()).trucks.map(x => [cmp(x.id), x.id])), have = new Set(haveMap.values());
+            const allTrucks = (await store.all()).trucks, byId = new Map(allTrucks.map(x => [x.id, x]));
+            const haveMap = new Map(allTrucks.map(x => [cmp(x.id), x.id])), have = new Set(haveMap.values());
             const truckPairs = tk.map((x, i) => {
                 let id = idc(x.id); id = haveMap.get(cmp(id)) || id; if (!ID.test(id)) throw new Error('Trucks row ' + (i + 2) + ': invalid truck ID "' + id + '" (use letters, numbers, spaces, - . _ only)');
                 const o = cleanTruck(x);
                 if (have.has(id)) for (const k of Object.keys(o)) if (str(x[k]) === '') delete o[k]; // blank cells do not wipe stored details
+                keepStaffDriver(byId.get(id), o); // driver details of a staff-linked truck come from Staff
                 return [id, o];
             });
             const known = new Map([...have, ...truckPairs.map(x => x[0])].map(id => [cmp(id), id]));
@@ -179,6 +218,10 @@ module.exports = async function makeMaster({ body, send }) {
                 const id = idc(x.id); if (id && !ID.test(id)) throw new Error('Trips row ' + (x.row || i + 2) + ': invalid trip ID "' + id + '" (use letters, numbers, spaces, - . _ only)');
                 return [id, t];
             });
+            // completed trips get the driver who is on the truck now (or keep the one already saved)
+            const oldTrips = new Map((await store.all()).trips.map(x => [x.id, x]));
+            const truckNow = id => { const p = truckPairs.find(x => x[0] === id); return { ...(byId.get(id) || {}), ...(p ? p[1] : {}) }; };
+            clean.forEach(([id, t]) => { t.drv = tripDriver(t, id ? oldTrips.get(id) : null, truckNow(t.truck)); });
             const need = clean.filter(([id]) => !id).length, ids = need ? await store.newIds(need) : [];
             let j = 0; const tripPairs = clean.map(([id, t]) => [id || ids[j++], t]);
             const top = Math.max(0, ...tripPairs.map(([id]) => tripNo(id))); if (top) await store.bump(top);
@@ -198,5 +241,35 @@ module.exports = async function makeMaster({ body, send }) {
         }
         send(res, 404, { error: 'Not found' });
     }
-    return { handle, name: store.name };
+    // Used by staff.js: put a driver on a truck (info) or take the driver off (info = null)
+    async function syncDriver(truckId, staffId, info) {
+        const t = await store.getTruck(truckId); if (!t) return;
+        // Before the truck's driver changes: completed trips of this truck that have no saved driver keep the OLD driver
+        const old = driverOf(t), changes = !info ? t.staffId === staffId : (t.staffId ? t.staffId !== staffId : str(t.driver).toUpperCase() !== str(info.driver).toUpperCase()); // a different PERSON, not a spelling fix
+        if (old && changes) {
+            const freeze = (await store.all()).trips.filter(x => x.truck === truckId && x.r && !x.drv).map(x => [x.id, { drv: old }]);
+            if (freeze.length) await store.putMany([], freeze);
+        }
+        // Same person, details corrected (name spelling, passport ...): update that person's own completed trips on this truck too
+        if (info && old && !changes) {
+            const me = d => d && (d.staffId ? d.staffId === staffId : str(d.driver).toUpperCase() === str(t.driver).toUpperCase());
+            const fix = (await store.all()).trips.filter(x => x.truck === truckId && x.r && me(x.drv)).map(x => [x.id, { drv: { staffId, ...Object.fromEntries(DRIVER_KEYS.map(k => [k, str(info[k], 100)])) } }]);
+            if (fix.length) await store.putMany([], fix);
+        }
+        if (!info) { if (t.staffId === staffId) await store.putTruck(truckId, { ...Object.fromEntries(DRIVER_KEYS.map(k => [k, ''])), staffId: '' }); return; }
+        await store.putTruck(truckId, { ...Object.fromEntries(DRIVER_KEYS.map(k => [k, str(info[k], 100)])), staffId });
+    }
+    // Used by staff.js: the truck ID as stored, or a NEW truck when it does not exist yet. extra = { trailer, type } (blank = keep)
+    async function ensureTruck(v, extra = {}) {
+        let id = idc(v); if (!id) return '';
+        try { id = await resolveTruck(id); }
+        catch (e) {
+            if (!ID.test(id)) throw new Error('Truck "' + id + '" is not a valid truck number (letters, numbers, spaces, - . _ only)');
+            await store.putTruck(id, { reg: '', trailer: '', type: '', status: 'Active', ...Object.fromEntries(DRIVER_KEYS.map(k => [k, ''])), staffId: '' });
+        }
+        const set = {}; if (str(extra.trailer)) set.trailer = str(extra.trailer, 40); if (str(extra.type)) set.type = str(extra.type);
+        if (Object.keys(set).length) await store.putTruck(id, set);
+        return id;
+    }
+    return { handle, name: store.name, store, resolveTruck, ensureTruck, syncDriver, cmp, ID };
 };

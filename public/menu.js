@@ -4,7 +4,7 @@
 //   name   : text shown in the menu
 //   desc   : small text shown in the company-name dropdown
 //   link   : page address (must also exist in PAGES in server.js)
-//   icon   : truck, grid, check, fuel, box  (see ICONS further down)
+//   icon   : truck, grid, check, fuel, box, users  (see ICONS further down)
 //   soon   : true -> greyed out with a "SOON" tag
 //   group  : makes the item a folder that opens/closes (it does not open a page)
 //   parent : puts the item inside the folder with that group name
@@ -13,9 +13,10 @@
     var MODULES = [
         { name: 'Fleet Master View', desc: 'Current and completed trips', icon: 'grid', group: 'master' },
         { name: 'Current Trips', desc: 'Trips started or on the road', link: '/master', icon: 'truck', go: 'main', parent: 'master' },
-        { name: 'Completed Trips', desc: 'Trips with a returned date', link: '/master#completed', icon: 'check', go: 'done', parent: 'master' },
+        { name: 'Completed Trips', desc: 'Trips with an Offloading 2 date', link: '/master#completed', icon: 'check', go: 'done', parent: 'master' },
         { name: 'Fleet Management', desc: 'Trucks, trips and Excel uploads', link: '/fleet', icon: 'truck' },
         { name: 'Fuel Management', desc: 'Fuel given per trip and truck', link: '/fuel', icon: 'fuel' },
+        { name: 'Staff', desc: 'Staff, drivers and their trucks', link: '/staff', icon: 'users' },
         { name: 'Procurement', desc: 'Coming soon', link: '', icon: 'box', soon: true }
     ];
 
@@ -25,6 +26,7 @@
         check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
         fuel: '<path d="M3 22V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17"/><path d="M3 22h12"/><path d="M15 9h2a2 2 0 0 1 2 2v5a2 2 0 0 0 4 0V8l-3-3"/><rect x="6" y="7" width="6" height="4"/>',
         box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+        users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
         moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
         logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
         chev: '<polyline points="6 9 12 15 18 9"/>'
