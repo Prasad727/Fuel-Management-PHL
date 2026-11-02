@@ -13,7 +13,7 @@
 const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), crypto = require('crypto'), zlib = require('zlib');
 //
 // REACT APP: the pages are built into client/dist (run "npm run build" in the client folder).
-// When client/dist exists, /, /fleet, /fuel, /master and /staff show the React app.
+// When client/dist exists, /, /fleet, /fuel, /master, /staff and /procurement show the React app.
 // When it does not exist yet, the old HTML pages in public/ are shown, so nothing breaks.
 // The old pages also stay available at /old/fleet, /old/fuel, /old/master, /old/staff.
 const PORT = process.env.PORT || 3000;
@@ -201,7 +201,7 @@ const send = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'applic
 
 // React app files (client/dist). Files in /assets/ have a unique name per build, so browsers may keep them for a year.
 const DIST = path.join(__dirname, 'client', 'dist');
-const APP_PAGES = new Set(['/', '/fleet', '/fuel', '/master', '/staff']);
+const APP_PAGES = new Set(['/', '/fleet', '/fuel', '/master', '/staff', '/procurement']);
 const OLD_PAGES = { '/old/fleet': 'fleet.html', '/old/fuel': 'fuel.html', '/old/master': 'fleet_master_view.html', '/old/staff': 'staff.html' };
 const TYPES = { '.js': 'application/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.json': 'application/json' };
 const zipped = new Map(); // gzip copies kept in memory (files only change when you rebuild and restart)
@@ -218,9 +218,9 @@ function sendFile(req, res, file, cache) {
 const reactBuilt = () => fs.existsSync(path.join(DIST, 'index.html'));
 
 // Pages: address -> file inside the public folder
-const PAGES = { '/': 'fleet.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html', '/index.html': 'fuel.html', '/master': 'fleet_master_view.html', '/staff': 'staff.html' };
+const PAGES = { '/': 'fleet_master_view.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html', '/index.html': 'fuel.html', '/master': 'fleet_master_view.html', '/staff': 'staff.html' };
 
-let store, trips, master, staff;
+let store, trips, master, staff, proc;
 const server = http.createServer(async (req, res) => {
     try {
         const p = new URL(req.url, 'http://x').pathname, m = req.method;
@@ -297,6 +297,7 @@ const server = http.createServer(async (req, res) => {
         }
         if (p === '/api/master' || p.startsWith('/api/master/')) return await master.handle(req, res, p, m);
         if (p === '/api/staff' || p.startsWith('/api/staff/')) return await staff.handle(req, res, p, m);
+        if (p === '/api/proc' || p.startsWith('/api/proc/')) return await proc.handle(req, res, p, m);
         if (p === '/api/fleet' || p.startsWith('/api/fleet/') || p.startsWith('/api/trips')) return await trips.handle(req, res, p, m);
         if (p === '/api/records' && m === 'GET') {
             const since = new URL(req.url, 'http://x').searchParams.get('since');
@@ -346,6 +347,9 @@ const server = http.createServer(async (req, res) => {
     // Staff Management: uses the Fleet Master storage (same Firebase project), so it starts after master
     try { staff = require('./staff.js')({ body, send, master }); }
     catch (e) { console.error('Could not start Staff module: ' + e.message + '  (are staff.js and the NEW master.js next to server.js?)'); process.exit(1); }
+    // Procurement: also saved with Fleet Master (collections proc_orders, proc_issues); pictures on Cloudinary
+    try { proc = require('./procurement.js')({ body, send, master }); }
+    catch (e) { console.error('Could not start Procurement module: ' + e.message + '  (is procurement.js next to server.js?)'); process.exit(1); }
     server.listen(PORT, '0.0.0.0', () => {
         console.log('\nFleet Fuel Manager is running.\n  On this computer:  http://localhost:' + PORT);
         for (const l of Object.values(os.networkInterfaces()))
@@ -353,6 +357,7 @@ const server = http.createServer(async (req, res) => {
         console.log('  Storage: ' + store.name);
         console.log('  Fleet Master storage: ' + master.name);
         console.log('  Staff: saved with Fleet Master (collection "staff")');
+        console.log('  Procurement: saved with Fleet Master (proc_orders, proc_issues) · pictures: ' + (proc.cloud() ? 'Cloudinary' : 'inside the records (set CLOUDINARY_* to use Cloudinary)'));
         console.log(reactBuilt() ? '  Pages: React app (client/dist)' : '  Pages: old HTML pages (run the build to switch to React - see README)');
         console.log(AUTH_ON ? '  Login protection: ON (' + Object.keys(USERS).length + ' user(s))' : '  Login protection: OFF (set FLEET_USERS to turn on)');
         if (AUTH_ON && !process.env.SESSION_SECRET) console.log('  Tip: set SESSION_SECRET so logins survive a server restart.');
