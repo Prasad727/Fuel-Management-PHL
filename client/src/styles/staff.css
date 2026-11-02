@@ -1,0 +1,63 @@
+/* Styles used ONLY on the Staff page (everything inside <div class="pg-staff">). Colours and sizes come from theme.css */
+.pg-staff .btn:disabled { opacity: .5; cursor: default }
+.pg-staff button:focus-visible, .pg-staff input:focus-visible, .pg-staff select:focus-visible, .pg-staff textarea:focus-visible { outline: 3px solid var(--yel); outline-offset: 2px }
+.pg-staff .teams { display: grid; grid-template-columns: repeat(8,1fr); gap: 10px; margin-bottom: 22px }
+.pg-staff .tm { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; cursor: pointer; text-align: left; font: inherit; color: inherit; transition: .12s }
+.pg-staff .tm:hover { border-color: var(--mute2) }
+.pg-staff .tm.on { border-color: var(--yel); box-shadow: inset 0 0 0 1px var(--yel); background: var(--ybg) }
+.pg-staff .tm span { display: block; font-size: var(--fs-sm); color: var(--mute); font-weight: 500 }
+.pg-staff .tm b { display: block; font-size: var(--fs-xl); font-weight: 800; letter-spacing: -.02em; margin-top: 4px }
+.pg-staff .tm.on span { color: var(--yfg) }
+.pg-staff .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 24px; border-bottom: 1px solid var(--line) }
+.pg-staff .ph h2 { margin: 0; font-size: var(--fs-lg) }
+.pg-staff .bar { display: flex; flex-wrap: wrap; gap: 8px }
+.pg-staff input, .pg-staff select, .pg-staff textarea { font: inherit; font-size: var(--fs-base); padding: var(--in-pad); border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); width: 100% }
+.pg-staff input[readonly] { background: var(--soft); color: var(--mute) }
+.pg-staff textarea { resize: vertical; min-height: 70px }
+.pg-staff .empty { padding: 48px; text-align: center; color: var(--mute); grid-column: 1/-1 }
+.pg-staff #cards { display: grid; grid-template-columns: repeat(auto-fill,minmax(250px,1fr)); gap: 12px; padding: 8px 24px 28px }
+.pg-staff .sc { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; cursor: pointer; transition: .12s; display: flex; flex-direction: column; gap: 10px }
+.pg-staff .sc:hover { box-shadow: 0 4px 14px rgba(0,0,0,.1); transform: translateY(-1px) }
+.pg-staff .sc.left { opacity: .6 }
+.pg-staff .sh { display: flex; gap: 12px; align-items: center }
+.pg-staff .av { width: 56px; height: 56px; border-radius: 50%; flex: none; object-fit: cover; display: grid; place-items: center; font-weight: 800; font-size: var(--fs-lg); color: #fff; background: #a8a29e; overflow: hidden }
+.pg-staff .av img { width: 100%; height: 100%; object-fit: cover }
+.pg-staff .nm { font-weight: 700; line-height: 1.2 }
+.pg-staff .ds { font-size: var(--fs-sm); color: var(--mute) }
+.pg-staff .meta { font-size: var(--fs-sm); color: var(--mute); display: grid; gap: 3px }
+.pg-staff .meta div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.pg-staff .chips { display: flex; flex-wrap: wrap; gap: 6px }
+.pg-staff .b { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 99px; font-weight: 600; font-size: var(--fs-2xs); white-space: nowrap; background: var(--soft); color: var(--mute); border: 1px solid var(--line) }
+.pg-staff .b.g { background: var(--gbg); color: var(--gfg); border-color: transparent }
+.pg-staff .b.o { background: var(--obg); color: var(--ofg); border-color: transparent }
+.pg-staff .b.y { background: var(--ybg); color: var(--yfg); border-color: transparent }
+.pg-staff .b.r { background: var(--rbg); color: var(--rfg); border-color: transparent }
+.pg-staff .b.p { background: var(--pbg); color: var(--pfg); border-color: transparent }
+.pg-staff .trk { font: 700 var(--fs-sm) var(--mono); background: var(--yel); color: var(--yink); padding: 2px 8px; border-radius: 7px; white-space: nowrap }
+.pg-staff .foot { padding: 14px 24px; border-top: 1px solid var(--line); color: var(--mute); font-size: var(--fs-base) }
+.pg-staff dialog { border: 0; border-radius: var(--radius); background: var(--card); color: var(--ink); width: min(860px,96vw); padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,.35) }
+.pg-staff dialog h2 { margin: 0; font-size: var(--fs-lg) }
+.pg-staff .pf { display: grid; grid-template-columns: 190px 1fr; gap: 24px }
+.pg-staff .pic { display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center }
+.pg-staff .pic .av { width: 150px; height: 150px; font-size: 44px }
+.pg-staff .pic small { color: var(--mute); font-size: var(--fs-xs) }
+.pg-staff .sec { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 12px }
+.pg-staff .sec h3 { margin: 0 0 12px; font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; color: var(--mute) }
+.pg-staff .sec.drv { border-left: 4px solid var(--yel) }
+.pg-staff .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+.pg-staff .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px }
+.pg-staff .hint { font-size: var(--fs-xs); color: var(--mute) }
+.pg-staff .acts { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; flex-wrap: wrap }
+.pg-staff .dt { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 18px }
+.pg-staff .api { font: var(--fs-xs) var(--mono); background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; line-height: 1.8; overflow-x: auto }
+@media(max-width:1300px) {
+    .pg-staff .teams { grid-template-columns: repeat(4,1fr) }
+}
+@media(max-width:860px) {
+    .pg-staff .pf { grid-template-columns: 1fr }
+}
+@media(max-width:560px) {
+    .pg-staff .teams { grid-template-columns: repeat(2,1fr) }
+    .pg-staff .grid, .pg-staff .grid3 { grid-template-columns: 1fr }
+    .pg-staff #cards { padding: 8px 16px 24px }
+}

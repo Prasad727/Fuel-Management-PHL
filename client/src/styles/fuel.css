@@ -1,0 +1,81 @@
+/* Styles used ONLY on the Fuel page (everything inside <div class="pg-fuel">). Colours and sizes come from theme.css */
+.pg-fuel .main { min-width: 0 }
+.pg-fuel button:focus-visible, .pg-fuel input:focus-visible, .pg-fuel select:focus-visible, .pg-fuel a:focus-visible { outline: 3px solid var(--yel); outline-offset: 2px }
+.pg-fuel .kpis { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; margin-bottom: 18px }
+.pg-fuel .chip.y { background: var(--ybg); color: var(--yfg) }
+.pg-fuel .chip.g { background: var(--gbg); color: var(--gfg) }
+.pg-fuel .track { flex: 1; height: 10px; background: var(--soft); border-radius: 99px; overflow: hidden }
+.pg-fuel .track div { height: 100%; width: 0; background: var(--yel); border-radius: 99px; transition: width .5s }
+.pg-fuel .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px; padding: 0 24px 0 24px; border-bottom: 1px solid var(--line) }
+.pg-fuel .bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 }
+.pg-fuel .tools .seg, .pg-fuel .tools .rst { flex: none }
+.pg-fuel .inp .ic { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--mute); width: 17px; height: 17px }
+.pg-fuel .inp input { padding-left: 40px !important }
+.pg-fuel .tools input, .pg-fuel .tools select, .pg-fuel dialog input, .pg-fuel dialog select { font: inherit; font-size: var(--fs-base); padding: var(--in-pad); border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); width: 100% }
+.pg-fuel .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12) }
+.pg-fuel table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1180px }
+.pg-fuel tr.r td:first-child { box-shadow: inset 4px 0 0 var(--red) }
+.pg-fuel tr.o td:first-child { box-shadow: inset 4px 0 0 var(--org) }
+.pg-fuel tr.g td:first-child { box-shadow: inset 4px 0 0 var(--grn) }
+.pg-fuel .horse { font: 700 var(--fs-base) var(--mono); letter-spacing: .02em }
+.pg-fuel .sub { font-size: var(--fs-xs); color: var(--mute) }
+.pg-fuel .st { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: var(--fs-sm) }
+.pg-fuel .st i { width: 7px; height: 7px; border-radius: 50%; background: currentColor }
+.pg-fuel .st.ld { background: var(--ybg); color: var(--yfg) }
+.pg-fuel .st.ld i { background: var(--ydot) }
+.pg-fuel .st.em { background: var(--soft); color: var(--mute) }
+.pg-fuel .pill { display: inline-block; padding: 3px 11px; border-radius: 99px; font-weight: 600; font-size: var(--fs-sm); background: var(--soft); color: var(--mute); border: 1px solid transparent; white-space: nowrap }
+.pg-fuel tr.L.w .pill { background: var(--card); border-color: var(--line); color: var(--ink) }
+.pg-fuel tr.g .pill { background: var(--gbg); color: var(--gfg); border-color: var(--grn) }
+.pg-fuel tr.o .pill { background: var(--obg); color: var(--ofg); border-color: var(--org) }
+.pg-fuel tr.r .pill { background: var(--rbg); color: var(--rfg); border-color: var(--red) }
+.pg-fuel td.act { white-space: nowrap }
+.pg-fuel td.act button { font: 600 var(--fs-sm) var(--font); font-family: inherit; margin-right: 6px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); color: var(--ink); cursor: pointer }
+.pg-fuel td.act button[data-d] { color: var(--rfg) }
+.pg-fuel .empty { padding: 48px; text-align: center; color: var(--mute) }
+.pg-fuel .foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--line); font-size: var(--fs-base); color: var(--mute) }
+.pg-fuel .lg { display: flex; gap: 8px; align-items: center; flex-wrap: wrap }
+.pg-fuel .lg span { padding: 3px 12px; border-radius: 99px; font-weight: 600; font-size: var(--fs-sm); border: 1px solid var(--line); color: var(--ink) }
+.pg-fuel .lg .g { background: var(--gbg); color: var(--gfg); border-color: var(--grn) }
+.pg-fuel .lg .o { background: var(--obg); color: var(--ofg); border-color: var(--org) }
+.pg-fuel .lg .r { background: var(--rbg); color: var(--rfg); border-color: var(--red) }
+.pg-fuel dialog { border: 0; border-radius: var(--radius); background: var(--card); color: var(--ink); width: min(660px,94vw); padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,.35) }
+.pg-fuel dialog h2 { margin: 0 0 16px; font-size: var(--fs-lg) }
+.pg-fuel .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
+.pg-fuel .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px }
+@media(max-width:1200px) {
+    .pg-fuel .kpis { grid-template-columns: repeat(3,1fr) }
+}
+@media(max-width:860px) {
+    .pg-fuel .ph { padding: 0 12px }
+    .pg-fuel .tools { padding: 10px 12px }
+}
+@media(max-width:520px) {
+    .pg-fuel .grid { grid-template-columns: 1fr }
+}
+.pg-fuel .kpis.k3 { grid-template-columns: repeat(3,1fr) }
+.pg-fuel .stp { display: inline-block; margin-left: 6px; font-size: var(--fs-sm); padding: 2px 11px; border-radius: 99px; background: var(--soft); color: var(--mute) }
+.pg-fuel .stp:empty { display: none }
+.pg-fuel .sec2 { padding: 20px 24px 0 }
+.pg-fuel .sec2 h2 { margin: 0; font-size: var(--fs-md) }
+.pg-fuel .fgrid { display: grid; grid-template-columns: repeat(auto-fit,minmax(170px,1fr)); gap: 14px; align-items: end; padding: 16px 24px 8px }
+.pg-fuel .fgrid label { display: flex; flex-direction: column; gap: 7px; font-size: var(--fs-sm); font-weight: 500; color: var(--mute) }
+.pg-fuel .fgrid input:not([type=checkbox]), .pg-fuel .tools2 input, .pg-fuel .tools2 select { font: inherit; font-size: var(--fs-base); padding: var(--in-pad); border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); width: 100% }
+.pg-fuel .fgrid label.chk { flex-direction: row; align-items: center; gap: 9px; color: var(--ink) }
+.pg-fuel .fgrid label.chk input { width: 18px; height: 18px; accent-color: var(--yel) }
+.pg-fuel .fbtns { display: flex; gap: 8px; flex-wrap: wrap }
+.pg-fuel .note { padding: 6px 24px 20px; font-size: var(--fs-sm); color: var(--mute) }
+.pg-fuel .tools2 { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 20px 24px 8px }
+.pg-fuel .tools2 .grow { flex: 1 1 280px; width: auto }
+.pg-fuel .tools2 input[type=date], .pg-fuel .tools2 select { width: auto }
+.pg-fuel .sumtitle { padding: 16px 24px 10px; font-size: var(--fs-sm); font-weight: 600; color: var(--mute); text-transform: uppercase; letter-spacing: .06em }
+.pg-fuel td.id { font: 600 var(--fs-xs) var(--mono); color: var(--ink) }
+.pg-fuel td.num, .pg-fuel th.num { text-align: right; font-variant-numeric: tabular-nums }
+.pg-fuel .panel button.del { padding: 5px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); color: var(--mute); margin-right: 6px; font-size: var(--fs-base); cursor: pointer }
+.pg-fuel .panel button.del:hover { color: var(--rfg); border-color: var(--red) }
+@media(max-width:700px) {
+    .pg-fuel .kpis.k3 { grid-template-columns: 1fr }
+    .pg-fuel .fgrid, .pg-fuel .tools2, .pg-fuel .sec2, .pg-fuel .sumtitle, .pg-fuel .note { padding-left: 14px; padding-right: 14px }
+}
+.pg-fuel table { font-size: var(--fs-xs) }
+.pg-fuel .grid label, .pg-fuel .grid input, .pg-fuel .grid select { font-size: var(--fs-xs) }

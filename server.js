@@ -10,7 +10,12 @@
 //   MASTER_FIREBASE_SERVICE_ACCOUNT = whole contents of the NEW project's service-account key file (see master.js)
 //
 // STAFF (/staff) is saved in that same Fleet Master Firebase project (see staff.js). No extra setting needed.
-const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), crypto = require('crypto');
+const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), crypto = require('crypto'), zlib = require('zlib');
+//
+// REACT APP: the pages are built into client/dist (run "npm run build" in the client folder).
+// When client/dist exists, /, /fleet, /fuel, /master and /staff show the React app.
+// When it does not exist yet, the old HTML pages in public/ are shown, so nothing breaks.
+// The old pages also stay available at /old/fleet, /old/fuel, /old/master, /old/staff.
 const PORT = process.env.PORT || 3000;
 const prefixOf = d => 'FM-' + d.replace(/-/g, '') + '-';
 
@@ -194,6 +199,24 @@ function body(req) {
 }
 const send = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
 
+// React app files (client/dist). Files in /assets/ have a unique name per build, so browsers may keep them for a year.
+const DIST = path.join(__dirname, 'client', 'dist');
+const APP_PAGES = new Set(['/', '/fleet', '/fuel', '/master', '/staff']);
+const OLD_PAGES = { '/old/fleet': 'fleet.html', '/old/fuel': 'fuel.html', '/old/master': 'fleet_master_view.html', '/old/staff': 'staff.html' };
+const TYPES = { '.js': 'application/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.json': 'application/json' };
+const zipped = new Map(); // gzip copies kept in memory (files only change when you rebuild and restart)
+function sendFile(req, res, file, cache) {
+    let buf; try { buf = fs.readFileSync(file); } catch (e) { res.writeHead(404); return res.end('Not found'); }
+    const type = TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream';
+    const head = { 'Content-Type': type, 'Cache-Control': cache, 'Vary': 'Accept-Encoding' };
+    if (/gzip/.test(req.headers['accept-encoding'] || '') && /javascript|css|html|svg|json/.test(type) && buf.length > 1024) {
+        const k = file + ':' + buf.length; let z = zipped.get(k); if (!z) { z = zlib.gzipSync(buf, { level: 9 }); zipped.set(k, z); }
+        head['Content-Encoding'] = 'gzip'; buf = z;
+    }
+    res.writeHead(200, head); res.end(buf);
+}
+const reactBuilt = () => fs.existsSync(path.join(DIST, 'index.html'));
+
 // Pages: address -> file inside the public folder
 const PAGES = { '/': 'fleet.html', '/fleet': 'fleet.html', '/fuel': 'fuel.html', '/index.html': 'fuel.html', '/master': 'fleet_master_view.html', '/staff': 'staff.html' };
 
@@ -257,6 +280,17 @@ const server = http.createServer(async (req, res) => {
         }
 
         if (!p.startsWith('/api/')) {
+            // React app
+            if (reactBuilt()) {
+                if (p.startsWith('/assets/')) {
+                    const f = path.join(DIST, path.normalize(p).replace(/^([\\/])+/, ''));
+                    if (!f.startsWith(path.join(DIST, 'assets'))) { res.writeHead(404); return res.end('Not found'); }
+                    return sendFile(req, res, f, 'public, max-age=31536000, immutable');
+                }
+                if (APP_PAGES.has(p)) return sendFile(req, res, path.join(DIST, 'index.html'), 'no-store');
+            }
+            // Old HTML pages (kept as a backup)
+            if (OLD_PAGES[p]) return sendFile(req, res, path.join(__dirname, 'public', OLD_PAGES[p]), 'no-store');
             if (!PAGES[p]) { res.writeHead(404); return res.end('Not found'); }
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
             return res.end(fs.readFileSync(path.join(__dirname, 'public', PAGES[p])));
@@ -319,6 +353,7 @@ const server = http.createServer(async (req, res) => {
         console.log('  Storage: ' + store.name);
         console.log('  Fleet Master storage: ' + master.name);
         console.log('  Staff: saved with Fleet Master (collection "staff")');
+        console.log(reactBuilt() ? '  Pages: React app (client/dist)' : '  Pages: old HTML pages (run the build to switch to React - see README)');
         console.log(AUTH_ON ? '  Login protection: ON (' + Object.keys(USERS).length + ' user(s))' : '  Login protection: OFF (set FLEET_USERS to turn on)');
         if (AUTH_ON && !process.env.SESSION_SECRET) console.log('  Tip: set SESSION_SECRET so logins survive a server restart.');
     });

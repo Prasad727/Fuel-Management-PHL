@@ -1,0 +1,57 @@
+/* Styles used ONLY on the Fleet page (everything inside <div class="pg-fleet">). Colours and sizes come from theme.css */
+.pg-fleet .main { min-width: 0 }
+.pg-fleet button:focus-visible, .pg-fleet input:focus-visible, .pg-fleet select:focus-visible, .pg-fleet a:focus-visible { outline: 3px solid var(--yel); outline-offset: 2px }
+.pg-fleet .kpis { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; margin-bottom: 18px }
+.pg-fleet .chip.y { background: var(--ybg); color: var(--yfg) }
+.pg-fleet .chip.g { background: var(--gbg); color: var(--gfg) }
+.pg-fleet .track { flex: 1; height: 10px; background: var(--soft); border-radius: 99px; overflow: hidden }
+.pg-fleet .track div { height: 100%; width: 0; background: var(--yel); border-radius: 99px; transition: width .5s }
+.pg-fleet .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px; padding: 0 24px 0 24px; border-bottom: 1px solid var(--line) }
+.pg-fleet .bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 }
+.pg-fleet .tools .seg, .pg-fleet .tools .rst { flex: none }
+.pg-fleet .inp .ic { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--mute); width: 17px; height: 17px }
+.pg-fleet .inp input { padding-left: 40px !important }
+.pg-fleet .tools input, .pg-fleet .tools select, .pg-fleet dialog input, .pg-fleet dialog select { font: inherit; font-size: var(--fs-base); padding: var(--in-pad); border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); width: 100% }
+.pg-fleet .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12) }
+.pg-fleet table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1180px }
+.pg-fleet tr.r td:first-child { box-shadow: inset 4px 0 0 var(--red) }
+.pg-fleet tr.o td:first-child { box-shadow: inset 4px 0 0 var(--org) }
+.pg-fleet tr.g td:first-child { box-shadow: inset 4px 0 0 var(--grn) }
+.pg-fleet .horse { font: 700 var(--fs-base) var(--mono); letter-spacing: .02em }
+.pg-fleet .sub { font-size: var(--fs-xs); color: var(--mute) }
+.pg-fleet .st { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: var(--fs-sm) }
+.pg-fleet .st i { width: 7px; height: 7px; border-radius: 50%; background: currentColor }
+.pg-fleet .st.ld { background: var(--ybg); color: var(--yfg) }
+.pg-fleet .st.ld i { background: var(--ydot) }
+.pg-fleet .st.em { background: var(--soft); color: var(--mute) }
+.pg-fleet .pill { display: inline-block; padding: 3px 11px; border-radius: 99px; font-weight: 600; font-size: var(--fs-sm); background: var(--soft); color: var(--mute); border: 1px solid transparent; white-space: nowrap }
+.pg-fleet tr.L.w .pill { background: var(--card); border-color: var(--line); color: var(--ink) }
+.pg-fleet tr.g .pill { background: var(--gbg); color: var(--gfg); border-color: var(--grn) }
+.pg-fleet tr.o .pill { background: var(--obg); color: var(--ofg); border-color: var(--org) }
+.pg-fleet tr.r .pill { background: var(--rbg); color: var(--rfg); border-color: var(--red) }
+.pg-fleet td.act { white-space: nowrap }
+.pg-fleet td.act button { font: 600 var(--fs-sm) var(--font); font-family: inherit; margin-right: 6px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); color: var(--ink); cursor: pointer }
+.pg-fleet td.act button[data-d] { color: var(--rfg) }
+.pg-fleet .empty { padding: 48px; text-align: center; color: var(--mute) }
+.pg-fleet .foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--line); font-size: var(--fs-base); color: var(--mute) }
+.pg-fleet .lg { display: flex; gap: 8px; align-items: center; flex-wrap: wrap }
+.pg-fleet .lg span { padding: 3px 12px; border-radius: 99px; font-weight: 600; font-size: var(--fs-sm); border: 1px solid var(--line); color: var(--ink) }
+.pg-fleet .lg .g { background: var(--gbg); color: var(--gfg); border-color: var(--grn) }
+.pg-fleet .lg .o { background: var(--obg); color: var(--ofg); border-color: var(--org) }
+.pg-fleet .lg .r { background: var(--rbg); color: var(--rfg); border-color: var(--red) }
+.pg-fleet dialog { border: 0; border-radius: var(--radius); background: var(--card); color: var(--ink); width: min(660px,94vw); padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,.35) }
+.pg-fleet dialog h2 { margin: 0 0 16px; font-size: var(--fs-lg) }
+.pg-fleet .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
+.pg-fleet .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px }
+@media(max-width:1200px) {
+    .pg-fleet .kpis { grid-template-columns: repeat(3,1fr) }
+}
+@media(max-width:860px) {
+    .pg-fleet .ph { padding: 0 12px }
+    .pg-fleet .tools { padding: 10px 12px }
+}
+@media(max-width:520px) {
+    .pg-fleet .grid { grid-template-columns: 1fr }
+}
+.pg-fleet table { font-size: var(--fs-xs) }
+.pg-fleet .grid label, .pg-fleet .grid input, .pg-fleet .grid select { font-size: var(--fs-xs) }

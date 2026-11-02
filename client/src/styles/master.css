@@ -1,0 +1,105 @@
+/* Styles used ONLY on the Master page (everything inside <div class="pg-master">). Colours and sizes come from theme.css */
+.pg-master button:focus-visible, .pg-master input:focus-visible, .pg-master select:focus-visible { outline: 3px solid var(--yel); outline-offset: 2px }
+.pg-master .kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 22px }
+.pg-master .chip.y { background: var(--ybg); color: var(--yfg) }
+.pg-master .chip.g { background: var(--gbg); color: var(--gfg) }
+.pg-master .chip.r { background: var(--rbg); color: var(--rfg) }
+.pg-master .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 24px; border-bottom: 1px solid var(--line) }
+.pg-master .ph h2 { margin: 0; font-size: var(--fs-lg) }
+.pg-master .bar { display: flex; flex-wrap: wrap; gap: 8px }
+.pg-master input, .pg-master select { font: inherit; font-size: var(--fs-base); padding: var(--in-pad); border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); width: 100% }
+.pg-master #cards, .pg-master #dCards { display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap: 12px; padding: 8px 24px 28px }
+.pg-master .tc { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; box-shadow: inset 4px 0 0 var(--ac,transparent); transition: .12s; font-size: var(--fs-sm) }
+.pg-master .tc:hover { box-shadow: inset 4px 0 0 var(--ac,transparent),0 4px 14px rgba(0,0,0,.12); transform: translateY(-1px) }
+.pg-master .tc.r { --ac: var(--red) }
+.pg-master .tc.o { --ac: var(--org) }
+.pg-master .tc.g { --ac: var(--grn) }
+.pg-master .tch { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 11px 12px 11px 16px; background: var(--soft); border-bottom: 1px solid var(--line) }
+.pg-master .tch { flex-wrap: wrap; row-gap: 6px }
+.pg-master .tch .b { margin-left: auto; font-size: var(--fs-2xs); padding: 2px 8px; gap: 4px }
+.pg-master .horse { font: 700 var(--fs-sm) var(--mono); letter-spacing: .02em }
+.pg-master .horse.trk { font-size: var(--fs-base); letter-spacing: .01em; white-space: nowrap; background: var(--yel); color: var(--yink); padding: 2px 8px; border-radius: 7px; display: inline-block; margin-bottom: 3px }
+.pg-master .sub { font-size: var(--fs-2xs); color: var(--mute) }
+.pg-master .b { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 99px; font-weight: 600; font-size: var(--fs-2xs); white-space: nowrap; background: var(--soft); color: var(--mute); border: 1px solid var(--line) }
+.pg-master .b i { width: 6px; height: 6px; border-radius: 50%; background: currentColor }
+.pg-master .b.g { background: var(--gbg); color: var(--gfg); border-color: transparent }
+.pg-master .b.o { background: var(--obg); color: var(--ofg); border-color: transparent }
+.pg-master .b.y { background: var(--ybg); color: var(--yfg); border-color: transparent }
+.pg-master .b.p { background: var(--pbg); color: var(--pfg); border-color: transparent }
+.pg-master .b.r { background: var(--rbg); color: var(--rfg); border-color: transparent }
+.pg-master .mini { padding: 4px 12px 12px 16px }
+.pg-master .mini > div { padding: 8px 0; border-bottom: 1px solid var(--line) }
+.pg-master .mini > div:last-child { border-bottom: 0; padding-bottom: 0 }
+.pg-master .rt { color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.pg-master .row { display: flex; justify-content: space-between; align-items: center; gap: 6px }
+.pg-master .pg { display: flex; gap: 3px }
+.pg-master .pg i { flex: 1; height: 5px; border-radius: 3px; background: var(--line) }
+.pg-master .tdet { background: var(--soft); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+.pg-master .tdet h3 { grid-column: 1/-1; margin: 0; font-size: var(--fs-sm); letter-spacing: .06em; text-transform: uppercase; color: var(--mute) }
+.pg-master .tdet small { grid-column: 1/-1; color: var(--mute); font-size: var(--fs-xs) }
+.pg-master .k.link { display: block; text-decoration: none; color: inherit; cursor: pointer; transition: .12s }
+.pg-master .k.link:hover { border-color: var(--yel); box-shadow: 0 6px 18px rgba(0,0,0,.08) }
+.pg-master .k.link .more { display: inline-flex; align-items: center; gap: 6px; color: var(--yfg); font-weight: 600 }
+.pg-master .go { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--yel); color: var(--yink); transition: .12s }
+.pg-master .k.link:hover .go { transform: translateX(3px) }
+.pg-master .cnt { display: inline-block; margin-left: 6px; padding: 1px 10px; border-radius: 99px; background: var(--ybg); color: var(--yfg); font-size: var(--fs-sm); vertical-align: middle }
+.pg-master .pager { display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; padding: 4px 24px 26px }
+.pg-master .pager button { min-width: 38px; height: 38px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 600 var(--fs-base) var(--font); cursor: pointer }
+.pg-master .pager button:hover { background: var(--soft) }
+.pg-master .pager button.on { background: var(--yel); border-color: var(--yel); color: var(--yink) }
+.pg-master .pager button:disabled { opacity: .4; cursor: default }
+.pg-master .pager span { color: var(--mute); padding: 0 4px }
+.pg-master .empty { padding: 48px; text-align: center; color: var(--mute); grid-column: 1/-1 }
+.pg-master .foot { padding: 14px 24px; border-top: 1px solid var(--line); color: var(--mute); font-size: var(--fs-base); display: flex; gap: 8px; flex-wrap: wrap }
+.pg-master .foot .b { border: 1px solid }
+.pg-master dialog { border: 0; border-radius: var(--radius); background: var(--card); color: var(--ink); width: min(660px,94vw); padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,.35) }
+.pg-master dialog h2 { margin: 0 0 16px; font-size: var(--fs-lg) }
+.pg-master .leg { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-top: 4px }
+.pg-master .drv { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.pg-master .lg { padding: 7px 0 7px 10px !important; border-left: 3px solid var(--line); margin: 2px 0 }
+.pg-master .lg.y { border-left-color: var(--yel) }
+.pg-master .lg.o { border-left-color: var(--org) }
+.pg-master .lg.g { border-left-color: var(--grn) }
+.pg-master .lg b { font-size: var(--fs-xs) }
+.pg-master .lg .lgd { font-weight: 700; white-space: nowrap }
+.pg-master .lg.run .lgd { color: var(--yfg) }
+.pg-master .lg.o.run .lgd { color: var(--ofg) }
+.pg-master .lg .rt { font-size: var(--fs-xs) }
+.pg-master .det-dlg { width: min(720px,94vw) }
+.pg-master .dh { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px }
+.pg-master .dh h2 { margin: 0 }
+.pg-master .dh .sub { font-size: var(--fs-sm); margin-top: 3px }
+.pg-master .dinfo { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px 16px; background: var(--soft); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 14px }
+.pg-master .dinfo div, .pg-master .dleg dl div { font-size: var(--fs-sm); font-weight: 600 }
+.pg-master .dinfo small, .pg-master .dleg dt { display: block; font-size: var(--fs-2xs); font-weight: 500; color: var(--mute); text-transform: uppercase; letter-spacing: .04em }
+.pg-master .dleg { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; border-left: 4px solid var(--line) }
+.pg-master .dleg.y { border-left-color: var(--yel) }
+.pg-master .dleg.o { border-left-color: var(--org) }
+.pg-master .dleg.g { border-left-color: var(--grn) }
+.pg-master .dleg h3 { margin: 0 0 10px; font-size: var(--fs-base); display: flex; justify-content: space-between; gap: 8px; align-items: center }
+.pg-master .dleg dl { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px 16px; margin: 0 }
+.pg-master .dleg dd { margin: 3px 0 0; font-size: var(--fs-base); font-weight: 600 }
+.pg-master .dleg.emp dl { grid-template-columns: repeat(2,1fr) }
+@media(max-width:620px) {
+    .pg-master .dinfo, .pg-master .dleg dl { grid-template-columns: 1fr 1fr }
+}
+.pg-master .clean-dlg { width: min(820px,96vw) }
+.pg-master .clist { max-height: 52vh; overflow: auto; border: 1px solid var(--line); border-radius: 12px }
+.pg-master .clist label { display: grid; grid-template-columns: 22px 130px 120px 1fr 120px; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: var(--fs-sm); color: var(--ink); cursor: pointer; font-weight: 500 }
+.pg-master .clist label:hover { background: var(--soft) }
+.pg-master .clist label.smp { background: var(--rbg) }
+.pg-master .clist input { width: 16px; height: 16px; padding: 0 }
+.pg-master .clist .hd { position: sticky; top: 0; background: var(--card); font-weight: 700; color: var(--mute); cursor: default }
+@media(max-width:620px) {
+    .pg-master .clist label { grid-template-columns: 22px 1fr 1fr }
+    .pg-master .clist label > :nth-child(n+4) { display: none }
+}
+.pg-master .clean-dlg .btn.on { background: var(--yel); border-color: var(--yel); color: var(--yink) }
+.pg-master .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
+.pg-master .acts { display: flex; justify-content: space-between; gap: 8px; margin-top: 20px }
+@media(max-width:1200px) {
+    .pg-master .kpis { grid-template-columns: repeat(2,1fr) }
+}
+@media(max-width:520px) {
+    .pg-master .grid, .pg-master .tdet { grid-template-columns: 1fr }
+}
